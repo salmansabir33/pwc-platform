@@ -6,6 +6,15 @@ PWC is a Faisalabad-first ecosystem for independent welfare NGOs, citizens/volun
 Implemented: `accounts.User` (UUID `AbstractUser`), organization/workspace/access skeleton, minimal health check and read-only public verified-organization projections. Session authentication is configured as a DRF default, not a completed login system. No private tenant APIs, granular authorization engine, finance, membership workflows or production deployment exist yet. Do not represent scaffold role labels or tests as proof of these capabilities.
 
 ## Planning authority and conflict handling
+
+### Documentation hierarchy and master execution plan
+- **Requirements authority:** The Strategic & Product Foundation (`docs/product/PWC_Strategic_and_Product_Foundation_v1.0_Draft_for_Review.md`) remains the authoritative source for product requirements and provisional decisions. Its decision statuses must be preserved; provisional does not mean approved.
+- **Implementation design references:** The technical architecture, identity/authorization, information architecture and detailed screen specifications listed below guide implementation design and canonical screen/flow mapping. They do not independently approve or redefine product requirements.
+- **Master engineering execution plan:** Read [AI-Agent Implementation Roadmap v2.0](docs/development/PWC_AI_Agent_Implementation_Roadmap_v2.0.md) before planning or executing a task. It defines engineering phases, dependencies, task sequencing, acceptance gates, agent workflows and execution standards. It refines the earlier Development Execution Plan and M1 backlog for engineering sequencing, without replacing requirements authority or approving unresolved decisions. Apply its task contract, prerequisite checks, scoped execution, evidence-based reporting and human PR review standards alongside the instructions here.
+- **Repository-wide agent instructions:** Root `AGENTS.md` contains the development instructions agents must follow throughout this repository. Task prompts supplement these instructions rather than replacing them; the roadmap does not waive the repository's security, quality or scope constraints.
+
+Unresolved decisions cannot be treated as approved requirements. Only an explicitly human-reviewed and accepted ADR or product decision establishes approval within its recorded scope; a roadmap entry, AI recommendation or implementation commit alone does not. If requirements, design references, execution sequencing or repository instructions conflict, use the conflict-handling process below rather than silently selecting an interpretation.
+
 Read `README.md`, `docs/decisions/`, the local setup runbook and relevant documents in `docs/product/` before changing code. All eight product documents remain drafts. Their roles (see Development Execution Plan §2) are:
 
 1. `PWC_Strategic_and_Product_Foundation_v1.0_Draft_for_Review.md`: product scope, NGO independence, provisional governance and selected requirements.
