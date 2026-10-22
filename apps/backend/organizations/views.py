@@ -1,5 +1,5 @@
 from rest_framework import generics, permissions, serializers
-from .models import Organization, OrganizationAccess, OrganizationWorkspace
+from .models import Organization, OrganizationWorkspace
 
 class PublicOrganizationSerializer(serializers.ModelSerializer):
     class Meta:
