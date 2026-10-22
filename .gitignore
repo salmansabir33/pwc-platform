@@ -1,0 +1,17 @@
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+.dart_tool/
+.flutter-plugins*
+.build/
+build/
+.idea/
+.vscode/
+.DS_Store
+*.sqlite3
+media/

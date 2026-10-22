@@ -1,0 +1,1 @@
+Development compose config lives at repository root. Production deployment, private file storage, backups, and restore drills remain unimplemented. Never use dev server or sample credentials in production.

@@ -1,0 +1,1 @@
+M1 negative-access tests must include NGO A vs NGO B across every private endpoint, claimant vs verified admin, revoked access, member import, secure claim and export. Those endpoints are not implemented by this scaffold.
