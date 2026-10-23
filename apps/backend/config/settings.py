@@ -31,9 +31,9 @@ DATABASES = {"default": {"ENGINE": "django.db.backends.postgresql", "NAME":os.ge
 AUTH_USER_MODEL = "accounts.User"
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME":"django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
-    {"NAME":"django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME":"django.contrib.auth.password_validation.MinimumLengthValidator", "OPTIONS":{"min_length":15}},
     {"NAME":"django.contrib.auth.password_validation.CommonPasswordValidator"},
-    {"NAME":"django.contrib.auth.password_validation.NumericPasswordValidator"},
+    {"NAME":"accounts.validators.MaximumLengthValidator", "OPTIONS":{"max_length":128}},
 ]
 LANGUAGE_CODE="en-us"
 TIME_ZONE="UTC"
