@@ -7,3 +7,11 @@ asgiref==3.12.1
 psycopg-binary==3.3.6
 sqlparse==0.6.0
 typing_extensions==4.16.0
+# PWC-03A.2: IDNA2008 domain profile and encrypted delayed challenge delivery.
+idna==3.20
+cryptography==50.0.2
+cffi==2.1.1
+pycparser==3.12
+
+# PWC-03A.4: RFC6238 TOTP (encryption remains cryptography/Fernet).
+pyotp==2.10.0
