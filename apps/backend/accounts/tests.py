@@ -391,9 +391,8 @@ class SecurityFoundationTests(TestCase):
 
     def test_deferred_authentication_routes_remain_absent(self):
         for path in [
-            "web/login/",
-            "mobile/login/",
-            "mobile/refresh/",
+            "assurance/intents/",
+            "contact-change/request/",
             "mfa/enrollment/request/",
         ]:
             self.assertEqual(

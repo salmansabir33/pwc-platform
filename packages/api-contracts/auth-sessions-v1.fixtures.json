@@ -1,0 +1,30 @@
+{
+  "version": "v1",
+  "scope": "PWC-03A.3 synthetic contract fixtures; placeholders are not credentials",
+  "prefix": "/api/v1/auth/",
+  "transport": {
+    "web/login/": "browser issuance; exact configured HTTPS portal + CSRF; no Authorization",
+    "mobile/login/": "native issuance; no session cookie or Authorization or browser provenance",
+    "mobile/refresh/": "native explicit body refresh proof only",
+    "me/": "exactly one cookie OR Bearer",
+    "logout/": "exactly one cookie OR Bearer; browser CSRF",
+    "logout-all/": "exactly one cookie OR Bearer; browser CSRF; step-up denial in this slice",
+    "sessions/": "exactly one cookie OR Bearer",
+    "sessions/{id}/": "exactly one cookie OR Bearer; browser CSRF; ownership then step-up denial"
+  },
+  "login_request": {"email": "person@example.invalid", "password": "<password>", "device_label": "My device"},
+  "web_success_keys": ["user", "session", "recovery_hold_state"],
+  "mobile_success_keys": ["user", "session", "recovery_hold_state", "access_token", "token_type", "expires_in", "refresh_token", "refresh_expires_at"],
+  "me_success_keys": ["user", "session", "recovery_hold_state", "email_verified"],
+  "session_list_item_keys": ["id", "device_label", "transport", "created_at", "last_interactive_at", "is_current"],
+  "refresh_request": {"refresh_token": "<opaque-selector.secret>"},
+  "assurance_request": {"assurance_proof": "<operation-bound-proof-not-implemented>"},
+  "error_keys": ["code", "message", "field_errors", "request_id"],
+  "access_lifetime_seconds": 300,
+  "refresh_lost_response": "clear local secrets and re-login; retry of consumed refresh revokes that family",
+  "idle_renewal": "GET/status/list/refresh never renew; no heartbeat accepted",
+  "cookie": {"name": "__Host-pwc_session", "secure": true, "httponly": true, "domain": null, "path": "/", "samesite": "Lax"},
+  "always_headers": {"Cache-Control": "no-store", "Referrer-Policy": "no-referrer"},
+  "deferred_denials": {"MFA_REQUIRED": 403, "STEP_UP_REQUIRED": 403},
+  "mixed_credentials": {"code": "AMBIGUOUS_CREDENTIALS", "status": 400}
+}

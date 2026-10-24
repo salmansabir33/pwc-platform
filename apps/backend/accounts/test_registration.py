@@ -9,6 +9,7 @@ from urllib.parse import parse_qs, urlsplit
 from cryptography.fernet import Fernet
 from django.contrib.auth.hashers import check_password
 from django.core import mail
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import close_old_connections, connection
 from django.test import (
@@ -179,7 +180,7 @@ class RegistrationTests(FlowFixtures, TestCase):
         self.assertTrue(contact.is_primary and contact.verified_at)
         self.assertEqual(user.auth_epoch, 1)
         self.assertFalse(AuthSession.objects.exists())
-        self.assertNotIn("sessionid", response.cookies)
+        self.assertNotIn(settings.SESSION_COOKIE_NAME, response.cookies)
         self.assertEqual(response["Cache-Control"], "no-store")
         self.assertEqual(response["Referrer-Policy"], "no-referrer")
         self.assertFalse(
@@ -462,7 +463,7 @@ class ResetTests(FlowFixtures, TestCase):
             ).code,
             "CHALLENGE_INVALID",
         )
-        self.assertNotIn("sessionid", response.cookies)
+        self.assertNotIn(settings.SESSION_COOKIE_NAME, response.cookies)
         self.assertTrue(dispatch_one())  # proof-free notification, generation N+1
         self.assertEqual(mail.outbox[-1].subject, "PWC password changed")
         self.assertNotIn(proof, mail.outbox[-1].body)
@@ -665,7 +666,7 @@ class TransportAndAbuseTests(FlowFixtures, TestCase):
         self.assertEqual(bad.status_code, 400)
 
     def test_mixed_and_authorization_transports_rejected_before_effects(self):
-        self.client.cookies["sessionid"] = "synthetic-incidental"
+        self.client.cookies[settings.SESSION_COOKIE_NAME] = "synthetic-incidental"
         response = self.post(
             "registration/request",
             {"email": "a@example.invalid"},
