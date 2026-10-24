@@ -1,3 +1,19 @@
+import {
+  browserOperations,
+  contractVersion,
+} from "../../api-contracts/generated/browser-operations";
+import type {
+  components,
+  operations as WireOperations,
+} from "../../api-contracts/generated/schema";
+export { contractVersion };
+export type ContractSchemas = components["schemas"];
+/** Check checked-artifact compatibility, not a fictitious HTTP version header. */
+export function assertContractVersion(version: string): void {
+  if (version !== contractVersion)
+    throw new ApiError("contract", 0, "CONTRACT_VERSION_MISMATCH");
+}
+
 /** W1 transport infrastructure only: applications cannot enable live network access. */
 export type Portal = "ngo" | "ops";
 export type Scope = Readonly<{
@@ -228,23 +244,20 @@ export function parseCsrf(v: unknown): string {
     throw new ApiError("contract", 0, "INVALID_RESPONSE");
   return v.csrf_token;
 }
-const operations = {
-  csrf: { path: "csrf/", method: "GET" },
-  me: { path: "me/", method: "GET" },
-  mfaStatus: { path: "mfa/status/", method: "GET" },
-  logout: { path: "logout/", method: "POST" },
-  stepUp: { path: "step-up/", method: "POST" },
-  clearHold: { path: "recovery-hold/clear/", method: "POST" },
-} as const;
+// Generated from canonical backend contracts; deliberately retains only W1's six
+// operations. No synthetic NGO or mobile issuance/refresh command is enabled.
+const operations = browserOperations;
 export type Operation = keyof typeof operations;
-type Bodies = {
-  csrf: never;
-  me: never;
-  mfaStatus: never;
-  logout: Record<string, never>;
-  stepUp: { intent_id: string; password: string; totp_code?: string };
-  clearHold: { intent_id: string; password: string; totp_code: string };
-};
+type RequestBody<O extends keyof WireOperations> = [
+  NonNullable<WireOperations[O]["requestBody"]>,
+] extends [never]
+  ? never
+  : NonNullable<WireOperations[O]["requestBody"]> extends {
+        content: { "application/json": infer Body };
+      }
+    ? Body
+    : never;
+type Bodies = { [O in Operation]: RequestBody<O> };
 export type SyntheticTransport = (
   input: string,
   init: RequestInit,
