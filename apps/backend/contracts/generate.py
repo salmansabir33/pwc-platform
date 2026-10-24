@@ -48,7 +48,9 @@ def compatibility(document):
     return {"version": VERSION, "operations": {path + " " + method: fingerprint(op)
             for path, methods in document["paths"].items() for method, op in methods.items()},
             "schemas": {name: fingerprint(schema) for name, schema in document["components"]["schemas"].items()},
-            "security": fingerprint(document["components"]["securitySchemes"])}
+            "security": fingerprint(document["components"]["securitySchemes"]),
+            "global_security": fingerprint(document["x-pwc-security"]),
+            "protocol": fingerprint({key: document[key] for key in ("servers", "openapi")})}
 
 
 def browser_catalog(document):
@@ -67,7 +69,8 @@ def check_compatibility(before, after):
     for section in ("operations", "schemas"):
         for key, value in before[section].items():
             assert after[section].get(key) == value, "Frozen v1 compatibility changed; human version review required: " + key
-    assert before["security"] == after["security"], "Credential transport compatibility changed"
+    for section in ("security", "global_security", "protocol"):
+        assert before[section] == after[section], "Security/protocol compatibility changed: " + section
 
 
 def main():
@@ -78,12 +81,13 @@ def main():
     assert routes() == set(document["paths"]), "Django route inventory drift: review annotations"
     outputs = {PACKAGE / "openapi-v1.json": encoded(document), PACKAGE / "source-lock.json": encoded(source_lock()),
                PACKAGE / "generated/browser-operations.ts": browser_catalog(document)}
+    # Reject incompatible output BEFORE touching any checked artifact.
+    check_compatibility(json.loads((PACKAGE / "compatibility-v1.json").read_text()), compatibility(document))
     for path, text in outputs.items():
         if args.check:
             assert path.exists() and path.read_text() == text, "Generated contract drift: " + str(path.relative_to(ROOT))
         else:
             path.write_text(text)
-    check_compatibility(json.loads((PACKAGE / "compatibility-v1.json").read_text()), compatibility(document))
     print("Contract generation/inventory/source/compatibility checks passed")
 
 

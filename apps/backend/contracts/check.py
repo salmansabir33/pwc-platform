@@ -64,9 +64,15 @@ def check_examples(doc):
         else:
             schema = op['responses'][str(case['status'])]['content']['application/json']['schema']
         validate_schema(schema, case['body'])
-    covered = {c['operationId'] for c in examples['cases'] if c['kind']=='response'}
-    expected = {op['operationId'] for op in ops.values() if any('application/json' in r.get('content',{}) for code,r in op['responses'].items() if code.startswith('2'))}
+    covered = {(c['operationId'], str(c['status'])) for c in examples['cases']
+               if c['kind'] == 'response' and 200 <= c['status'] < 300}
+    expected = {(op['operationId'], code) for op in ops.values()
+                for code, result in op['responses'].items()
+                if code.startswith('2') and 'application/json' in result.get('content', {})}
     assert covered >= expected, expected - covered
+    requests = {c['operationId'] for c in examples['cases'] if c['kind'] == 'request'}
+    expected_requests = {op['operationId'] for op in ops.values() if 'requestBody' in op}
+    assert requests >= expected_requests, expected_requests - requests
 
 
 if __name__ == '__main__':

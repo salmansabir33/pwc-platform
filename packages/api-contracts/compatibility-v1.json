@@ -1,4 +1,5 @@
 {
+  "global_security": "874182a34005f0378d2ab0ec046fad6230c6325725fcad9134bb598da439f51e",
   "operations": {
     "/api/v1/auth/assurance/intents/ post": "484666aea39d218cc003b711d35f5da2d1f22ac4985d87bfb3aef870b24ca1c8",
     "/api/v1/auth/csrf/ get": "2b7a0eb3dd20858ffdd788afe92a8cfb72ccd7d8e6baebbe2d6752c07dce8445",
@@ -48,6 +49,7 @@
     "/api/v1/organizations/{pk}/ head": "2d03b5ab8b4696965e762857d8e0c5f0b01d7e9061b54ff939375e2573131938",
     "/api/v1/organizations/{pk}/ options": "eae8de7cc2fafa4cd169bd1bb5db47ba8784c30e91bf7ba1681ed1e38639b805"
   },
+  "protocol": "dd1413402837296ad5ce1062086ed5ffeaf24dfe656487f41a66fe531dc1085e",
   "schemas": {
     "Activation": "e73971ca0e948a01ffb4d523030a586a4cabafbb5921c2d798f8051d92cfaf3d",
     "Assurance": "1d71a472e2462f325dfe9718599ff8538217cf9bb2153119e52f60fc2670bb30",

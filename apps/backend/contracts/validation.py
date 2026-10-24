@@ -26,14 +26,17 @@ def validate_response(path, method, response):
     if method not in methods and status != "405":
         # Plain Django mixed-credential checks precede method checks.
         assert status in ("400", "403", "404"), "Unexpected unsupported-method behavior"
+    if response.status_code < 400:
+        assert status in operation["responses"], "Undocumented successful status"
     if status == "204" or method == "head":
         assert not response.content, "Body on HEAD/204"
         if status in operation["responses"]:
             for name, header in operation["responses"][status].get("headers", {}).items():
                 if "const" in header["schema"]:
                     assert response.get(name) == header["schema"]["const"], "Security header drift: " + name
+            validate_vary(operation, response)
         return
-    if not response.get("Content-Type", "").startswith("application/json"):
+    if response.get("Content-Type", "").partition(";")[0].strip().lower() != "application/json":
         assert response.status_code >= 400, "Non-JSON success drift"
         return  # Documented framework/proxy errors; never a successful API result.
     assert status in operation["responses"], f"Undocumented status: {method} {path} {status}"
@@ -42,3 +45,11 @@ def validate_response(path, method, response):
     for name, header in item.get("headers", {}).items():
         if "const" in header["schema"]:
             assert response.get(name) == header["schema"]["const"], "Security header drift: " + name
+
+    validate_vary(operation, response)
+
+
+def validate_vary(operation, response):
+    if operation["x-pwc"]["availability"] == "synthetic-only":
+        tokens = {value.strip().lower() for value in response.get("Vary", "").split(",")}
+        assert {"cookie", "authorization"} <= tokens, "Synthetic credential Vary drift"
