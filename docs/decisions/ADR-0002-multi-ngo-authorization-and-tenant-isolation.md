@@ -1,6 +1,14 @@
 # ADR-0002 — Multi-NGO authorization and tenant isolation
 
-**Status: PROPOSED — NOT APPROVED**
+**Status: APPROVED — CORE MVP ARCHITECTURE; IMPLEMENTATION CONTRACTS SUBJECT TO DOCUMENTED GATES**
+
+**Approval date:** 24 October 2026
+
+**Approval authority:** Product owner, explicit PWC-02C continuation assignment.
+
+**Approval scope:** Technical principles and synthetic-only personal/NGO kernel contracts
+below. Institutional, operational, finance, signatory, governance, sharing and support
+policies are not approved by this status. No implementation is performed or started here.
 
 **Date:** 2026-10-24
 
@@ -75,13 +83,22 @@ Read with the repository's authority hierarchy, not as independent approvals:
   `bb2969e5c59fd2889fec83192000590274da2b0570770ae122f43ebe2aecc294`.
 - [Existing open decisions](OPEN-DECISIONS.md): verification/recovery, granular
   permissions, storage/support, public disclosure, finance and signatories remain
-  unresolved. §12 below is this proposal's review register; it does not close or
+  unresolved. §12 below records scoped approval and gates; it does not close or
   silently revise the existing register.
 
-All recommendations below, including payloads, role bundles and thresholds, are
-**proposals**, not approved policy. Source [S] means selected provisionally, [R]
-recommended, [O] open, [D] deferred. This ADR does not approve bylaws, legal standing,
-financial authority, onboarding evidence or technical support governance.
+The product owner approved shared-schema Django/PostgreSQL, centralized deny-first
+checks, explicit NGO context, queryset/object/field isolation, small pinned bundles,
+current-database expiry/revocation, provenance/audit, no legacy promotion, unsupported
+context/action denial, and no positive authorization cache or unrestricted multi-hop
+delegation on **24 October 2026**. Only synthetic accounts, organizations and resources
+may exercise the initial kernel. No automatic administration or real NGO claims.
+
+Approval is not retroactive approval of every illustrative future design. **Precedence:**
+§§3.2–3.3, 4.5, 5.3–5.4, 8, 10 and 12 define the resolved initial contract; other
+model catalogs, finance, alliance, support, files and workload material describe gated
+future extensions only. Source [S]/[R]/[O]/[D] labels in draft references remain unchanged.
+This ADR does not approve bylaws, legal standing, financial authority, onboarding
+evidence, retention periods or technical support governance.
 
 ## 2. Core security and governance invariants
 
@@ -138,66 +155,51 @@ tables after transaction-local context, pooled connections, workers, migration/D
 roles and fail-closed tests are reviewed. Do not use session-level tenant settings
 that leak through reused connections; RLS would not replace service authorization.
 
-### 3.2 Closed contexts, ownership and boundaries
+### 3.2 Closed contexts, ownership and boundaries — D01 resolved
 
-| Context | Identity / ownership | Permission boundary |
+Only two context kinds are active in PWC-03B.1:
+
+| Kind | Canonical representation | Authority rule |
 |---|---|---|
-| Personal | Authenticated User UUID | Own preferences, affiliations and participation; no NGO operating authority |
-| NGO | Organization UUID; existing workspace attached | That NGO's tenant-owned records, bounded by resource/action/relationship |
-| Alliance | Explicit singleton institutional context, not a master NGO | Institutional membership, approved PWC Board/officer business only |
-| Committee | Committee UUID with alliance relationship | Assigned committee records; not member NGOs' rosters/accounts |
-| Project | Project UUID, explicit owning kind/party | Authorized project collaboration records and approved shared projections |
-| Platform operations | Dedicated operations context | Technical registry/security actions; no routine NGO business access |
+| `personal` | Server-resolved authenticated User UUID | Existing ADR-0001 personal ownership and operation policies; no NGO grant implied |
+| `ngo` | `/api/v1/ngo-contexts/{organization_uuid}/…` | Typed Organization FK through the kernel state; current qualifying grant required |
 
-NGO finance is an explicitly separate permission namespace **within the same NGO
-ownership boundary**, not a second identity store or implied child-role inheritance.
-PWC's own finances need a separate owner/policy; neither alliance finance nor a
-joint project creates access to participating NGO ledgers.
+Use an immutable in-process `ResolvedContext(kind, subject_uuid)` value created by the
+server, never a caller-supplied permission object. Do not add a generic context registry,
+personal grant rows or polymorphic target FKs in .1. Existing Workspace BigAutoField
+remains internal; Organization UUID is canonical externally. Alliance, committee,
+project and operations contexts, service principals and all unknown kinds deny.
+Future typed registries require additive review; no fabricated disabled context rows.
 
-Recommend an `AuthorizationContext` registry with real typed target FKs and an
-exactly-one target constraint, rather than unvalidated `kind + arbitrary UUID` or
-GenericForeignKey authority. Stable registry rows can reference future committee/
-project models through later additive migrations. Initially allow only implemented
-kinds; unused future kinds remain disabled, not fake rows. Personal context need
-not create one grant per User; ownership is a dedicated personal rule.
+Private tenant tables have a mandatory Organization FK. Parent/child references must
+have the same organization, enforced by composite FK/constraint or a reviewed database
+trigger when introduced. A normal FK alone does not prove tenant equality. No private
+resource with nullable tenant ownership is allowed in this kernel.
 
-Tenant-owned tables require `organization_id NOT NULL`, unless explicitly a global
-registry or separately owned collaboration record. Project-owned records require
-project ownership, not an ambiguous nullable NGO ID. A project reference does not
-change the owner of an NGO's own task, budget or file. Cross-owner references need
-an explicit shared projection/participation record, never a permission bypass join.
+### 3.3 Context selection and switching — D11 resolved
 
-### 3.3 Context selection and switching
+The path Organization UUID is the sole authoritative NGO selector. No ContextSelection
+model, selection token, required selection header or server-side remembered tenant in
+.1. A frontend may remember a UUID locally as display state; every request still carries
+the explicit path and is independently validated. There is no User.current_organization,
+default tenant, tenant inferred from an object ID, or last-selected fallback.
 
-Recommend explicit per-request context, resolved from a bound selection and a
-canonical resource URL. A server-held **ContextSelection** may remember a display
-choice, bound to current logical AuthSession and context, with bounded expiry.
-Its UUID is a selector, **not** an authentication or grant token. Several selections
-may coexist per logical session for separate browser tabs; no mutable global
-User.current_organization that silently retargets in-flight requests.
+Tenant ownership fields in write bodies are forbidden; a future parent identifier is
+resolved only within the path tenant. Reject unexpected context/selection headers and
+conflicting tenant query/body fields with 400; never use them to retarget a request.
+Personal endpoints cannot dispatch NGO actions. Switching is a client navigation change,
+not an authority mutation, session renewal, proof issuance or idle keepalive.
 
-For private context APIs, require selection header and an explicit context-scoped
-path. Resolve selection ownership by User/session, then compare its context with
-path/body/parent ownership before domain access. Any conflicting context input
-denies, without looking up an alternative tenant. Body organization IDs are either
-forbidden or checked for exact equality; never trusted to set ownership. Switching
-context does not change roles, renew login/idle time, rotate credentials into new
-privileges, or validate an old proof for a different context.
-
-Selection remains usable only while account/session/context and current entry
-permission are valid. Web step-up cookie rotation and mobile refresh preserve the
-logical session, so selections can remain bound; reset/logout/revocation/expiry
-invalidates access through existing live session checks. Cap selection lifetimes
-and row growth; GET/list/selection is not a keepalive loophole.
-
-Clients must cancel/tag old-context requests, partition caches by user/context/
-authorization version, discard late responses for a former context, clear private
-screens/files/notifications on revocation/switch/logout, and refetch permissions.
-Backend correctness does not depend on these client behaviors.
+Client caches must be partitioned by identity and organization; cancel/tag requests,
+discard late responses and clear private state on switch/revocation/logout. Selection
+persistence cannot make an expired, revoked or unsupported context valid. .1 correctness
+does not depend on a frontend implementation.
 
 ## 4. Proposed data model, roles and organizational authority
 
-**Logical contracts only; names/fields are not migrations or final schemas.**
+**Documentation contracts, not implemented migrations.** Sections 4.1–4.4 retain the
+future logical catalog, not the .1 model list. Section 4.5 is the minimal .1 schema
+contract; do not build the wider catalog in anticipation of later phases.
 Use UUIDs for new records, UTC dates, protected historical FKs, bounded enums and
 integer versions. Preserve existing Organization/Workspace identities and access
 rows pending reviewed mapping; do not reinterpret `active=True` as verified authority.
@@ -317,6 +319,108 @@ it to content/self-records, not the complete roster or administrative workspace.
 - No cascading destruction of mandates, decisions, posted finance, approvals or
   authorization evidence. Soft revocation and reviewed retention, not log deletion.
 
+### 4.5 Resolved PWC-03B.1 additive schema and vocabulary — D02/D03/D09/D14
+
+#### Minimal records
+
+All new rows use UUID PKs, aware UTC timestamps, protected historical FKs and bounded
+enums. Preserve accounts and organizations migrations unchanged. Suggested Django names
+below are the implementation contract, not permission to create them in this task.
+
+| Record | Required fields and database invariants |
+|---|---|
+| `NGOKernelState` | OneToOne Organization (PROTECT); immutable fixture batch UUID and evidence reference; created_at; `revision` bigint >=1; `mode` = `disabled` or `synthetic`; default disabled. This is the per-tenant lock root. No `real` mode in .1. Absence denies. |
+| `SyntheticPrincipal` | OneToOne User (PROTECT), fixture batch UUID, non-sensitive evidence reference, created_at. Explicit synthetic-account attestation, not inferred from username/email. Immutable; no API to label existing real users. |
+| `NGOGrant` | Organization, subject User, `role_code`, `role_version`, `scope_kind=organization`, `source_kind=synthetic_fixture`, `source_ref`, fixture batch UUID, `issuer_process=kernel_fixture_v1`, nullable issuing actor User, `verification_status` (`synthetic_verified` or `unverified`), `approval_evidence_ref`, `effective_at`, mandatory `expires_at`, `created_at`, `revision` >=1, `revoked_at`, `revoked_by` nullable User, `revoked_by_process`, `revocation_reason`. Issuing actor or allowlisted process required; process is always recorded for fixture creation. No runtime external verification or issuer self-assertion. |
+| `AuthorizationEvent` | Organization (nullable only for discovery or unknown-context denials), actor User/session references where known, actor process if offline fixture, action, result, reason code, target UUID, grant UUID and role version if applicable, old/new context and grant revisions, fixture batch, correlation UUID, DB timestamp, non-sensitive evidence reference. Immutable append-only application interface. Historical FKs PROTECT; no raw commands or credentials. |
+
+`NGOKernelState.mode=synthetic` attests that the organization is synthetic; its creation
+must be in an explicit isolated fixture batch, not by relabeling a real organization.
+The factory atomically creates new synthetic User/Organization records, attestations,
+verified fixture Workspace, state root and creation audit; it cannot enroll an existing
+real entity. Once created, batch/evidence/identity bindings are immutable. The only
+later state-mode transition in .1 is synthetic → disabled (terminal); reenabling
+requires a new fixture tenant, not toggling an old state. Root creation uses Organization
+uniqueness within the factory transaction; no runtime get-or-create-on-missing fallback.
+Only dedicated test/development databases may enable `PWC_SYNTHETIC_AUTHORIZATION_ENABLED`
+(default false). Runtime requires the flag, synthetic state, synthetic subject attestation,
+matching fixture batch and `source_kind=synthetic_fixture` together. Ordinary deployed
+settings must not enable it. No automatic grant seeding on migrate/startup; no general
+management command that can nominate arbitrary existing real accounts or NGOs. Test
+fixture factory creates its own new accounts/organizations and records provenance; it
+is not a production grant issuer. Missing or inconsistent synthetic attestations deny.
+This boundary is an application/release safeguard, not protection against a malicious
+DB owner; environment separation and release configuration checks remain mandatory.
+
+Grant DB constraints: expiration > effective time and no more than 24 hours after effective time (synthetic fixture lifetime, not a real authority policy); role/version pair in the two frozen
+pairs below; only the organization scope and listed source/verification values; positive
+revision; nonempty source/evidence/process references; revocation is either entirely
+absent or has timestamp, nonempty reason, and actor or named process. Partial unique
+index on `(organization, subject, role_code, role_version)` WHERE revoked_at IS NULL.
+Expiry/unverified rows occupy that slot until explicitly revoked; no time-dependent
+partial index. Index `(organization, subject, revoked_at)` and `(organization, expires_at)`.
+No hard delete, un-revoke, in-place role/scope/provenance/validity change or expiration
+extension. Replace with a newly approved grant after revocation; UUIDs never reused.
+Revocation is terminal and increments grant and tenant revisions exactly once.
+Unknown role versions inserted by unsupported writers fail constraint/evaluation.
+
+Cross-row synthetic eligibility is checked under the tenant lock by the only fixture
+writer and independently on every evaluation. It is not falsely claimed to be enforced
+by a single-row CHECK. Runtime application role cannot write grant/state/attestation
+rows directly; future migrations must specify separate fixture-writer privileges and
+an append-only audit writer. Django admin/bulk updates/raw SQL are not approved mutation
+paths. DB-owner/migration credentials are outside runtime trust. PostgreSQL privilege
+and trigger enforcement of immutable fields/revocation and audit update/delete denial
+must be included in .1 migration acceptance, not left as an ORM convention.
+
+#### Frozen closed registry: `ngo_kernel_v1`
+
+Role bundles and permission registry live in version-controlled Python constants in
+.1, not editable database policy tables, role editors or arbitrary JSON predicates.
+No `PermissionDefinition`, `RoleVersion`, delegation, mandate, selection, support,
+policy-engine or service-principal tables are required in .1.
+
+| Server action | Exact meaning |
+|---|---|
+| `ngo.context.enter` | Enter/discover this synthetic NGO context; no domain data implied |
+| `ngo.private_stub.read` | Read fixed non-sensitive synthetic probe projection in this NGO |
+| `ngo.kernel_settings.read` | Read non-sensitive synthetic kernel settings projection only; not grants, people or security evidence |
+
+| Role code / pinned version | Exact actions |
+|---|---|
+| `ngo_kernel_reader` / `1` | `ngo.context.enter`, `ngo.private_stub.read` |
+| `ngo_kernel_admin_probe` / `1` | Reader actions plus `ngo.kernel_settings.read` |
+
+The second bundle tests administrative separation; it is **not** a real NGO administrator
+appointment and has no management/write/delegation powers. Membership/volunteering,
+legacy `admin`/`members`/`claimant`, Board, staff, superuser, Groups and portal labels map
+to neither bundle. No finance, signatory, governance, audit-reading, people, import,
+file, export or grant-management action is in the registry. Unknown actions deny even
+if a stale/forged role or MFA proof names them. Bundle version 1 is immutable; future
+expansion creates a new reviewed version and new explicit grants, never changes v1.
+
+Effective permissions are the union of live eligible grants **in one NGO**, minus all
+hard denies. Each grant independently authorizes its complete action and bounds; never
+combine one grant's scope with another's limits. .1 has organization-wide scope only:
+no per-object/amount/account limits, allow wildcards, direct user permission exceptions,
+custom roles, deny-grant language, parent grants or delegation. No live issuance,
+revocation endpoint or self-service grant management. Revocation exists as a tested
+fixture lifecycle service; its future human command requires separate permission and
+assurance approval. A new grant after revocation is a new, explicit fixture event, not
+an upsert that revives a revoked row.
+
+#### Minimal private category
+
+`NGO_PRIVATE_SYNTHETIC_V1` contains only bounded constant probe data and settings labels
+for the synthetic NGO. Projection: organization UUID, fixed probe code, non-sensitive
+label and context revision. No names/contact details/rosters/beneficiaries, free text,
+financial balances, evidence documents, private files or exports. .1 can use in-memory
+probe objects tagged with the Organization FK identity and tenant-filtered state rows;
+no general-purpose private content model is needed. Both queryset and direct-object
+helpers must demonstrate scoped lookup of the state/probe; foreign UUID and absent
+UUID have the same outcome. Adding real private categories needs D09 classification,
+consent, retention and field policy decisions before implementation.
+
 ## 5. Permission evaluation and enforcement contracts
 
 ### 5.1 Deny-first algorithm
@@ -331,12 +435,12 @@ decisions, not only a boolean, but redact public reasons as §8 defines:
    calls, independently authenticate a live ServicePrincipal instead, apply §9.2's
    scope intersection, and reject human-only approval/assurance operations. A service
    cannot fabricate a User session or assert it has completed human MFA.
-2. Resolve context selection and principal binding. Missing/conflicting/unknown kind,
+2. Resolve the explicit path context and principal binding (§3.3). Missing/conflicting/unknown kind,
    inactive target, ambiguous ownership or incompatible route denies. No default tenant.
 3. Apply account recovery restrictions and context lifecycle/dispute/suspension gates.
-   Proposal: held/recovery-code sessions may use approved restricted personal flows,
-   not private operating/finance/support/commitment contexts. Exact business hold
-   matrix needs approval; never weaken ADR-0001 or let fresh MFA override a hold.
+   For the approved synthetic kernel, held/recovery-code sessions may use approved
+   restricted personal flows only; all NGO discovery, projections and private access
+   require clear hold. Never weaken ADR-0001 or let fresh MFA override a hold.
 4. Resolve required action from a server-owned endpoint/command registry. Unknown
    action or disabled implementation/policy denies. Clients never choose the action
    code to authorize their own requested operation.
@@ -348,7 +452,7 @@ decisions, not only a boolean, but redact public reasons as §8 defines:
 6. Scope queryset before lookup/filter/pagination/count/aggregation; verify parent,
    resource ownership, classification, permitted fields and object-state transition.
    No broad object lookup followed by a tenant check that leaks existence.
-7. Require approved action-specific assurance where mapped (§6). Proof is necessary,
+7. For future approved privileged commands only, require approved action-specific assurance where mapped (§6). Proof is necessary,
    never sufficient. No proof is consumed to operate on a foreign/unauthorized object.
 8. Under compatible locks, recheck current authority/policy/grant/object versions,
    session deadlines and approval/separation-of-duty predicates. Enforce idempotency.
@@ -365,7 +469,7 @@ needed, define/test precedence rather than mixing ad hoc view exceptions.
 
 ### 5.2 Django/DRF and query boundaries
 
-Proposed interfaces: `resolve_context(principal, selection, route)`;
+Proposed interfaces: `resolve_context(principal, route_kind, organization_uuid)`;
 `authorized_queryset(principal, context, action, model)`;
 `authorize_object(principal, context, action, object)`; transactional
 `execute_authorized_command(...)`. Names are contracts, not implemented functions.
@@ -384,49 +488,107 @@ Proposed interfaces: `resolve_context(principal, selection, route)`;
 - New private endpoints stay disabled until mapped actions, policies and negative
   tests exist. No claim that this ADR registers these permission classes globally.
 
-### 5.3 Revocation, concurrency and caching
+### 5.3 Concrete PostgreSQL transaction, revision and audit protocol — D13
 
-Context revisions advance transactionally for role activation/revocation, delegation,
-mandate, policy, lifecycle and sharing changes. Auth User epochs remain personal
-credential revocation; do not overload them to log users out of every NGO for one
-NGO role change. Principal suspension still uses the existing auth lifecycle.
+READ COMMITTED on the primary database; no replica, positive permission cache, process
+mutex or check-then-write outside the transaction. Immutable registry constants may be
+cached, never current eligibility. Every path, including tests/management/migrations,
+that changes authorization state must follow this protocol or remain unavailable.
 
-Preserve the auth lock prefix: **User → contact/factor → AuthSession(s)** before
-context/domain authority locks; workload calls lock their ServicePrincipal after
-any originating human auth prefix and before context roots. Lock challenge/intent/proof rows afterward in a
-fixed implementation-reviewed order compatible with accounts services. Proposed
-business lock order: NGO context roots in UUID order, then alliance, committee,
-project, platform roots in fixed kind/UUID order, then grant/policy/domain rows
-and proof rows under the agreed command order. Never acquire a User/session lock
-or an earlier context root after taking a later root. Grant changes lock the actor's
-auth prefix and affected context root; do not lock a target User late. Multi-context
-commands acquire their complete sorted roots up front or split into independent
-commands; no project-first path may later acquire NGO roots. Validate this detailed
-order with the existing auth call graph and PostgreSQL races before implementation;
-this ADR is not permission to change accounts lock order silently.
+1. Resolve untrusted selectors without returning domain data, then start `atomic`.
+   Preserve ADR-0001 lock prefix: **User(s) UUID order → active contact/factor rows stable
+   ID order → AuthSession(s) UUID order → auth challenge/credential/intent rows in the
+   existing auth helper order → NGOKernelState by Organization UUID → NGOGrant UUID →
+   domain rows UUID → insert audit**. Ordinary .1 reads need only requesting User,
+   current session/credential rows required by auth, and one state root. Fixture writes
+   lock all affected subject/issuer Users up front; offline fixture work has no session
+   and cannot impersonate a human request. Never lock a target User after a state root.
+   No multi-tenant runtime command in .1. No auth helper that acquires earlier locks
+   may be called after the domain root; audit actual helper call order in .1 review.
+2. After locks are acquired, re-read active identity, logical session, epoch, transport
+   credential generation, hold, deadlines, synthetic flags, workspace lifecycle and
+   current grants from primary DB. Request adapter validation alone is insufficient.
+   Only existing Workspace `verified` plus state synthetic is eligible; fixtures may
+   explicitly create verified synthetic workspaces. Registration classification never
+   establishes eligibility. Missing/restricted/deactivated workspace denies.
+3. For fixture authority changes require expected tenant revision; for revocation also
+   expected grant revision. Compare under lock before mutation. Missing precondition
+   fails; stale value conflicts. Serialize all grant creation and revocation through
+   the same state root, with the partial unique constraint as a second guard. Increment
+   state revision on every creation, first revocation or synthetic lifecycle change.
+   Immutable definitions never change in place. No independent expiry writer needed.
+4. Grant eligibility is `effective_at <= clock_timestamp() < expires_at`, unrevoked,
+   synthetic_verified and fully attested. Use DB wall-clock after lock wait, not
+   transaction-start `now()`. Bound reads and materialize selected scalar projections
+   under locks; no lazy ORM/serializer query after transaction exit, streaming or
+   external I/O. Recheck original session/credential/grant cutoffs immediately before
+   final decision/write and audit; deadline failure returns no protected data and
+   rolls back provisional mutation. Expiry is checked even when revisions are equal.
+5. Successful authority mutation and its audit event commit atomically. An audit insert
+   failure rolls back mutation. Successful private reads/discovery also require durable
+   access audit before releasing data; audit outage returns 503 with no protected body.
+   Discovery locks eligible state roots in sorted order and rechecks grants; serialize
+   only bounded pages (maximum 50). No foreign context details in denial events.
+6. Denials/conflicts make no domain mutation. Record a bounded redacted denial event
+   after rollback in a separate short transaction when necessary. If primary/audit is
+   unavailable, fail closed with 503; safe external operational diagnostics are fallback
+   telemetry, not a claim of durable DB audit. Configure lock timeout 2s, transaction
+   statement timeout 5s for .1 acceptance. No silent retry after uncertain commit. A
+   deadlock/serialization failure rolls back and returns retryable 503; client re-reads
+   state before resubmitting. No .1 mutation API or idempotency-token system to invent.
 
-A minimal implementation may serialize private mutations per context root to make
-revocation linearizable; optimize with proven finer locks only after measurement.
-Revocation and a sensitive mutation share that root. If the mutation commits first,
-revocation follows; if revocation commits first, mutation denies. An earlier read
-may finish; do not promise to recall bytes already returned. Recheck between streamed
-chunks/job batches and at downloads; no future access on stale authority.
+Revocation linearizes at the locked authority transition: a read holding the root may
+complete first; after revocation commits every newly authorized request denies. Bytes
+already materialized/returned cannot be recalled. “Immediate” does not mean cancellation
+of a read serialized before revocation. Expiry is evaluated at the final decision point,
+not a guarantee about network delivery after the lock is released.
 
-Initial recommendation: no positive permission-decision cache for sensitive actions.
-Read authorization metadata from the primary database in a coherent transaction;
-no lagging replica/cache-only grant acceptance. Cache immutable role definitions,
-and optionally projections keyed by principal/context/revision/policy/resource
-version only after current revision/liveness is checked against authoritative state.
-Expiry must still be checked against now; revision alone cannot detect clock expiry.
-Cache outages never fall back to allow. Invalidation events improve UX, not correctness.
+Audit schema records event IDs and revision transitions, never secrets or private
+payloads. Runtime DB role has no audit UPDATE/DELETE and no direct grant UPDATE/DELETE;
+reviewed narrowly privileged lifecycle functions/fixture role perform permitted writes.
+Revocation/immutability triggers must reject resurrection even by a stale ORM save.
+Fixture-only writer is absent from ordinary deployment credentials. Application `atomic`
+alone is not a substitute for those privileges/constraints. Retention, legal holds,
+operational monitoring and production throughput targets remain D13 release gates;
+no automatic event purge in .1. Test data is disposable only as an entire isolated
+synthetic environment, not by deleting individual security history rows.
 
-READ COMMITTED plus transaction.atomic alone is not a coherent multi-query policy
-snapshot. Initial private-read implementation should hold the relevant authority
-root locks through current grant/mandate checks and the bounded scoped data query,
-then release before response/network I/O. Reacquire/recheck for subsequent streaming
-chunks. A future shared-lock/single-snapshot optimization must prove equivalent
-revocation semantics with PostgreSQL tests; a revision read followed by an
-unsynchronized cache allow is not sufficient.
+### 5.4 Evaluation algorithm and deny precedence — D05 integration
+
+For each protected request: authenticate existing supported transport → lock/revalidate
+identity/session → require clear recovery hold → resolve exactly one supported context
+→ require synthetic deployment/subject/tenant/batch and verified workspace → resolve
+server-owned known action → query current tenant grants with pinned known bundles →
+require `ngo.context.enter` and requested action → scope query/object by tenant and
+classification → project allowlisted fields → recheck deadlines → persist audit and
+materialize response → commit. A personal context uses only ADR-0001 personal rules,
+not NGO grants. Discovery applies the same NGO entry predicates to each returned item.
+
+Deny precedence is: unavailable authoritative dependencies (503, no fallback); invalid
+authentication (401); malformed/conflicting context input (400); recovery hold (403);
+unsupported/ineligible tenant, no entry grant or foreign/absent object (uniform 404);
+known entered tenant but missing action/unsupported category (403); authorized target
+with stale precondition (412) or invalid transition (409). Perform no target/version
+lookup before entry authorization. Unknown action and disabled feature are always
+hard denies, not inferred permissions. Deny beats every role, MFA observation and
+stale capability. Authentication middleware's existing CSRF/transport errors retain
+ADR-0001 semantics; do not normalize them into successful context responses.
+
+| .1 operation | Auth/current grant | Hold clearance | MFA / step-up |
+|---|---|---|---|
+| Existing personal flows | ADR-0001 unchanged | Existing personal rules | Existing action policy unchanged |
+| Discovery/entry/capabilities/probe/settings read | Active online session + current relevant NGO grant(s) | `clear` required | No additional recent MFA or operation proof for these non-sensitive synthetic reads; ordinary MFA login remains enforced |
+| Fixture creation/revocation | Isolated offline test factory, not user API; attested synthetic batch and locked lifecycle service | Never a recovered-session escape route | No human assurance assertion; fixture-only provenance is not human authority |
+| Live grant issue/revoke/delegate/admin transfer; finance/signatory/support/export | Disabled, no registry action or route | No override | Missing complete permission/retention/operation-bound assurance contract means deny |
+
+Authentication/MFA never establishes NGO authority. No NGO intent is issued in .1;
+`accounts.mfa.scope()` remains personal-only. Before any .2+ privileged command,
+review its exact password+TOTP policy, retention, bound command/version/context and
+lock-compatible intent integration. Preserve auth intent failure semantics: semantic
+payload/version change invalidates the old intent and needs a new one; invalidation
+and abuse counters must survive a rejected command. Transient transaction failure
+rolls back provisional consumption; a committed success cannot execute twice. Do not
+apply a blanket “all failures roll back intent invalidation” rule.
 
 ## 6. Financial authority separation and assurance integration
 
@@ -501,8 +663,9 @@ revision and keyed command digest. Secret fields never appear in ordinary audit 
 stored raw command bodies. Final domain service rechecks all permissions/holds/
 revisions under shared locks and consumes the exact proof atomically with mutation.
 Changed amount/recipient/account/version/grant/context requires a new intent. Revoked
-permission wins over valid MFA. Failed mutation rolls back proof consumption; owned
-successful replay is a conflict, not a second posting. Read-only permission checks
+permission wins over valid MFA. Transient mutation failure rolls back provisional proof consumption; semantic
+validation/state conflict invalidates the intent as required by ADR-0001 and §5.4;
+owned successful replay is a conflict, not a second posting. Read-only permission checks
 cannot substitute for this transactional boundary.
 
 For queued commands requiring step-up, do not turn a short proof into an unbounded
@@ -549,94 +712,48 @@ not authorize arbitrary later finance writes or bypass fresh download authorizat
   Public/voluntary sharing is opt-in under approved publication rules, never a
   condition silently imposed by alliance admission or basic workspace activation.
 
-## 8. Proposed API and frontend contracts
+## 8. Resolved initial API and frontend contracts — D11
 
-**Illustrative contract proposals only: these routes do not exist.** Use `/api/v1/`
-and retain existing `/auth/` routes/envelopes/transports. Approve/generate schemas
-in PWC-03C; no Flutter/web implementation or framework choice is made here.
-Placeholders such as `<organization-uuid>` are not usable identifiers or credentials.
+These contracts are frozen for .1 service results and .2 HTTP adapters; they do not
+assert endpoint existence. .1 builds no public-facing NGO API. .2 may expose only
+synthetic read operations behind the same default-off environment gate, after its
+assignment and PostgreSQL acceptance. No server selection persistence is needed.
 
-### 8.1 Listing, selecting and refreshing
+### 8.1 Workspace discovery, selection and effective permissions
 
-| Method / suggested path | Contract |
+| Proposed .2 route | Contract |
 |---|---|
-| GET `access/contexts/` | Current authenticated principal's authorized entry contexts only; paginated, minimal labels/kinds, current capabilities/version; not a global NGO/member search |
-| POST `access/context-selections/` | Explicit desired context; authorize entry now, bind to logical session; no grant changes or session-idle renewal |
-| GET `access/context-selections/{id}/permissions/` | Recompute caller's current effective capabilities, field/resource limits, policy/revision and assurance requirements; no other users' grants/evidence |
-| DELETE `access/context-selections/{id}/` | Remove caller's own display selection; not role revocation or logout |
-| Private `ngos/{organization_id}/...` | Context-scoped routes plus selection header and action permission; explicit ownership; no unscoped private detail endpoint |
+| `GET /api/v1/me/ngo-contexts/` | Authenticated, clear hold; return only current eligible synthetic NGOs with `ngo.context.enter`. Cursor pagination, maximum 50, Organization UUID stable ordering. Empty 200 when none; never all registry organizations or legacy memberships. No private organization names needed. |
+| `GET /api/v1/ngo-contexts/{organization_uuid}/capabilities/` | Reauthorize entry; return context kind/UUID, registry version `ngo_kernel_v1`, current context revision, sorted effective action codes and earliest contributing grant expiry as advisory refresh hint. Not a bearer proof; expiry/revocation may invalidate immediately. |
+| `GET /api/v1/ngo-contexts/{organization_uuid}/private-probe/` | Requires `ngo.private_stub.read`; fixed §4.5 projection only. |
+| `GET /api/v1/ngo-contexts/{organization_uuid}/kernel-settings/` | Requires `ngo.kernel_settings.read`; fixed synthetic settings projection only. |
 
-Illustrative selection request:
+No POST select route, header token or keepalive update. No HTTP grant-management route,
+write stub or real business data. `Cache-Control: no-store` for all private responses;
+no browser/shared-cache ETag validation that skips authorization. A capability projection
+is informational only and cannot authorize the next request. Unsupported contexts have
+no dispatcher/route and deny. Existing public directory endpoints remain unchanged.
 
-```json
-{"context":{"kind":"ngo","id":"<organization-uuid>"}}
-```
+### 8.2 Errors, preconditions and conflicts
 
-Illustrative 201 response:
+Error envelope for new adapters: `{"error":{"code":"…","correlation_id":"…"}}`.
+No foreign object identifiers, grant details or evidence in errors. Stable codes:
+`invalid_context` 400 (malformed UUID, unexpected/conflicting context fields),
+`authentication_required` 401, `recovery_hold` 403, `not_found` 404 (well-formed unknown,
+ineligible/ungranted tenant or foreign/absent resource), `permission_denied` 403 only
+inside an entered tenant, `precondition_required` 428, `revision_mismatch` 412,
+`state_conflict` 409, `authorization_unavailable` 503. Existing authentication routes
+retain their current schemas; no auth code changes in this task.
 
-```json
-{
-  "selection_id":"<server-generated-selection-uuid>",
-  "context":{"kind":"ngo","id":"<organization-uuid>","label":"Synthetic NGO A"},
-  "authorization_version":42,
-  "policy_version":3,
-  "capabilities":["ngo.members.read"],
-  "constraints":{"finance_access":false},
-  "assurance_requirements":{},
-  "expires_at":"<server RFC3339 UTC deadline>"
-}
-```
-
-Suggested private request headers: `X-PWC-Context-Selection: <selection-uuid>` and,
-for mutations, `X-PWC-Authorization-Version: 42`, plus expected resource version.
-These values are client preconditions, not trusted permissions. Unknown/stale/
-malformed values never select another tenant or mint grants. Returned capabilities
-are advisory; server recomputes on every request. A selected NGO does not imply
-all actions or full field visibility. Pagination/search cannot reveal inaccessible
-contexts, users or mandate evidence. ID-03 affiliations list is a different personal
-relationship contract; mere membership does not add an administrative workspace.
-
-If still authorized but versions changed, permission refresh returns current
-revision/capabilities; GET need not mutate selection. Clear affected client caches
-before reissuing commands with new preconditions. If entry was revoked, deny rather
-than return an empty-permission response containing private context metadata.
-No capability token is embedded in native refresh/access credentials. A selection
-bound to one logical session cannot be replayed from another session or user.
-
-Browser unsafe requests retain exact portal/CSRF requirements and secure cookies;
-native X routes require exactly one Bearer mode, never cookie fallback. Selection
-responses are no-store/no-referrer and do not renew personal idle time. Context
-switches do not silently move between NGO and PWC portal hosts. Role changes may
-prompt UI refresh via future notifications, but API checks do not wait for them.
-
-### 8.2 Error and disclosure semantics
-
-Use the auth-compatible envelope:
-
-```json
-{"error":{"code":"NOT_AUTHORIZED","message":"This action is not available.","field_errors":{},"request_id":"<server-correlation-uuid>"}}
-```
-
-Proposed domain errors (do not rename existing auth codes):
-
-| Status/code | Semantics / disclosure boundary |
-|---|---|
-| 400 CONTEXT_REQUIRED / CONTEXT_MISMATCH / VALIDATION_ERROR | Missing selection, mutually conflicting context identifiers or schema failure; do not look up a second tenant to diagnose mismatch |
-| 401 SESSION_INVALID | Missing/invalid/revoked/expired auth, existing auth semantics; never fallback to another transport/context |
-| 403 NOT_AUTHORIZED | Known accessible context, insufficient action/field/authority; no foreign-object details |
-| 403 CONTEXT_UNAVAILABLE | Owned session-bound selection is no longer eligible; generic, no private reason or new metadata |
-| 403 STEP_UP_REQUIRED / MFA_REQUIRED / RECOVERY_RESTRICTED | Existing assurance/hold meanings; only after independent scope/action checks; never imply a foreign object's existence |
-| 404 NOT_FOUND | Unknown or inaccessible context requested for selection, foreign selection, or object absent from authorized queryset; same envelope for absent/foreign |
-| 409 STATE_CONFLICT | Authorized caller's stale policy/authorization/resource version or owned consumed proof; refetch/re-authorize, do not retry changed commands blindly |
-| 429 RATE_LIMITED | Bounded abuse/expensive-query limits with Retry-After; never change authority |
-| 503 AUTH_UNAVAILABLE / AUTHORIZATION_UNAVAILABLE | Existing auth infrastructure vs proposed domain-policy storage/configuration outage; fail closed, not anonymous/default-tenant fallback |
-
-Authorization denial precedes stale-version/assurance detail disclosure. If a grant
-is revoked, return a generic denial rather than an informative object's version
-conflict. Filter inputs/ordering/counts/validation/FK errors must not become existence
-oracles. Private 405s use correct Allow; private responses/errors are no-store and
-no-referrer. Framework/proxy-wide exception-envelope standardization is separate
-contract work; no secret stack traces or private record bodies in diagnostics.
+Read requests need no revision precondition; all reauthorize from current DB. Future
+writes must supply `If-Match: "ngo:{uuid}:r{revision}"` and a target revision where
+applicable; fixture lifecycle services take equivalent required integer arguments.
+Missing is 428, malformed is 400, stale is 412, valid revision but invalid transition is
+409. Entry/object authorization occurs before disclosing a current revision. A repeated
+revocation may return an owned no-op result only when already revoked and the caller
+supplies that current revision; never update audit/state twice. Unknown commit outcome
+requires re-read, not blind retry/upsert. No idempotent replay of authority creation is
+approved. .2 schema generation belongs to PWC-03C, not this documentation assignment.
 
 ## 9. Security, audit and non-HTTP threat analysis
 
@@ -644,7 +761,7 @@ contract work; no secret stack traces or private record bodies in diagnostics.
 |---|---|
 | IDOR/BOLA, cross-tenant parent/child references | Scope before lookup; composite ownership constraints plus service validation; 404 absent/foreign |
 | Role mass assignment / privilege inflation | Server action registry, pinned bundles, scoped grant-authorizer evidence; reject unknown grant fields/wildcards |
-| Context confusion, two tabs, delayed mobile response | Session-bound explicit selections + canonical path, immutable captured request context; cache partitioning and response tags |
+| Context confusion, two tabs, delayed mobile response | Explicit canonical path without authority-bearing selections, immutable captured request context; cache partitioning and response tags |
 | Board/staff/deputy-as-superuser | No business inheritance; separate scoped grants and approved exceptional support path |
 | TOCTOU revocation, stale roles/replicas | Shared context serialization, online primary DB checks, transaction-time validation and original deadlines |
 | Valid proof reused in another action/NGO | Exact command/context/session/policy/version binding and atomic consumption; permissions rechecked |
@@ -734,46 +851,46 @@ security suspension is not NGO business authority. No silent impersonation path.
 
 ## 10. Migration and implementation sequencing
 
-This task changes only this document. It does not modify the approved auth ADR,
-OPEN-DECISIONS, models, tests, settings, migrations or client files.
+This task changes only ADR-0002; it does not implement anything. PWC-03B.1 is design-ready
+for a **separate assignment**, not started by approval of this document.
 
-1. **Review first:** approve this ADR's technical boundaries and explicitly decide
-   blocking §12 policies. Approval may be scoped; unapproved domains remain disabled.
-2. **PWC-03B kernel contract:** freeze closed action/context registry, grant provenance,
-   denial semantics, lock order, lifecycle/revocation rules and acceptance fixtures.
-   Synthetic fixtures may demonstrate policy; they cannot authorize real NGO authority.
-3. **Additive schema:** introduce reviewed access/context/versioned-grant records and
-   constraints after existing migrations. Inventory legacy OrganizationAccess rows
-   without exporting personal data. Do not map `admin` or `members` to production
-   privileges automatically; preserve rows and require documented verified regrant.
-   No auth model replacement, mass session changes or global privilege backfill.
-4. **Shadow comparison, never shadow allow:** safely compare proposed decisions on
-   synthetic data; unknown legacy mappings deny. Avoid a permissive legacy fallback
-   during dual-read/cutover. Audit reviewed mapping IDs/provenance and rollback plan.
-5. **Enforcement slice:** implement services, explicit DRF permissions, scoped queries,
-   context contracts and negative PostgreSQL tests behind default-off enablement.
-   Preserve all existing 247 auth/public tests; added tenant tests must be independent
-   and must not substitute for original auth regressions.
-6. **Assurance integration:** separately review extension of personal-only auth
-   interfaces/schema, command canonicalization, revision/hold binding and atomic
-   consumption with domain changes. No sensitive domain route enabled before this.
-7. **PWC-03C/03D and 02D:** approve/generated shared API schema/fixtures, private-file
-   primitive and client cache/context/storage behavior before Flutter/web delivery.
-   PWC-02E verification/bootstrap policy gates real admin activation in P3; finance
-   (P6), alliance/commitments (P7) retain independent product/policy gates.
-8. **Operational acceptance:** provenance inventory, access reviews, monitoring,
-   restore/revocation drills, retention and workload identity/security tests before
-   real-user activation. Auth default-off/synthetic limitations remain in force.
+1. **PWC-03B.1 synthetic kernel:** additive §4.5 records/constraints/DB privileges,
+   immutable registry, pure context resolution, centralized evaluation/scoped repository
+   helpers, bounded synthetic probes, fixture-only creation/revocation lifecycle,
+   durable audit and actual PostgreSQL security/race tests. No HTTP NGO adapters,
+   UI, generalized engine, real authority, private files or auth proof extension.
+2. **PWC-03B.2 scoped HTTP integration:** explicit context routes/discovery/capabilities
+   and synthetic read adapters under §8; DRF auth/queryset/object/field enforcement;
+   request errors/preconditions/CSRF/mixed transport regression and PostgreSQL A/B
+   tests. Any privileged grant-management command is a separately gated sub-slice,
+   not automatically approved as part of .2.
+3. **PWC-03C, 03D and 02D:** generated schemas and client contracts, audit infrastructure
+   evolution, file primitive only after D10; Flutter workspace/cache-clear behavior and
+   independently approved web delivery choices. No premature sensitive file release.
+4. **PWC-02E/P3:** real eligibility, representative verification, independent one-time
+   bootstrap, disputed/last-admin recovery and team grant workflows only after D03/D05/
+   D14 approvals. P4 memberships/imports and P5 volunteers/projects retain independent
+   relationships and classification/consent gates. No role label promoted by migration.
+5. **P6/P7/P8:** finance ADR/grants/signatories and commitments, alliance/governance and
+   sharing, workload/support/files/export, then operational/production acceptance in
+   their roadmap phases and separate policies. Disabled until approved and tested.
 
-Migration tests must preserve User/Organization UUIDs, Workspace PKs, all relationship
-FKs/password hashes, historical access labels and auth evidence. Test existing,
-empty, anomalous and used-security datasets; explicit constraints/index plans and
-no-drift checks. Used authorization/evidence schemas must refuse destructive reversal
-or supply reviewed forward-fix/restore procedures, never erase revocations or revive
-legacy grants. Rollback disables/drains affected endpoints/jobs and preserves evidence;
-backward app compatibility must not re-enable old role-label authority. Role-policy
-version migrations must not silently expand live grants. No production backfill or
-reversible-data-loss claim is approved here.
+D14 safe migration: inventory legacy rows without exporting personal data; preserve
+User UUIDs/password hashes, Organization UUIDs, Workspace PKs, memberships, all role
+rows and historical FKs/security evidence. No grant backfill from labels/active flags,
+name/contact matching or imported people. No cascade deletes or User replacement.
+The new evaluator never consults legacy labels for allow. No dual-read fallback or
+shadow infrastructure is needed where no legacy private permission engine exists.
+
+A later reconciliation case references legacy row ID, proposed subject/NGO, independent
+eligibility and representative evidence, reviewer identity/conflict checks, policy
+version and explicit outcome. Human verification may result in a **new** grant with
+its own provenance, not mutation/deletion of historical labels. Approvers/evidence for
+real regrant remain blocked by D03/D14. Rejected/ambiguous rows stay nonauthoritative.
+Rollback disables/drains kernel entry points and preserves grants/audit/revocations;
+old software must not revive legacy authority. Used evidence schema reversal requires
+reviewed forward-fix/restore, not destructive reverse migration. Test populated, empty,
+expired/revoked and anomalous datasets with MigrationExecutor on PostgreSQL.
 
 ## 11. Automated acceptance-test matrix (required future work)
 
@@ -797,14 +914,14 @@ for each implemented private resource. No SQLite replacement for acceptance.
 | AZ-09 | Import produces unclaimed NGO-person rows, no User; same-contact/name rows in A/B stay separate; wrong/used/expired claim proofs cannot link | HF-03; PG integration |
 | AZ-10 | Revoke/expire grant/mandate/parent delegation/context; next request denies even with warm cache, stale capability snapshot and valid MFA | Identity AUTH-05; PG + cache |
 | AZ-11 | Pause mutation vs revocation with two connections: only valid serialized outcome commits; past-deadline grant/proof/session cannot commit | PG race and rollback assertions |
-| AZ-12 | Concurrent contexts/tabs/late response/refresh cannot retarget requests; mismatched selection/path/body denies without foreign lookup | ID-04; API + future client |
-| AZ-13 | Missing context, fabricated selection/capabilities/action code/role fields or different-session selector cannot grant anything | Contract negatives |
+| AZ-12 | Concurrent contexts/tabs/late response/refresh cannot retarget requests; unexpected selection headers or mismatched path/body deny without foreign lookup | ID-04; API + future client |
+| AZ-13 | Missing context, fabricated selection/capabilities/action code/role fields or any unsupported selector cannot grant anything | Contract negatives |
 | AZ-14 | Pinned role upgrade does not broaden old grants; self-delegation/cycles/expired parent/resource/amount-bound escape denied | Service + constraints |
 | AZ-15 | Last-authority compromise revocation works without promotion; dispute blocks unsafe transfers; recovery unavailable absent approved process | ORG-06/25/OPS-01 |
 | AZ-16 | Dashboard/report/dues responses reveal no ungranted ledger/donor fields; cross-NGO receipt/account/transfer references rejected | HF-04/05; HTTP + PG |
 | AZ-17 | Independent approvers/quorum/direct-entry rules obey selected policy; policy/amount/approver changes invalidate pending approval as specified | FIN-06/09; PG races |
 | AZ-18 | MFA without domain grant denies; A proof fails in B/another session/action/version; revoke or hold after intent denies final command | Auth integration + PG |
-| AZ-19 | Proof consumption, money/commitment/grant mutation and audit atomic; failed validation/audit/deadline rolls back; successful replay cannot execute twice | PG rollback/race |
+| AZ-19 | Proof consumption, money/commitment/grant mutation and audit atomic; transient failure rolls back provisional consumption, semantic conflicts invalidate intent per ADR-0001; successful replay cannot execute twice | PG rollback/race |
 | AZ-20 | File preview/download/range/upload-linking/metadata all enforce tenant/source scope; revoked export artifacts unavailable without public URL loophole | File service/storage integration |
 | AZ-21 | Export rechecks at pickup/batches/publish/download; revoked role/session or stale context cancels/withholds output; no hidden columns/foreign counts | Worker + PG + storage |
 | AZ-22 | User-delegated job cannot exceed actor ∩ job ∩ service scope; forged system flag/wrong tenant, expired workload assignment and pooled-context leakage deny | Background/service API |
@@ -821,50 +938,90 @@ G1a is not met by role-label tests, unit-only mocks or this ADR. Future client t
 must cover context cache clearing; endpoint existence, storage/worker integration
 and actual PostgreSQL concurrency evidence must be reported separately and honestly.
 
-## 12. Open decisions and approval gates
+### 11.1 PWC-03B.1 PostgreSQL acceptance gate
 
-The following are review questions, not a list of already approved answers. They
-refine the existing OPEN-DECISIONS register without changing its status. Safe default
-where unresolved is deny/disabled, not technical staff discretion.
+AZ-01–AZ-30 above remain future domain coverage, not all .1 features. For .1, finance,
+files, sharing, signatory and workload positive paths must be **disabled**, never built
+just to satisfy their future tests. Run the following on real PostgreSQL 16 with
+TransactionTestCase/separate connections and deterministic barriers, not SQLite,
+mocked locks, sleeps-only races or one shared connection. HTTP-specific assertions
+are .2; .1 asserts equivalent service decisions and error categories.
 
-| ID | Owner decision required | Blocks / conservative proposal |
+| ID | Required case / observable outcome |
+|---|---|
+| K01 | A reader cannot list/count/read/probe B, even guessing B object/state UUID; queryset prefilter and direct lookup both return uniform absence; no foreign field leakage. |
+| K02 | Same User is admin-probe in A and reader in B: settings allowed only A; union never crosses tenant; grant-scope/limit composition cannot launder bounds. |
+| K03 | Membership/volunteer/legacy claimant/admin/members alone denies entry/settings; Board/staff/superuser/Groups do not change denial. Explicit admin-probe still denies every finance/signatory/grant-management action, including with valid MFA. |
+| K04 | Expired, future-effective, unverified, revoked, unknown-version, unattested and legacy-only grants all deny; session revoked/epoch-invalid/expired or hold nonclear denies even with live grant. |
+| K05 | Missing/malformed/conflicting/unsupported context fails closed; no selected/default fallback; foreign/absent object errors equivalent. No query target revision disclosure before authorization. |
+| K06 | Revoke and then reauthorize on a new connection: immediate deny with old capabilities/MFA. Grant revision and context revision increase once, audit commits with revocation. |
+| K07 | Barrier race read vs revoke: read may serialize first; if revoke commits first read denies. Expiry during state-lock wait or before final check denies without protected body; use DB wall clock. |
+| K08 | Concurrent same-slot create: exactly one unrevoked row, second stale revision/conflict; revoked row cannot be un-revoked by stale ORM save/upsert/raw runtime SQL. Concurrent revoke vs create with old expected revision cannot resurrect authority; distinct new grant requires explicit new revision/event. |
+| K09 | Stale/missing preconditions, repeated revoke and replacement: no duplicate transitions/events; no reused UUID, expiration extension or immutable role/provenance edit. |
+| K10 | Audit insertion failure rolls back grant change; read audit failure returns no data; DB outage/lock timeout/deadlock fails closed. Complete denial audit where DB available; no phantom success on uncertain commit. |
+| K11 | Synthetic flag off, missing/mismatched attestation/batch, real/unattested account or NGO, disabled state and nonverified/restricted workspace deny. Factory cannot relabel arbitrary existing real entities; ordinary deployment config and credentials cannot activate fixture writer. |
+| K12 | PostgreSQL CHECK/partial uniqueness/PROTECT and runtime privileges/triggers reject malformed lifetimes, missing evidence/revocation fields, unknown bundle pair, duplicate current slots, audit deletion and direct grant/state mutation. Test with actual restricted runtime DB role, not only test-owner credentials. |
+| K13 | Additive migrations preserve existing UUIDs/hashes/FKs/workspace IDs/legacy rows/auth evidence; no grants seeded from labels; destructive used-history reversal blocked; disable/rollback cannot revive authority. |
+| K14 | Stable auth→context lock ordering under concurrent logout/reset/hold/factor/refresh and read/lifecycle transitions; no stale session write or reversed lock path. Bounded 50-item discovery page materializes under locks with no lazy queries; timeout behavior observable. |
+| K15 | Retain existing auth/public regression suite; .2 adds cookie/Bearer/CSRF/mixed transport, path/body mismatch, HTTP error/no-store and revoked discovery/capability tests. Historical 247-test evidence is not a substitute for a fresh regression run. |
+
+For every race assert final DB state, event revisions and both transaction outcomes,
+not only status codes. Report PostgreSQL version, isolation level, connection/barrier
+strategy and commands/results in implementation evidence. Audit performance/load and
+production privilege provisioning remain explicit review gates.
+
+## 12. Decision register, documented gates and handoff
+
+Status vocabulary: **Approved for initial kernel** means the bounded synthetic .1
+contract is resolved; **Approved in principle / narrower contract required** approves
+only the stated principle; **Deferred** means no implementation in this kernel;
+**Blocked** requires separate product/security/operational approval. Partial approvals
+do not close broader OPEN-DECISIONS entries or authorize real users/data.
+
+| ID | Status on 24 October 2026 | Resolved scope / remaining gate |
 |---|---|---|
-| D01 | Accept shared-schema contextual RBAC/predicate architecture, typed contexts and centralized enforcement; decide future RLS criteria | PWC-03B schema/service contract; no RLS claim |
-| D02 | Approve initial per-domain role bundles, permission atoms, member-only entitlements and grantable subsets/custom-role limits | Production grant seeding; no wildcard/admin inheritance |
-| D03 | Registered/unregistered verification evidence, who validates which mandate, expiry/revalidation, disputes and multiple/last-admin recovery | Real admin bootstrap/transfer; no contact-based authority or auto-migration |
-| D04 | NGO-selected finance root authority/bootstrap/recovery, delegation, single vs multiple authorizers, amount/account/currency limits and self-approval constraints | Finance access/activation; ordinary admin/Board excluded |
-| D05 | Approve sensitive action → assurance matrix, role-based MFA retention, hold effects on all private reads/writes, and auth interface extension | Nonpersonal proof integration/sensitive commands; deny missing policy |
-| D06 | Signatory evidence, single/multiple NGO commitment approval, conflict rules, authority withdrawal, amendments and legal consequences | Binding commitments; PWC cannot bind NGO |
-| D07 | Board/officer terms, institutional representatives/voting eligibility and committee/project entitlements within provisional governance | Alliance business activation; no elections/bylaw assumptions |
-| D08 | Exceptional support independent approval, emergency suspension vs access, tenant notice, allowed fields/actions and recovery evidence | Support access remains disabled; no technical superuser business exception |
-| D09 | Data classification/publication/consent, project sharing audience/purpose, donor privacy, retention/legal holds and audit-reader rules | Private sharing/exports/real data; minimal public projection retained |
-| D10 | Private storage/download enforcement and acceptable signed-URL/stream revocation window, export disposal and limits | File/export release; authenticated retrieval preferred |
-| D11 | Approve selection/header/version/error API contract and per-tab semantics; frontend schema/runtime/portal decisions | PWC-03C/03D clients; no generated API promise yet |
-| D12 | Job lifetime after logout, durable authorizations, workload identity credential/rotation policy and allowed scheduled purposes | Background authority; default user jobs require live originating session |
-| D13 | Approve revision/locking granularity, denial/audit failure policy, retention/monitoring, performance/load requirements and incident procedures | Production enforcement; linearizable sensitive checks over primary DB |
-| D14 | Legacy OrganizationAccess inventory/regrant approvers and cutover/rollback evidence | Any real legacy mapping; no inferred validated grants |
+| D01 | Approved for initial kernel | Shared schema; personal and NGO only; path UUID, typed FK and server resolution (§3); all other kinds disabled. RLS deferred, not claimed. |
+| D02 | Approved for initial kernel | Closed three-action `ngo_kernel_v1`, two v1 synthetic bundles, same-tenant union, organization scope, terminal revocation, mandatory expiry, no delegation or wildcard (§4.5). Real administration/member entitlements/custom roles remain blocked. |
+| D03 | Approved in principle / narrower contract required | Mandatory source/issuer/verification/evidence/validity/revocation schema and synthetic provenance resolved (§4.5). Real eligibility/representative verification, expiry/revalidation, disputes, bootstrap/last-admin recovery blocked pending PWC-02E and NGO/security approval. |
+| D04 | Blocked pending separate product/security approval | Finance root authority, independent delegation, account/currency/limits, maker-checker, threshold aggregation and self-approval. Admin/Board never inherit finance. P6 finance ADR required. |
+| D05 | Approved in principle / narrower contract required | .1 active auth/current grant/clear hold; no extra MFA for fixed synthetic reads; existing personal policies unchanged (§5.4). Every privileged command/role-retention and nonpersonal proof extension blocked until complete matrix/canonicalization/locking/failure contract reviewed. |
+| D06 | Blocked pending separate product/legal/security approval | Signatory evidence, distinct-human approvals, exact-version NGO commitments, withdrawal/amendment and legal consequences. No PWC binding of NGO. |
+| D07 | Deferred until P7; activation blocked on governance approval | Institutional terms, Board/officer/committee/voting scope are not NGO access and not approved bylaws. |
+| D08 | Blocked pending separate security/operational approval | Support access, independent approval, emergency suspension boundaries, notice/review and assisted recovery. No staff/superuser exception. |
+| D09 | Approved in principle / narrower contract required | Only `NGO_PRIVATE_SYNTHETIC_V1` and its fixed allowlist approved (§4.5). Real private categories, beneficiary/donor data, consent, publication, retention, audit readers and sharing blocked. Existing public projection unchanged. |
+| D10 | Deferred; release blocked on security/operational approval | Private storage/download revocation windows, signed URLs, exports/disposal and limits. No .1 file access. |
+| D11 | Approved for initial kernel | Stateless path context, discovery/entry/capability/error/precondition contracts (§8); .1 internal service only, .2 synthetic HTTP adapters. Frontend technology and generated schemas retain 02D/03C gates. |
+| D12 | Deferred; activation blocked on security/operational approval | Durable jobs, workload identities, post-logout authority and credential rotation. No .1 service-principal allow path. |
+| D13 | Approved in principle / narrower contract required | Concrete .1 primary-DB locks, revisions, expiry, fail-closed audit and race gates (§5.3) resolved. Production retention, monitoring, incident response and throughput/lock-budget review remain operational blockers, not silently approved policy. |
+| D14 | Approved in principle / narrower contract required | Preserve legacy rows, no label promotion or allow fallback; synthetic additive migration contract resolved (§10). Real inventory/regrant approvers, evidence and rollback operational sign-off blocked pending D03/D14 review. |
 
-Acceptance of this ADR's technical architecture does not approve every role bundle,
-legal mandate, finance control or governance article. Record explicit scope/owner/date
-for each decision before the corresponding implementation slice; keep remaining
-capabilities disabled. Real-data/production authorization additionally retains all
-ADR-0001 delivery/security/privacy/operations gates.
+### Remaining blockers and readiness
 
-**Consequences:** explicit grant provenance and centralized scoped services add
-implementation/audit work and may initially serialize writes per context. In return,
-they make multi-NGO authority reviewable and revocation testable without a new policy
-engine or changing personal identity. Versioned roles and negative tests reduce
-silent expansion; remaining legal/organizational decisions are visible, not guessed.
+No unresolved institutional decision blocks the **synthetic-only .1 contract as scoped**.
+Implementation must still be separately assigned and satisfy PostgreSQL acceptance,
+helper lock-order review, DB privilege/trigger enforcement, synthetic release guards
+and regression tests. Failure to implement any such safeguard blocks that slice;
+it is not permission to choose weaker defaults. No real NGO activation, private real
+data, privileged grant-management route, finance, signatory, governance, support,
+sharing, file/export or durable-workload authority is approved.
 
-**Handoff:** ready for product-owner/security/NGO architecture review as a proposal.
-Commit/push this document only. Do not open/merge a PR for this assignment, do not
-mark this ADR approved, and do not begin PWC-03B or NGO onboarding implementation.
+Auth default-off, synthetic delivery/privacy/deployment gates remain unchanged. This
+ADR does not claim production readiness, legal approval, a completed G1a/G1 milestone,
+or executed database acceptance. Retention and operational procedures must be approved
+before persistent real-user events or data; no policy numbers are invented here.
 
+**Consequences:** the small read-only synthetic kernel proves tenant isolation,
+provenance and revocation without a large policy engine or real NGO claims. Coarse
+locks serialize reads and grant changes per tenant; bounded projections/pages and
+real PostgreSQL contention tests are required before optimizing. Later capabilities
+require explicit new actions/role versions and approved policy rather than inheritance.
 
-### Design-task validation note
+**Handoff:** ready for a separately assigned PWC-03B.1 synthetic authorization kernel.
+Commit/push ADR-0002 only; no PR/merge and no implementation in this assignment.
 
-Validation for this assignment is document structure/status, relative source links,
-JSON example syntax, whitespace and a single-file diff against the verified base.
-Application code, migrations, tests and the approved authentication ADR remain
-unchanged. No backend/PostgreSQL test execution, production enforcement, generated
-API contract or approval is claimed for this documentation-only assignment.
+### Documentation validation note
+
+Validate status/date, all fourteen decision IDs, source links, retained JSON examples,
+required contract/test IDs, whitespace and single-file scope. Preserve approved auth
+ADR SHA256 and prior ADR commit ancestry. Backend/PostgreSQL acceptance cases in §11
+are future requirements, not executed results of this documentation task.
