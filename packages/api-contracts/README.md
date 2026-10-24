@@ -21,3 +21,11 @@ fixture, no real-browser/native storage/app-link acceptance, and no enabled
 password-change/contact-change routes. Do not generate Flutter/web clients from
 the ADR's entire target route catalog. See the integration review's API matrix
 and operational gates before frontend implementation.
+
+PWC-03B.2: `ngo-contexts-v1.fixtures.json` is checked against actual synthetic HTTP
+responses for discovery, capabilities, private probe and kernel settings. It records
+only the approved read surface, strict path/input grammar, minimized keys, no-store
+headers and error/cursor semantics. These endpoints are independently default-off;
+all existing synthetic eligibility and current-session/grant checks still apply.
+It is not generated OpenAPI, a client implementation, grant-management authority or
+real NGO/finance approval. See `docs/runbooks/PWC-03B2-CONTEXT-ENFORCEMENT.md`.

@@ -6,6 +6,7 @@ def health(request):
     return JsonResponse({"status": "ok", "service": "pwc-api"})
 
 urlpatterns = [
+    path("api/v1/", include("access.urls")),
     path("api/v1/auth/", include("accounts.registration_urls")),
     path("api/v1/health/", health),
     path("api/v1/organizations/", OrganizationListView.as_view()),

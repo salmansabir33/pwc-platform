@@ -1,0 +1,44 @@
+{
+  "version": "v1",
+  "scope": "PWC-03B.2 checked synthetic wire-key fixtures; not OpenAPI or production authority",
+  "prefix": "/api/v1/",
+  "routes": {
+    "discovery": "me/ngo-contexts/",
+    "capabilities": "ngo-contexts/{organization_uuid}/capabilities/",
+    "private_probe": "ngo-contexts/{organization_uuid}/private-probe/",
+    "kernel_settings": "ngo-contexts/{organization_uuid}/kernel-settings/"
+  },
+  "methods": ["GET", "HEAD"],
+  "gates": ["PWC_SYNTHETIC_CONTEXT_HTTP_ENABLED", "PWC_SYNTHETIC_AUTHORIZATION_ENABLED", "isolated synthetic environment and database", "current online authentication", "clear hold", "matching synthetic batch and current eligible grant"],
+  "discovery_keys": ["results", "next_cursor"],
+  "discovery_item_keys": ["kind", "organization_id", "context_revision"],
+  "capability_keys": ["context", "registry_version", "context_revision", "actions", "earliest_grant_expires_at"],
+  "context_keys": ["kind", "organization_id"],
+  "resource_keys": ["organization_id", "probe_code", "label", "context_revision"],
+  "error_keys": ["code", "correlation_id"],
+  "registry_version": "ngo_kernel_v1",
+  "role_actions": {
+    "ngo_kernel_reader/1": ["ngo.context.enter", "ngo.private_stub.read"],
+    "ngo_kernel_admin_probe/1": ["ngo.context.enter", "ngo.kernel_settings.read", "ngo.private_stub.read"]
+  },
+  "always_headers": {"Cache-Control": "no-store", "Referrer-Policy": "no-referrer"},
+  "vary": ["Cookie", "Authorization"],
+  "errors": {
+    "invalid_context": 400,
+    "authentication_required": 401,
+    "recovery_hold": 403,
+    "permission_denied": 403,
+    "not_found": 404,
+    "state_conflict": 409,
+    "authorization_unavailable": 503,
+    "method_not_allowed": 405,
+    "AMBIGUOUS_CREDENTIALS": 400,
+    "TRANSPORT_NOT_ALLOWED": 400,
+    "CSRF_FAILED": 403
+  },
+  "discovery": {"page_size": 50, "query_keys": ["cursor"], "cursor": "signed v1 scan cursor bound to User/logical session, max age 3600 seconds, never authority; no stable snapshot", "empty": {"results": [], "next_cursor": null}},
+  "reads": "No revision precondition. Ignore If-Match/If-None-Match for authorization and always recheck; never return a cached 304.",
+  "capabilities": "Current projection only; earliest grant expiry is advisory, not a validity guarantee or bearer proof.",
+  "context": "Explicit path Organization UUID only; all GET bodies and unknown/query authority or selection fields rejected. No server-side selection.",
+  "unsupported": "No grant mutation, finance, signatory, governance, support, sharing, file or export routes. Unregistered routes retain ordinary Django 404."
+}

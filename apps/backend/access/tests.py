@@ -319,11 +319,14 @@ class KernelTests(KernelFixture):
         self.request.COOKIES["__Host-pwc_session"] = "mixed"
         self.assertFalse(self.check().allowed)
 
-    def test_k15_no_new_http_routes(self):
-        from django.urls import resolve, Resolver404
+    def test_k15_http_routes_stay_disabled_by_default(self):
+        # .2 adds routes, not default enablement. No credentials or DB allow path.
         for suffix in ("capabilities", "private-probe", "kernel-settings"):
-            with self.assertRaises(Resolver404):
-                resolve(f"/api/v1/ngo-contexts/{self.a}/{suffix}/")
+            response = self.client.get(f"/api/v1/ngo-contexts/{self.a}/{suffix}/")
+            self.assertEqual(response.status_code, 404)
+            self.assertEqual(response.json()["error"]["code"], "not_found")
+            self.assertEqual(response["Cache-Control"], "no-store")
+
 
 
 @override_settings(**CONFIG)
