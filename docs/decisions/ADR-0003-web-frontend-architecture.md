@@ -1,12 +1,13 @@
 # ADR-0003 — Web frontend architecture and technology
 
-**Status: PROPOSED — NOT APPROVED**
+**Status: APPROVED — MVP WEB TECHNICAL FOUNDATION; LIVE INTEGRATION AND DEPLOYMENT GATED**
 **Task:** PWC-02D; P1 architecture/design only
 **Date:** 24 October 2026
 **Baseline:** `main` at `cb4ae6c7c1b7f08bd8b6c4a5b5a0a304f1276445`, including merged PRs #3 and #4
-**Decision sought:** React + TypeScript + Vite for the NGO administration portal and separately deployed PWC operations console, subject to the gates below.
+**Technical approval:** 24 October 2026, explicitly authorized by the product owner in the PWC-02D finalization instruction. React + TypeScript + Vite and the bounded W1 foundation decisions below are approved.
+**Verified prior checkpoint:** `8f9223767d841212c17683e1a28812891e2461dc`.
 
-> This document authorizes no implementation, deployment, feature activation, NGO authority, or privileged command. All choices here are recommendations pending human acceptance. Existing approved authentication and authorization ADRs take precedence. Source product documents retain their selected/provisional/open/deferred statuses and canonical screen identifiers. Engineering slices do not reduce M1–M3 P0 scope or constitute independent public releases.
+> **Approval boundary.** This is approval of the MVP web technical foundation, not production, governance, legal, operational, real-user authentication or real NGO authority approval. React/TypeScript/Vite; separate NGO Web and PWC Operations applications, builds, routes, sessions and deployments; shared tokens, accessible components, typed API/localization utilities; the shared Django REST backend; same-origin cookie/CSRF authentication without browser bearer tokens, a separate identity provider or unnecessary BFF; explicit NGO UUID backend paths; backend-authoritative authorization; English foundation with early Urdu/RTL testing; WCAG 2.2 AA; and the prohibition on treating synthetic probes as production functionality are approved technical decisions. Implementation still needs a separately authorized task and tests. Existing approved authentication and authorization ADRs take precedence. Product requirement statuses and canonical screen IDs are unchanged; M1–M3 P0 scope is not reduced. This finalization task makes documentation changes only.
 
 ## 1. Repository assessment and authoritative inputs
 
@@ -33,7 +34,7 @@ Read against the actual merged repository, not only its older scaffold descripti
 
 PR #3 (authentication) and PR #4 (authorization foundation/review) were verified merged before drafting. This ADR does not alter their code, approved decisions, IDs or migration history. No new backend/browser tests are claimed here; the validation for this task is document integrity and scope checking.
 
-## 2. Options, comparison and proposed technology decision
+## 2. Options, comparison and approved technology decision
 
 Compare the **two private administrative surfaces**, not a public SEO website. Ratings below are qualitative engineering judgments, not measured benchmarks, price quotes or claims about the latest library versions.
 
@@ -48,19 +49,21 @@ Compare the **two private administrative surfaces**, not a public SEO website. R
 | Flutter sharing | Share schema, fixtures, semantic tokens, product rules and test scenarios; not Dart widgets | Same limitation as React/Vite | Can share Dart models/widgets with mobile, but platform-specific storage, navigation, input and accessibility reduce literal reuse |
 | Agent implementation/extensibility | Explicit route/module boundaries, one browser language and contract tests support small reviewable Arena/Codex slices | Productive ecosystem but more server/client and rendering choices for agents to get wrong | Productive if the team has strong Flutter-web expertise; do not optimize only for generated UI or nominal single-codebase claims |
 
-**Recommend React + TypeScript + Vite for both apps.** These workflows benefit from native web semantics, typed DRF integration and static delivery without introducing a second server-side application tier. React does not enforce tenant security; backend contracts and negative tests do. Two bundles duplicate some assets and a TypeScript UI adds maintenance alongside Dart mobile; accept those costs instead of claiming universal code sharing.
+**Approved: React + TypeScript + Vite for both apps.** These workflows benefit from native web semantics, typed DRF integration and static delivery without introducing a second server-side application tier. React does not enforce tenant security; backend contracts and negative tests do. Two bundles duplicate some assets and a TypeScript UI adds maintenance alongside Dart mobile; accept those costs instead of claiming universal code sharing.
 
 Next.js is not rejected as insecure or incapable. Its SSR/SEO/server-component/BFF benefits do not currently justify the additional boundary for private administration; static-export Next.js is viable but offers no demonstrated requirement advantage here. Reconsider for a separately scoped public publishing/SEO product or an accepted server-rendering need, through another ADR, not a silent conversion of these portals.
 
 Flutter Web is viable if a representative admin/accessibility spike later disproves this assessment, but the mobile recommendation alone is insufficient evidence. Do not change the mobile technology decision. Do not add a fourth framework without a concrete unmet requirement.
 
-### Proposed implementation stack, subject to acceptance and version verification
+### Supporting implementation stack: bounded selection and version verification
 
-- React, TypeScript strict mode, Vite and React Router; client-rendered routing, no SSR/BFF in the foundation.
+- React, TypeScript strict mode and Vite are approved. React Router is a supporting implementation recommendation; client-rendered routing, no SSR/BFF in the foundation.
 - TanStack Query for server state; React Hook Form + Zod for client validation (server validation stays authoritative); i18next/react-i18next for messages and locale.
 - Semantic HTML/CSS and a small audited wrapper layer around React Aria Components for complex accessible controls; TanStack Table only where needed, with explicitly implemented semantic tables and keyboard behavior. Neither library makes a custom grid automatically accessible. Avoid two competing component suites or a homegrown complex widget framework.
 - Vitest, Testing Library, MSW for contract-faithful synthetic test responses, Playwright and axe-based checks plus manual accessibility testing.
 - Recommend npm workspaces, one root lockfile, supported Node LTS and pinned dependency/toolchain versions checked when implementation is authorized. Use `npm ci` in CI; no Nx/Turborepo or microfrontend runtime initially. Confirm compatibility, maintenance/security history and licenses before freezing exact versions. Nothing is installed or generated by this ADR.
+
+Approval of the framework and shared-component approach is not approval of every named library/version. Verify supporting dependencies, compatibility, licenses and maintenance in the W1 implementation review. Keep W1 small: routing, a few accessible controls, locale utilities, the typed adapter and tests. Forms/query libraries may be introduced only for demonstrated foundation needs; defer TanStack Table, advanced grids and domain-specific widgets until their feature slices. No complete PWC-03C schema generator is required to begin W1 synthetic adapter tests.
 
 ## 3. Application topology and boundaries
 
@@ -77,9 +80,9 @@ packages/api-contracts   existing fixtures; future reviewed schemas/generation
 apps/mobile             remains separate; consumes compatible contracts/tokens
 ```
 
-These are proposed responsibilities, not instructions to create folders now. Apps own navigation, route loaders, permission composition, feature-specific API adapters and forms. Shared packages must not import app modules or infer roles/business policy. Share code factories, never a singleton QueryClient, session store or active NGO across apps. Do not put finance or privileged command logic into a universal `AdminService`.
+These are approved separation/sharing responsibilities; new shared package names are implementation recommendations, not instructions to create folders in this documentation task. Apps own navigation, route loaders, permission composition, feature-specific API adapters and forms. Shared packages must not import app modules or infer roles/business policy. Share code factories, never a singleton QueryClient, session store or active NGO across apps. Do not put finance or privileged command logic into a universal `AdminService`.
 
-Proposed deployment shape (hostnames remain unselected):
+Approved logical deployment separation (hostnames remain unselected; concrete deployment acceptance remains gated):
 
 ```text
 HTTPS NGO origin -> NGO static assets + same-origin /api/v1/* -> Django
@@ -87,7 +90,7 @@ HTTPS OPS origin -> OPS static assets + same-origin /api/v1/* -> Django
                                   one identity/backend, no second user store
 ```
 
-Each host has its own host-only session cookie, CSRF bootstrap and portal-bound session registry. Use exact configured HTTPS origins, not subdomain wildcards. Signing in to NGO web does not transfer a cookie/token to operations. A person may use both portals with separate sessions and the same personal identity. No implicit SSO bridge, shared cookie Domain, cross-origin bearer handoff or session-bearing URL. Portal separation is origin/session/UX isolation, **not** an independent backend grant: an operations session/Board title never confers NGO-private authority. Backend authorization remains necessary even if someone calls an endpoint outside its intended UI.
+Each host has its own host-only session cookie, CSRF bootstrap and portal-bound session registry. The cookie name may be the same on both hosts; cookies must not be parent-domain shared. Sibling subdomains can be same-site, so SameSite is not a substitute for CSRF and exact Origin validation. Use exact configured HTTPS origins, not subdomain wildcards. Signing in to NGO web does not transfer a cookie/token to operations. A person may use both portals with separate sessions and the same personal identity. No implicit SSO bridge, shared cookie Domain, cross-origin bearer handoff or session-bearing URL. Portal separation is origin/session/UX isolation, **not** an independent backend grant: an operations session/Board title never confers NGO-private authority. Backend authorization remains necessary even if someone calls an endpoint outside its intended UI.
 
 Shared package changes require both builds/test suites. Keep independently roll-backable artifacts and app labels; a token/UI change must not silently widen navigation or permissions in either app.
 
@@ -106,21 +109,61 @@ CSRF is separate from session authority: obtain JSON `{csrf_token}` from GET `/a
 3. Registration request/resend/confirm and password-reset request/resend/confirm follow their exact generic responses, expiry/replay/error handling and explicit confirmation contracts. Registration confirmation creates no session; password reset does not auto-login. Honor throttles without exposing account existence.
 4. Delivery currently emits `/account/confirm#...` with `flow_id`, `proof`, `purpose`. Preserve this link destination when defining frontend routing; validate purpose, capture proof in memory, immediately scrub the fragment via history replacement and render an explicit confirmation form. Never mutate on link GET, preload or preview; do not migrate proofs to query strings. Link-origin/portal ownership and real delivery acceptance remain deployment gates, not guessed dual-portal links.
 5. ID-05 may integrate only implemented personal session/MFA/assurance operations using the exact wire contracts and assurance-intent bindings. No enabled password/contact-change API exists. Step-up is not permission acquisition; no generic privileged-operation button is justified by its existence.
-6. Successful browser step-up or hold clearance rotates the cookie **and CSRF** while retaining the logical session/proof binding. Invalidate old CSRF state and re-bootstrap before another unsafe request; serialize security mutations to avoid rotation races. Recovery-hold clearance needs the approved fresh single-use captured pre-hold TOTP, not merely recent assurance. Render hold/expiry/invalid-proof states without a workaround.
+6. Successful browser step-up or hold clearance rotates the cookie **and CSRF** while retaining the logical session/proof binding. Invalidate old CSRF state and re-bootstrap before another unsafe request; serialize security mutations to avoid rotation races. Eligible `restricted` recovery-hold clearance needs the approved fresh single-use captured pre-hold TOTP, not merely recent assurance. `review_required` is not self-clearable through this flow; lost-all-factors or review-required recovery must not acquire a workaround. Render hold/expiry/invalid-proof states without a workaround.
 7. Personal session list/revoke, logout and logout-all follow existing methods/statuses. Clear UI caches immediately on logout initiation; if server logout fails, do not claim the cookie was revoked—show a safe retry state. On 401/session invalidation, abort requests, purge private state and return to sign-in. On logout-all, other origins learn revocation through subsequent backend checks, not cross-origin browser broadcasts.
 
 Transient passwords, preauth controls, intent proofs, enrollment material and one-time recovery-code displays stay outside normal form/query telemetry and are cleared on completion/cancel/navigation/expiry. Recovery-code display/download is only the approved explicit personal-security ceremony, never ordinary app persistence. No auth polling/heartbeat: GET/status/list requests do not renew idle lifetime, and focus refresh must not manufacture keep-alive activity.
 
-### Hard compatibility gate: direct HTTPS versus proxies
+### HTTPS deployment addendum: preferred end-to-end TLS
 
-The merged backend tests **direct TLS** and rejects forwarded host/port trust or `SECURE_PROXY_SSL_HEADER` pending O3 review. The ordinary HTTP Compose/runserver setup and Arena's TLS-terminating preview proxy are **not** accepted browser-login deployments. A static CDN + HTTP API upstream, permissive CORS or blindly setting Django proxy flags is not a valid implementation of the diagram above.
+**Approved architecture, subject to deployment/security testing; no operational activation approved.** Prefer:
 
-Before real browser integration, deployment/security owners must approve and demonstrate either:
+```text
+Browser HTTPS -> controlled edge reverse proxy
+                 |-- exact NGO Host -> NGO static build
+                 |-- exact OPS Host -> OPS static build
+                 `-- /api/v1/* -> certificate-verified private HTTPS
+                                  -> TLS-capable production application server
+                                  -> Django with genuine secure WSGI/ASGI scheme
+```
 
-- an ingress/service arrangement where Django genuinely receives direct HTTPS with the exact portal Host, secure cookies and correct origin validation, without unsupported forwarding trust; or
-- a separately reviewed auth deployment extension that defines trusted TLS termination, canonical host/proto/port handling, header stripping, spoof resistance, client-IP/rate-limit behavior and corresponding backend/browser regression tests.
+1. Preserve the canonical public Host selected from the exact portal-host allowlist. Django must see `https` and that Host so its computed origin matches the configured `ngo_web` or `pwc_ops` portal. Reject unknown/malformed Host and invalid authority/port combinations; do not derive identity from forwarded Host, JSON or a portal label. Certificate/SNI routing and HTTP Host must follow a documented validated mapping.
+2. Verify the upstream certificate chain, validity and expected server name; never disable certificate verification. Restrict backend ingress to controlled edge peers with firewall/network policy and authenticated upstream access; assess mTLS. Monitor certificate expiry/rotation. The backend cannot be an alternate public ingress.
+3. Strip client-supplied `Forwarded` and `X-Forwarded-*` headers, including host/protocol/port/client-IP claims, before constructing any explicitly approved ingress metadata. Reject conflicting/duplicate framing and authority information. Do not append untrusted protocol values or treat a browser header as evidence of TLS.
+4. TLS must reach the application-serving layer that supplies Django's request scheme. A second proxy that terminates HTTPS and then sends ordinary HTTP to the application recreates the compatibility problem. An encrypted upstream alone is not proof that Django observes the correct Host/scheme.
+5. Source-IP trust is a separate O3 decision: current abuse budgets use `REMOTE_ADDR`. With a proxy that may identify the edge rather than the end user, measure aggregate/NAT behavior; do not claim per-client budgets work. Approve either authenticated, peer-restricted source-address propagation with spoof/rate-limit tests, or explicitly tested aggregate-proxy budgets plus edge controls. No arbitrary X-Forwarded-For trust, ad hoc middleware, or silent abuse-budget relaxation is authorized. Document which hop supplies each address and retain sufficient non-secret operational evidence under the approved privacy policy.
 
-An upstream HTTPS connection alone is not evidence if an existing proxy changes Host or relies on forbidden trust settings. Do not change approved ADRs or backend flags as part of frontend scaffolding. Same-origin behavior must be tested at **both** exact hosts, including cross-portal cookie rejection. Existing session/auth/MFA flags, secrets, delivery and operational gates remain independent. Static shell previews can use synthetic tests with a conspicuous non-production boundary; they cannot prove real auth works.
+### Existing direct-HTTPS compatibility and trusted-termination alternative
+
+The merged `accounts/sessions.py::configured()` and `accounts/flow_security.py::configured()` reject forwarded host/port trust and any non-None `SECURE_PROXY_SSL_HEADER`. Handlers also enforce `request.is_secure()`. Therefore the preferred architecture preserves `SECURE_PROXY_SSL_HEADER=None`, `USE_X_FORWARDED_HOST=False`, and `USE_X_FORWARDED_PORT=False`, and proves genuine HTTPS at Django's application-serving boundary. It is compatible in principle, not already deployment-tested or production-approved. Do not use Django's development server for production.
+
+If hosting requires TLS termination followed by a non-TLS application hop, a **separately reviewed backend/security change** is mandatory. A prospective Django setting is `SECURE_PROXY_SSL_HEADER=("HTTP_X_FORWARDED_PROTO", "https")`, but setting it now makes existing auth gates fail closed; this ADR neither enables it nor authorizes bypassing those gates. A future extension must:
+
+- Restrict and verify the immediate proxy peer/network path. Django's header tuple alone is not a proxy-IP allowlist.
+- Make the trusted edge overwrite the protocol header with one canonical value derived from the actual client-facing transport; reject missing, conflicting, duplicate or comma-separated values under the reviewed single-hop contract. Reject any direct/untrusted request attempting to assert HTTPS. If additional hops are introduced, review the entire chain rather than assuming first/last header values are safe.
+- Retain canonical Host validation and keep forwarded-host/port trust disabled unless separately justified. Review secure-redirect behavior to avoid loops, insecure paths or credential-bearing redirects.
+- Update both explicit auth configuration gates only through an approved implementation contract and regression tests while preserving HTTPS enforcement, cookie/portal binding and source-IP/abuse controls. Never merely remove the guards.
+
+### CSRF/origin and delivery boundaries
+
+Use exact Django `ALLOWED_HOSTS` and exact HTTPS `PWC_AUTH_PORTALS`, Secure/HttpOnly/host-only session cookies and Secure host-only CSRF cookies. Preserve anonymous unsafe-request CSRF and exact Origin/Referer checks. Same-origin routing needs no broad `CSRF_TRUSTED_ORIGINS` expansion: leave it empty unless a specific additional origin is separately reviewed. Do not whitelist sibling portals or wildcard origins to repair routing; no permissive credentialed CORS. Preserve incoming browser Origin/Referer, not an invented proxy value. Configure secure redirects/HSTS and other headers at the reviewed ingress/application layers; unsafe plaintext authentication/proof/password requests must fail rather than rely on redirects to protect already-submitted secrets.
+
+Registration/reset delivery is currently synthetic-only, including the backend delivery-mode gate. Real email requires a separately approved provider/adapter implementation, secrets, abuse/operational acceptance and link-origin ownership; flipping a flag is not enough. W1 requires none of these.
+
+### Concrete ingress and browser acceptance tests
+
+Before live W2 use, security/deployment reviewers must record results at **both exact portal hosts**:
+
+- Real browser sign-in, MFA preauth/confirmation, session bootstrap and explicit account-confirm link handling; GET/preview cannot mutate registration/reset state.
+- Backend-observed Host, HTTPS scheme and portal origin are correct; unknown Hosts, mismatched authority/ports and malformed ingress fail. Forwarded host/proto/port/IP spoofing, duplicate/comma values and direct-backend attempts cannot change trust or budgets.
+- Upstream wrong-name/untrusted/expired certificates fail closed; backend ingress is peer-restricted and certificate rotation is demonstrated. Where headers are trusted under a later extension, untrusted peers cannot set them.
+- Secure/HttpOnly/host-only/Path/SameSite cookie attributes and Secure CSRF cookie behavior; NGO cookie manually replayed at OPS is rejected by portal binding and vice versa. Sibling-origin unsafe requests fail even when SameSite permits cookie attachment.
+- Missing/stale CSRF, absent/incorrect Origin or invalid Referer, cookie-plus-bearer ambiguity and browser use of native issuance routes fail without side effects.
+- Login/step-up/eligible hold clearance rotate cookie/CSRF as specified; old cookie/CSRF fail; session revoke/logout/logout-all, idle/absolute expiry and cross-tab invalidation work. Recovery-required states cannot bypass approved restrictions, and no polling renews idle lifetime.
+- Source-IP spoofing, concurrent abuse, proxy-aggregate and shared-NAT/load behavior retain effective controls. Never adopt client IP from untrusted headers.
+- `/api/` is neither cached nor replaced by SPA HTML; unsafe HTTP requests fail; redirects, no-store/no-referrer, CSP/anti-framing and controlled error logging do not leak secrets. Document compatible rollout/rollback and remaining operational gates.
+
+No such deployment/browser tests are claimed by this documentation approval. Ordinary HTTP Compose/runserver and Arena's TLS-terminating preview proxy are not accepted live-auth environments. W1 may use clearly labeled synthetic contract tests and static previews without weakening backend checks.
 
 ## 5. Route/module architecture and authority-aware navigation
 
@@ -154,8 +197,8 @@ Start with shared semantic color/spacing/type/focus/status tokens, shell/layout 
 
 Keep NGO and PWC identity/context visibly different without maintaining two incompatible design systems. Shared UI accepts presentation props; it does not decide grants. No client-generated role hierarchy or generic finance-enabled admin template.
 
-- Recommend WCAG 2.2 AA as an explicit acceptance target, pending approval: semantic landmarks, skip link, route titles/focus, labeled controls, described validation, error summary, keyboard and visible focus, dialog focus restoration, live status announcements and non-color-only state.
-- Recommend English/Urdu locale architecture and an early reviewed RTL specimen. Full Urdu launch coverage remains **open** in the Flutter/product foundation; this ADR does not relabel it selected. Store messages by stable keys, use CSS logical properties and `dir`, test mixed-direction identifiers/email/amounts with bidi isolation. Self-host only reviewed/licensed fonts; test Urdu shaping/readability and load cost. Do not mirror all icons or reverse numeric data indiscriminately.
+- **Approved target: WCAG 2.2 AA**, subject to implementation evidence: semantic landmarks, skip link, route titles/focus, labeled controls, described validation, error summary, keyboard and visible focus, dialog focus restoration, live status announcements and non-color-only state.
+- **Approved: English frontend foundation with locale architecture and early Urdu/RTL testing/specimen.** Full Urdu launch coverage remains **open** in the Flutter/product foundation; this ADR does not relabel it selected. Store messages by stable keys, use CSS logical properties and `dir`, test mixed-direction identifiers/email/amounts with bidi isolation. Self-host only reviewed/licensed fonts; test Urdu shaping/readability and load cost. Do not mirror all icons or reverse numeric data indiscriminately.
 - Use locale-aware date/number formatting with explicit timezone/underlying value semantics. Keep exact decimal/money values in server-specified strings/minor units; no binary-float accounting or hardcoded `Rs` data model. Backend defines currency, precision, rounding and posting rules.
 - Desktop supports dense forms/tables; small screens use responsive sections and accessible horizontal table regions or task-appropriate cards, never silently drop critical columns/actions. Test 320 CSS-pixel reflow, zoom, large text and touch targets. Virtualization requires an accessible fallback and demonstrated benefit; server pagination first.
 - Destructive, financial and binding-commitment actions need clear scoped confirmation and backend concurrency/idempotency contracts. Client validation improves feedback, not policy. No optimistic grant, balance, approval or commitment changes.
@@ -251,52 +294,62 @@ These identifiers refer to the detailed screen specification; grouped rows do no
 
 No currently implemented API authorizes a complete real NGO workspace, PWC operational workflow or private financial module. Health is liveness, not dashboard readiness. Keep test-only fixtures/harnesses visibly synthetic and out of production navigation; do not ship placeholder business screens as evidence of completion.
 
-## 11. Phased implementation proposal after approval
+## 11. Implementation gates and phased scope
+
+**W1 architecture is approved; implementation starts only in a separately authorized task.** W1 does not require live email delivery, production domains, production ingress, real NGO grants or a complete generated API schema. Live W2 use, W3 authority and later business features retain independent gates.
 
 | Slice | Preconditions | Bounded deliverable and exit evidence |
 |---|---|---|
-| W0 — decisions/contracts | Human acceptance of this ADR's relevant choices, deployment owner and API gap review | Record accepted/open items, exact supported toolchain/library versions, reviewed auth topology and contract work tickets; no business authority |
-| W1 — web foundation | W0 framework/tooling acceptance | Two independent builds/shells, tokens, locale/RTL specimen, routing/error/accessibility primitives, contract adapters and synthetic test harness; no business menu/API claims |
-| W2 — personal account integration | Approved HTTPS/browser topology, applicable auth operational gates, verified fixture/schema gaps closed for consumed endpoints | ID-01 and supported ID-02/ID-05 subsets in both portals; real browser cookie/CSRF/MFA/session/hold negative tests; no OPS tool entry or real NGO switcher without contracts |
-| W3 — production context and M1 NGO slice | Real-context activation review, P3 backend onboarding/verification/role contracts and PWC-02E decisions | ID-03/ID-04 real subset plus ORG-01–ORG-12/ORG-25 relevant subsets and PWC-01 only as contracts land; two-NGO isolation, claim/import and revocation evidence; do not bundle all these screens in one agent ticket |
-| W4 — independent NGO operations | M1 gate and appropriate P5/P6 backend contracts | Separate small volunteer/event/project/dues/finance/report slices; each requires its policy, action matrix and end-to-end negatives; no partial ledger disguised as complete finance |
-| W5 — alliance/collaboration/operations | Relevant P7 policies/contracts, delegated authority and privileged-command approvals | Scoped ALL/COM/COL/PWC/GOV-01 workflows, distinct platform and alliance navigation; OPS-01 only after its independent approval |
-| W6 — pilot/release | M1–M3 gates plus P8 security/legal/operations acceptance | Accessibility/localization/performance evidence, backup/restore, monitoring/support, staged pilot and human launch decision |
+| W0 — approval record/toolchain preparation | Technical approval recorded here; narrow implementation task | Preserve this decision register, verify supported versions/licenses and consumed synthetic contracts; identify owners for later gates, without making their resolution a W1 prerequisite |
+| W1 — Web Foundation | Approved foundation choices; supporting dependency checks and separate implementation authorization | Two independently buildable application shells/routes, shared small accessible UI/token primitives, English localization plus Urdu/RTL specimen, typed same-origin API adapter and synthetic contract tests. No live credentials, business menus or claims of operational authority |
+| W2 — Authentication and Personal Security Integration | Verified current auth/MFA/session contracts, fixture gaps closed for consumed endpoints; real ingress compatibility and applicable security/delivery approvals **before live use** | ID-01 and supported read-only ID-02/personal-security ID-05 subsets; browser CSRF/cookie/MFA/recovery/session invalidation tests. Mocked development can precede live ingress acceptance but is not real integration evidence; no OPS tool or real NGO switcher |
+| W3 — Real NGO Contexts | Independently approved NGO eligibility/representative verification, real authority activation (REAL01–REAL04), production workspace/discovery/capability contracts and relevant PWC-02E/P3 gates | Real ID-03/ID-04 subsets and explicit backend path contexts with two-NGO isolation/revocation evidence; ORG onboarding/team/profile and PWC-01 verification workflows only in separately approved contract-backed slices, never by relabeling synthetic probes |
+| W4 — independent NGO operations | Relevant membership/P4, volunteer/project/P5 and dues/finance/P6 APIs, policies and permission matrices | Separate complete membership/import/claim, volunteer/event/project, dues/finance/report slices; no admin finance inheritance or invented ledger/export APIs |
+| W5 — alliance/collaboration/operations | Relevant P7 APIs, governance/representation/signatory policies, delegated permissions and privileged-command approvals | Contract-backed ALL/COM/COL/PWC/GOV-01 workflows; OPS-01 requires its independent support/exceptional-access policy. PWC approval cannot bind NGO resources |
+| W6 — pilot/release | M1–M3 gates plus P8 security/legal/operations acceptance | Accessibility/localization/performance evidence, backup/restore, monitoring/support, staged pilot and explicit human launch decision |
 
-These W labels organize frontend engineering only and do not replace roadmap P0–P8 or product M1/M2/M3. Each implementation ticket names canonical IDs, API methods/shapes, grant matrix, state transitions, contract versions and negative tests. No automatic follow-on implementation from approval of a subset; separate authorized tasks and reviewed PRs are required. This task stops after the proposed ADR and repository checkpoint, without a PR.
+W labels organize frontend engineering only; they do not replace roadmap P0–P8 or M1/M2/M3. Each implementation ticket names canonical IDs, methods/shapes, versions, allow/deny matrix, state transitions and negative tests. Missing business APIs block their workflows, not W1. No automatic follow-on implementation, feature activation or release is authorized by this documentation task.
 
-## 12. Approval register, blockers and unresolved decisions
+## 12. Final decision register and unresolved choices
 
-All rows remain **OPEN / NOT APPROVED by this ADR**. Review can accept the framework separately from production activation; accepted choices must be recorded explicitly, not inferred from commits.
+**Approval record: 24 October 2026, product-owner PWC-02D finalization instruction.** The four status categories are: **Approved for W1**; **Approved architecture / testing required**; **Blocked before live integration**; **Deferred to deployment/later business phase**. Compound WEB entries explicitly split their approved direction from unresolved execution details. Neither this register nor a commit supplies missing security/governance approval.
 
-| Gate | Decision / evidence required | Proposed accountable reviewer |
-|---|---|---|
-| WEB-01 | React/TS/Vite, two apps, source sharing, package/component/test strategy; pin compatible maintained versions/licenses before install | Technical/product owner |
-| WEB-02 | Exact portal hosts, ingress/direct-HTTPS compatibility or separately reviewed auth O3 extension; spoof/cross-portal/CSRF live-browser tests | Backend security + deployment owner |
-| WEB-03 | Auth/session/MFA/delivery operational approvals, confirmation link-origin ownership, real browser handling and rollout/rollback; do not flip default-off flags casually | Authentication/security owner |
-| WEB-04 | Contract/schema/error/versioning plan (PWC-03C), missing registration/reset fixtures, supported endpoint adapters; distinguish synthetic-only gates from real workspace rollout | API/backend owner |
-| WEB-05 | Production NGO context discovery/selection/capabilities and revocation; REAL01–REAL04 remain independent activation gates; no repurposing synthetic APIs | Authorization + product owner |
-| WEB-06 | Operations entry and platform/alliance/NGO permission boundaries; privileged grant/support commands remain subject to GM01–GM12 and their separate approval pack | Security/governance owner |
-| WEB-07 | PWC-02E evidence/authority/contested-claim policy; per-domain finance, import, files, institutional membership, signatory/commitment and support contracts before those features | Respective policy + backend owners |
-| WEB-08 | WCAG target, supported browser/assistive-tech matrix, English/Urdu launch coverage, translation/font review, responsive/performance budgets | Product/accessibility owner |
-| WEB-09 | Hosting/artifact/security-header/CSP/retention/logging/observability/private-file/legal and support ownership; approved runtime/toolchain maintenance plan | Operations/privacy + technical owner |
-| WEB-10 | Public web/SEO delivery and PWC-owned finance scope if separately requested; deferred elections/cases/payments/national features remain deferred | Product/governance owner |
+| ID | Approved decision and status | Recommended execution / alternative / risk | Remaining approval or evidence; timing |
+|---|---|---|---|
+| WEB-01 | **Approved for W1:** React/TS/Vite, separate NGO/OPS apps/builds/routes/sessions/deployments; shared tokens, accessible components, typed API/localization utilities; shared Django REST backend | Minimal shared source packages, not shared runtime state. Next.js or Flutter Web would require a new justified decision; avoid premature table/framework infrastructure | Supporting libraries, exact compatible versions, package-manager/Node pinning and licenses remain implementation-review choices before installation; passing two-app build/test evidence required |
+| WEB-02 | **Approved architecture / testing required:** preferred end-to-end verified TLS, canonical Host/scheme and origin binding. **Blocked before live integration:** actual ingress acceptance | §4 verified HTTPS upstream with restricted ingress; alternative trusted TLS termination needs separately reviewed backend/security extension. Risk: false secure scheme, spoofed metadata or proxy-aggregate budgets | Security/deployment owner: exact hosts/certificates, ingress/server selection, source-IP trust, abuse tests and real browser evidence before live W2; no proxy setting changes approved |
+| WEB-03 | **Approved architecture / testing required:** same-origin cookie/CSRF, existing MFA/session/recovery contracts; no browser bearer tokens, separate identity provider or unnecessary BFF. **Blocked before live integration:** operational activation | Current personal flows only; synthetic testing may start in W1. Risk: treating 202/assurance/recovery as full authority, losing rotated CSRF or pretending real delivery exists | Auth/security owner: fixture/service reconciliation, flow tests, applicable keys/flags, link-origin ownership and ingress acceptance; real delivery provider/adapter separately reviewed before real mail |
+| WEB-04 | **Approved for W1:** narrow typed relative-URL adapter, synthetic verified fixtures, safe normalization of distinct error envelopes. **Approved architecture / testing required:** eventual reviewed schemas/generation | Manual bounded verified types first; no fabricated universal SDK or contradictory slice snapshots. Full PWC-03C is not a W1 blocker | API owner: missing registration/reset fixtures and exact consumed contracts before those W2 integrations; generation/versioning plan before broader generated consumers |
+| WEB-05 | **Approved for W1:** explicit NGO UUID backend paths, backend-authoritative authorization, tenant cache isolation; synthetic probes never production functionality. **Blocked before live integration:** real NGO contexts | Synthetic two-NGO isolation tests only; no real switcher built from fixture discovery. Risk: stale cross-tenant state or fixture-to-real authority promotion | Authorization/product owners: PWC-02E, real workspace contracts and REAL01–REAL04 before W3 activation; no real authority approved here |
+| WEB-06 | **Approved architecture / testing required:** independent platform/alliance/NGO domains; Board/platform status grants no NGO access; NGO administration grants no finance. **Deferred to later business phase:** operational entry/tools | Personal security is not OPS-01; no `isAdmin` shortcut. Risk: operational shell mistaken for an authority grant | Security/governance/API owners: explicit OPS entry/capabilities and per-command contracts; GM01–GM12 remain independently unresolved where applicable, before relevant implementation |
+| WEB-07 | **Deferred to later business phases:** onboarding evidence, imports/files/exports, finance, institutional membership, commitments and support workflows | Only complete approved API/policy-backed vertical slices; do not expose invented business forms or fake datasets. No policy option is selected here | Relevant policy/backend owners: PWC-02E and each domain's authority, evidence, posting, signatory, storage and retention contracts before its feature; these are not W1 blockers |
+| WEB-08 | **Approved for W1:** English foundation, early Urdu/RTL testing and WCAG 2.2 AA target. **Approved architecture / testing required:** accessible responsive primitives | Small representative specimen first; alternative full bilingual launch is not approved. Risk: “RTL-ready” or automated axe checks misrepresented as complete localization/accessibility | Product/accessibility owners: browser/assistive-tech matrix and specimen evidence during W1; full Urdu launch coverage, translations/fonts and measured performance budgets remain open before release |
+| WEB-09 | **Approved architecture / testing required:** no browser secrets/persisted private caches; secure artifact and deployment separation. **Deferred to operational deployment:** concrete hosting/operations/privacy choices | Versioned independent artifacts, no API caching, reviewed headers/CSP and rollback. No hosting vendor or legal/retention policy selected | Operations/security/privacy owners: exact deployment, secret rotation, logging/retention, support, incident/restore and maintenance evidence before real operation; only bounded CI/build evidence required for W1 |
+| WEB-10 | **Deferred to later product/business decisions:** public web/SEO delivery and separately scoped PWC-owned finance. Elections/cases/payments/national expansion retain existing deferred statuses | Keep outside W1 and do not silently extend these admin builds. Risk: technology approval mistaken for product/governance scope approval | Product/governance owners: separate scoped decisions and APIs if requested; no launch routes or new policy approvals here |
 
-Lack of a universal production business API is an implementation blocker for affected screens, not a reason to broaden synthetic permissions. No browser route, framework choice, tenant selector, UI role badge, MFA proof or platform title can close backend policy gates. Framework acceptance alone is not launch acceptance.
+**Still unresolved:** supporting toolchain/library versions and maintenance choices; exact production domains, ingress/server and certificate ownership; source-IP trust and abuse-control acceptance; trusted-termination extension if required; real email provider/adapter and link origin; consumed contract gaps and broader PWC-03C generation; real workspace and OPS entry contracts; all future business policies/APIs; launch Urdu coverage, browser matrix, performance budgets and operational/legal/privacy approvals. Resolve each at its stated gate, not all before W1. Framework approval does not close any live-activation gate.
 
-## 13. Foundation acceptance criteria and task boundary
+## 13. Acceptance criteria and documentation task boundary
 
-For a future **web foundation** to be accepted, reviewers must see:
+### W1 — foundation acceptance (implementation evidence still required)
 
-- [ ] Explicit human decision on WEB-01 and a recorded accepted/open gate ledger; approved auth/authorization ADRs unchanged unless separately reviewed.
-- [ ] Independent NGO and OPS production builds with shared typed primitives but no shared runtime/session/context; documented exact versions, reproducible lockfile and dependency/license/security review.
-- [ ] No secrets in browser artifacts; no bearer/mobile auth, persisted private data, third-party replay or production business fixture menus. No hidden-nav-only access control.
-- [ ] Traceability to all canonical IDs in §10; only implemented/approved subsets registered, with missing and deferred capabilities honestly identified. Source requirement statuses and M1–M3 P0 scope preserved.
-- [ ] Contract-faithful auth/error handling and full state-machine tests; real ID-01/ID-05 integration accepted only after WEB-02/03/04. Ordinary static preview is not auth evidence.
-- [ ] Proven context partitioning/clearing, in-flight generation discard, same-origin tab invalidation, permission refresh/revocation and idle-expiry behavior; no cross-NGO or cross-principal stale render. Synthetic tests are labeled and cannot activate real workspaces.
-- [ ] Clear operations no-authority state until an approved OPS entry contract; NGO admin without finance and Board/platform without NGO grant remain denied backend-side.
-- [ ] Accessible responsive English/Urdu/RTL specimen with manual and automated results; approved launch-language and browser matrix before claiming localization completion.
-- [ ] CI type/lint/component/contract/browser/build results for both apps; measured performance and documented remaining limitations rather than invented pass claims.
-- [ ] Approved ingress/cookie/CSRF/security-header acceptance, deployment/rollback and support ownership before real integration/activation. Future file/export/finance tests are independently mandatory when those modules exist.
+- [ ] A separately authorized W1 task uses the technical approvals dated 24 October 2026 and preserves this gate ledger; approved auth/authorization ADRs unchanged.
+- [ ] Two independent NGO/OPS builds and route shells; shared typed/presentational primitives but no shared runtime/session/context singleton; reviewed compatible versions, licenses and reproducible lockfile.
+- [ ] Small accessible controls/layout/error states, English messages and early Urdu/RTL mixed-text specimen; WCAG 2.2 AA target supported by automated and manual foundation checks, without claiming complete product conformance or Urdu launch coverage.
+- [ ] Typed relative-URL adapter with same-origin credentials, CSRF injection, no browser bearer/mobile auth, bounded response validation and normalization of both declared errors and non-JSON failures.
+- [ ] Clearly labeled synthetic contract tests for auth states, MFA preauth, CSRF rotation/invalidation, expiry/logout, context partitioning, in-flight generation discard and cross-principal/tenant stale-response prevention. These prove client behavior only, not real backend/browser/TLS acceptance.
+- [ ] No secrets in artifacts, persisted private data, production fixture menus, invented operational capabilities/business workflows, or real NGO grants. OPS shell grants no tool access; tests represent NGO-admin-without-finance and Board-without-NGO-grant denials without inventing a production API.
+- [ ] Canonical screen metadata traces only supported/tested subsets; unimplemented and deferred business routes remain unregistered. Preserve all §10 identifiers and source requirement statuses.
+- [ ] Both apps pass configured type/lint/component/contract/build checks and appropriate synthetic browser smoke tests; limitations and baseline bundle/interaction measurements recorded honestly. No backend tests are claimed from mocked acceptance.
 
-**Acceptance of this documentation task is narrower:** create only this proposed ADR; check source references, canonical-ID coverage and diff hygiene; preserve all app/backend/approved ADR files; make a normal commit/push on the assigned fresh branch and verify remote SHA/tree/clean status. Do not install frameworks, generate frontend code, change migrations or activate flags. Do not open or merge a PR. Stop after the documented checkpoint and report unresolved approvals.
+**Not W1 prerequisites:** live email, production domains/ingress, production cookies, real users/NGO workspaces, all business APIs, complete generated SDK, full Urdu translation or production legal/operations sign-off. Their absence must not be concealed by mocks or bypasses.
+
+### W2/W3 and production acceptance remain independent
+
+Live W2 requires verified consumed authentication/MFA/session contracts, real browser cookie/CSRF/session/recovery behavior, §4 ingress compatibility and applicable WEB-02/03/04 security approvals. W3 additionally requires approved NGO verification, real authority activation, backend workspace contracts and REAL01–REAL04. Later business workflows require their own backend allow/deny, file/export, finance, governance and commitment acceptance. Production activation still requires WEB-09 and roadmap release gates; approval here is not real-user or pilot authorization.
+
+### Finalization provenance and scope
+
+Before editing, the assigned branch was at `cb4ae6c7c1b7f08bd8b6c4a5b5a0a304f1276445` with an untracked ADR. The remote feature branch was fetched and verified at expected checkpoint `8f9223767d841212c17683e1a28812891e2461dc`; the untracked ADR matched its remote blob byte-for-byte. A checksum-verified external preservation copy and an include-untracked stash were retained, then the **existing branch** fast-forwarded to that checkpoint. No prior commit was recreated and no file content was discarded or history rewritten.
+
+This documentation task updates only ADR-0003, validates sections/local links/canonical-ID coverage/whitespace/single-file scope, then makes a normal commit/push to `arena/ce7673c3-pwc-platform` and verifies remote commit/tree and clean status. No frontend/backend code, Django settings, dependencies, migrations or existing approved auth/authorization ADRs change. No PR is opened or merged. Stop after the documentation checkpoint; implementation requires another task.
