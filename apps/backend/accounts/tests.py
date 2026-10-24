@@ -389,9 +389,8 @@ class SecurityFoundationTests(TestCase):
                 validate_password(password, user=self.user)
         validate_password("cobaltwovenfern", user=self.user)  # 15 lowercase chars
 
-    def test_no_public_authentication_routes_added(self):
+    def test_deferred_authentication_routes_remain_absent(self):
         for path in [
-            "registration/request/",
             "web/login/",
             "mobile/login/",
             "mobile/refresh/",
@@ -408,7 +407,7 @@ class MigrationCompatibilityTests(TransactionTestCase):
         ("organizations", "0002_alter_organizationaccess_id_and_more"),
     ]
     new = [
-        ("accounts", "0003_usercontact_user_auth_epoch_and_more"),
+        ("accounts", "0004_flow_cooldown_and_transition_evidence"),
         ("organizations", "0002_alter_organizationaccess_id_and_more"),
     ]
 
@@ -500,6 +499,27 @@ class MigrationCompatibilityTests(TransactionTestCase):
         with self.assertRaises(IrreversibleError):
             self.migrate(self.old)
         self.assertEqual(User.objects.get(username="epoch-used").auth_epoch, 2)
+
+    def test_transition_evidence_reverse_refuses_before_dropping_columns(self):
+        user = User.objects.create_user(username="audited-reset", auth_epoch=2)
+        evidence = SecurityEvent.objects.create(
+            subject=user,
+            event="auth.reset_completed",
+            result="success",
+            auth_epoch=2,
+            recovery_generation=1,
+            previous_hold_state="clear",
+            new_hold_state="restricted",
+        )
+        with self.assertRaises(IrreversibleError):
+            self.migrate(self.old)
+        preserved = SecurityEvent.objects.get(pk=evidence.pk)
+        self.assertEqual(preserved.auth_epoch, 2)
+        self.assertEqual(preserved.new_hold_state, "restricted")
+        self.assertIn(
+            ("accounts", self.new[0][1]),
+            MigrationExecutor(connection).loader.applied_migrations,
+        )
 
     def test_used_schema_cannot_be_destructively_reversed(self):
         user = User.objects.create_user(username="synthetic-used")

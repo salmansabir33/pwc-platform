@@ -1,8 +1,8 @@
-"""Inert security records. No credential generation, encryption or auth workflows.
+"""Security records; cryptography and workflows live in service modules.
 
-choices are database-enforced as well as form validated. Cross-row ownership is
-validated by full_clean(); future transactional services must call it and lock
-owners. An ordinary FK cannot enforce ownership across multiple tables.
+Choices are database-enforced as well as form validated. full_clean() provides
+cross-row validation but is not called by ORM saves/bulk writes. Transactional
+services must lock and recheck ownership explicitly; a FK cannot enforce joins.
 """
 
 import uuid
@@ -219,6 +219,7 @@ class AuthChallenge(SecurityRecord):
     )
     portal = models.CharField(max_length=16, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
+    last_issued_at = models.DateTimeField(default=timezone.now)
     expires_at = models.DateTimeField()
     consumed_at = models.DateTimeField(null=True, blank=True)
     invalidated_at = models.DateTimeField(null=True, blank=True)
@@ -576,6 +577,13 @@ class SecurityEvent(SecurityRecord):
     )
     reason = models.CharField(max_length=80, blank=True)
     correlation_id = models.UUIDField(default=uuid.uuid4)
+    # Typed recovery-transition evidence, never arbitrary request bodies/secrets.
+    auth_epoch = models.PositiveBigIntegerField(null=True, blank=True)
+    recovery_generation = models.PositiveBigIntegerField(null=True, blank=True)
+    previous_hold_state = models.CharField(max_length=16, blank=True)
+    new_hold_state = models.CharField(max_length=16, blank=True)
+    factor_id_snapshot = models.UUIDField(null=True, blank=True)
+    factor_revision = models.PositiveBigIntegerField(null=True, blank=True)
     # Deliberately no arbitrary JSON/body metadata field: future risk data needs review.
     objects = AppendOnlyQuerySet.as_manager()
 
@@ -591,6 +599,31 @@ class SecurityEvent(SecurityRecord):
     class Meta:
         constraints = [
             models.CheckConstraint(condition=~Q(event=""), name="event_code_required"),
+            choice_check(
+                "previous_hold_state",
+                ["", "clear", "restricted", "review_required"],
+                "event_previous_hold_valid",
+            ),
+            choice_check(
+                "new_hold_state",
+                ["", "clear", "restricted", "review_required"],
+                "event_new_hold_valid",
+            ),
+            models.CheckConstraint(
+                condition=Q(auth_epoch__isnull=True) | Q(auth_epoch__gte=1),
+                name="event_epoch_valid",
+            ),
+            models.CheckConstraint(
+                condition=Q(
+                    factor_id_snapshot__isnull=True, factor_revision__isnull=True
+                )
+                | Q(
+                    factor_id_snapshot__isnull=False,
+                    factor_revision__isnull=False,
+                    factor_revision__gte=1,
+                ),
+                name="event_factor_pair",
+            ),
             choice_check(
                 "result", ["success", "denied", "failure"], "event_result_valid"
             ),

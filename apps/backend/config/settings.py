@@ -1,3 +1,4 @@
+import json
 import os
 from pathlib import Path
 
@@ -42,3 +43,15 @@ STATIC_URL="static/"
 DEFAULT_AUTO_FIELD="django.db.models.BigAutoField"
 REST_FRAMEWORK = {"DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
                   "DEFAULT_AUTHENTICATION_CLASSES": ["rest_framework.authentication.SessionAuthentication"]}
+
+# PWC-03A.2 is synthetic-only and disabled by default. Never derive delivery
+# encryption keys from database contents or silently fall back to SECRET_KEY.
+PWC_AUTH_FLOWS_ENABLED = os.getenv("PWC_AUTH_FLOWS_ENABLED", "0") == "1"
+PWC_AUTH_DELIVERY_MODE = "synthetic"
+PWC_AUTH_LINK_ORIGIN = os.getenv("PWC_AUTH_LINK_ORIGIN", "https://pwc.invalid")
+PWC_AUTH_ABUSE_KEY = os.getenv("PWC_AUTH_ABUSE_KEY", "")
+PWC_AUTH_DELIVERY_ACTIVE_KEY = os.getenv("PWC_AUTH_DELIVERY_ACTIVE_KEY", "")
+# Key ring supports reading old ciphertext while new intents use active key.
+# JSON is deployment configuration, never a credential committed to source.
+PWC_AUTH_DELIVERY_KEYS = json.loads(os.getenv("PWC_AUTH_DELIVERY_KEYS", "{}"))
+PWC_AUTH_GLOBAL_SENDS_PER_HOUR = 100
