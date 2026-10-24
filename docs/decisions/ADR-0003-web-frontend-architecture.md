@@ -1,9 +1,9 @@
 # ADR-0003 — Web frontend architecture and technology
 
-**Status: PROPOSED — NOT APPROVED**  
-**Task:** PWC-02D; P1 architecture/design only  
-**Date:** 24 October 2026  
-**Baseline:** `main` at `cb4ae6c7c1b7f08bd8b6c4a5b5a0a304f1276445`, including merged PRs #3 and #4  
+**Status: PROPOSED — NOT APPROVED**
+**Task:** PWC-02D; P1 architecture/design only
+**Date:** 24 October 2026
+**Baseline:** `main` at `cb4ae6c7c1b7f08bd8b6c4a5b5a0a304f1276445`, including merged PRs #3 and #4
 **Decision sought:** React + TypeScript + Vite for the NGO administration portal and separately deployed PWC operations console, subject to the gates below.
 
 > This document authorizes no implementation, deployment, feature activation, NGO authority, or privileged command. All choices here are recommendations pending human acceptance. Existing approved authentication and authorization ADRs take precedence. Source product documents retain their selected/provisional/open/deferred statuses and canonical screen identifiers. Engineering slices do not reduce M1–M3 P0 scope or constitute independent public releases.
