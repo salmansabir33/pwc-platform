@@ -28,6 +28,15 @@ def unavailable():
 
 
 def configured():
+    # Proxy trust/deployment topology is not approved for synthetic auth.
+    # Match session ingress: configuration must not turn spoofable HTTP into
+    # supposedly secure public proof/password processing.
+    if (
+        settings.USE_X_FORWARDED_HOST
+        or settings.USE_X_FORWARDED_PORT
+        or settings.SECURE_PROXY_SSL_HEADER is not None
+    ):
+        raise unavailable()
     if (
         not settings.PWC_AUTH_FLOWS_ENABLED
         or not isinstance(settings.PWC_AUTH_ABUSE_KEY, str)

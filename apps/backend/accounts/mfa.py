@@ -583,6 +583,10 @@ def step_up(user, session, data):
     ):
         return problem()
     factor = active(user)
+    # ADR §8's hold-clear transition is stricter than ordinary recent-TOTP
+    # step-up: require a newly supplied, single-use code from the pre-hold factor.
+    if row.operation == "recovery_hold.clear" and not data.get("totp_code"):
+        return hold_denial(user, session, row.operation)
     if factor:
         if data.get("totp_code"):
             if not verify_totp(factor, data["totp_code"]):

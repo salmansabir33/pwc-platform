@@ -140,6 +140,7 @@ class FlowFixtures:
         self.fail("Synthetic mail not delivered")
 
     def post(self, path, payload, **extra):
+        extra.setdefault("secure", True)
         return self.client.post(
             f"/api/v1/auth/{path}/",
             data=payload,

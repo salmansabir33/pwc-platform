@@ -91,7 +91,13 @@ def public_command(operation, purpose):
         if problem:
             return reply(problem)
         if request.method != "POST":
-            return reply(FlowProblem("METHOD_NOT_ALLOWED", 405))
+            response = reply(FlowProblem("METHOD_NOT_ALLOWED", 405))
+            response["Allow"] = "POST"
+            return response
+        # Public proofs and new passwords are secrets too. Do not accept
+        # plaintext ingress or trust an arbitrary forwarded-proto header.
+        if not request.is_secure():
+            return reply(FlowProblem("TRANSPORT_NOT_ALLOWED"))
         if browser_request(request):
             origin = request.META.get("HTTP_ORIGIN")
             allowed = {f"{request.scheme}://{request.get_host()}"} | {
@@ -165,7 +171,9 @@ def csrf_bootstrap(request):
     if problem:
         return reply(problem)
     if request.method != "GET":
-        return reply(FlowProblem("METHOD_NOT_ALLOWED", 405))
+        response = reply(FlowProblem("METHOD_NOT_ALLOWED", 405))
+        response["Allow"] = "GET"
+        return response
     return reply({"csrf_token": get_token(request)})
 
 

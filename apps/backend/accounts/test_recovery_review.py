@@ -131,6 +131,7 @@ class RecoveryReviewTests(FlowFixtures, TestCase):
             "/api/v1/auth/registration/request/",
             data="[" * 2000 + "0" + "]" * 2000,
             content_type="application/json",
+            secure=True,
         )
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()["error"]["code"], "VALIDATION_ERROR")

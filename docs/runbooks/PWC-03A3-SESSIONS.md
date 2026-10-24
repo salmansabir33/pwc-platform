@@ -250,3 +250,22 @@ backup controls; synchronized clocks/DB health; NAT and global abuse/load limits
 retention/disposal and safe logging/APM; device storage/retry UX and frontend
 acceptance; real-user/provider/security/governance/privacy/operational approvals.
 Do not enable on an inferred preview topology or claim production readiness.
+
+
+## Combined-branch review (2026-10-24)
+
+With MFA/assurance enabled, successful web `step-up/` and `recovery-hold/clear/`
+now rotate the Django DB session key and CSRF token. The logical AuthSession UUID
+stays stable, so its exact intent/proof still works with the new cookie; the old
+cookie no longer authenticates. Rotation, registry digest and sensitive action
+share a savepoint and original authorization deadline. Expiry or a database
+failure rolls back provisional changes and restores the request's session store
+so SessionMiddleware cannot save a rolled-back key or replace the JSON denial.
+Failed step-up does not rotate. Re-bootstrap CSRF before subsequent unsafe calls;
+serialize browser security commands so competing old-cookie requests fail safely.
+
+The flow, session and MFA flags are **independent**, not a single kill switch.
+Disabling registration/reset alone does not revoke or disable existing session
+or MFA operations; incident/deployment procedures must address all flags plus
+credential revocation. The existing .3 fixture remains the MFA-disabled profile.
+See `../reviews/PWC-03A-AUTHENTICATION-INTEGRATION-REVIEW.md` for combined results.

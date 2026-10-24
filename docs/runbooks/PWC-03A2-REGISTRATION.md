@@ -258,3 +258,22 @@ challenge-delivery B2 are implemented/tested for the documented restricted
 profile; MFA B2/B3 and O1–O6 remain open. PWC-03A.3 needs an explicit new assignment,
 trusted test topology and its own transport/session review. Stop here: no
 login/logout, mobile issuance/refresh, MFA enrollment, NGO authority or UI added.
+
+
+## Integration-review corrections (2026-10-24)
+
+All six registration/reset POST commands now require HTTPS **before** body
+processing, abuse spending or workflow calls. Plain HTTP (including a spoofed
+forwarded-proto header) returns 400 `TRANSPORT_NOT_ALLOWED`; it is not redirected
+with secret-bearing bodies. Unreviewed `USE_X_FORWARDED_HOST`,
+`USE_X_FORWARDED_PORT` or `SECURE_PROXY_SSL_HEADER` configurations fail closed in
+flow configuration, matching session topology restrictions. Direct TLS is the
+synthetic request contract, not approval of a proxy deployment. GET `csrf/`
+is only a CSRF bootstrap, never login authority. Unsupported methods now include
+an explicit `Allow` header (`POST` on commands, `GET` on bootstrap).
+
+The earlier HTTP-default test helper is now explicitly secure, retaining every
+existing test and its assertions; the direct deep-JSON regression likewise uses
+HTTPS so it continues to exercise the parser, not just the transport gate.
+See `../reviews/PWC-03A-AUTHENTICATION-INTEGRATION-REVIEW.md` for current combined
+acceptance; earlier counts in this runbook remain historical slice evidence.

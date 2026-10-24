@@ -343,3 +343,30 @@ holds, and personal-only scope checks were reviewed and retained, not rebuilt.
 Remaining policy/operational gates in the preceding section are unchanged.
 This recovery ends at the validated MFA checkpoint, not a PR, next work package,
 production deployment or domain financial acceptance.
+
+
+## Integration-review corrections (2026-10-24)
+
+ADR §8's `restricted → clear` transition requires a newly supplied, single-use
+TOTP code from the same active revision confirmed before the hold. Ordinary
+step-up's recent-TOTP observation exception does **not** apply to a hold-clear
+intent, on either `step-up/` or `recovery-hold/clear/`. An empty code (or omission on
+`step-up/`) returns audited 403 `RECOVERY_RESTRICTED`, including immediately after
+TOTP login. The clearance endpoint requires the field; omitting it there is a
+400 `VALIDATION_ERROR` at schema validation. Wait for a new timestep if login consumed the current code. A recovery
+code/new factor/review-required hold still cannot clear it. This corrects the
+implementation to the approved hold-clear rule; no new recovery policy is adopted.
+
+Successful web step-up and hold clearance now rotate cookie/CSRF with atomic
+registry mapping, stable logical session/proof binding and the original deadline
+gate; failed/expired/database-failed commands cannot commit assurance or rotation.
+The session runbook describes lost/concurrent-response client handling.
+
+Migration **0006_guard_used_preauth_bindings** is a separate additive, no-data-write
+reverse guard. It refuses backward removal of 0005's used client/factor/device
+bindings (including terminal preauth records), before any columns are dropped.
+0001–0005 are unchanged. Unused synthetic schema can still reverse/reapply;
+used-schema recovery is a reviewed forward fix or backup/restore, never deleting
+preauth evidence to defeat the guard. Apply the complete migration chain before
+activation. See the integration review for current full-suite/race evidence;
+earlier counts above remain historical evidence, not production authorization.

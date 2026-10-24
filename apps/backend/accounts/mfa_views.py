@@ -4,6 +4,7 @@ import json
 from django.conf import settings
 from django.core.exceptions import RequestDataTooBig
 from django.db import transaction, DatabaseError
+from django.middleware.csrf import rotate_token
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.debug import sensitive_variables
 from . import mfa, sessions
@@ -55,6 +56,7 @@ def endpoint(operation):
             response = reply(FlowProblem("METHOD_NOT_ALLOWED", 405))
             response["Allow"] = method
             return response
+        prior_web_session = None
         try:
             mfa.configured()
             if not request.is_secure():
@@ -150,15 +152,42 @@ def endpoint(operation):
                     return reply(sessions.invalid())
                 with transaction.atomic():
                     response = personal_command(operation, user, session, data)
+                    if (
+                        operation in ("step", "clear")
+                        and response.status_code < 400
+                        and session.transport == "web"
+                    ):
+                        # Rotate the cookie, not the logical session: exact
+                        # intent/proof bindings stay valid, old cookies do not.
+                        # Both Django's DB session and registry mapping share
+                        # this savepoint and the final original-deadline gate.
+                        prior_web_session = request.session.__class__(
+                            request.session.session_key
+                        )
+                        request.session.cycle_key()
+                        request.session.save()
+                        session.web_key_digest = sessions.web_digest(
+                            request.session.session_key
+                        )
+                        session.save(update_fields=["web_key_digest"])
                     if mfa.timezone.now() >= deadline:
                         transaction.set_rollback(True)
+                        if prior_web_session is not None:
+                            request.session = prior_web_session
                         return reply(sessions.invalid())
+                if prior_web_session is not None:
+                    rotate_token(request)
                 return response
         except FlowProblem as exc:
             return reply(exc)
         except (ValueError, UnicodeError, RecursionError, RequestDataTooBig):
             return reply(FlowProblem("VALIDATION_ERROR"))
         except DatabaseError:
+            # A rolled-back cycle_key no longer exists in PostgreSQL. Restore
+            # the request store too, or SessionMiddleware's later save raises
+            # SessionInterrupted and replaces our fail-closed JSON response.
+            if prior_web_session is not None:
+                request.session = prior_web_session
             return reply(FlowProblem("AUTH_UNAVAILABLE", 503))
 
     return view
