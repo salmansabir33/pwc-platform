@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "accounts",
     "organizations",
+    "access",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -118,3 +119,7 @@ PWC_AUTH_MFA_ENABLED = os.getenv("PWC_AUTH_MFA_ENABLED", "0") == "1"
 PWC_AUTH_MFA_ACTIVE_KEY = os.getenv("PWC_AUTH_MFA_ACTIVE_KEY", "")
 PWC_AUTH_MFA_KEYS = json.loads(os.getenv("PWC_AUTH_MFA_KEYS", "{}"))
 PWC_AUTH_MFA_PROOF_KEY = os.getenv("PWC_AUTH_MFA_PROOF_KEY", "")
+
+# ADR-0002: independent default-off, isolated synthetic kernel. No NGO endpoints.
+PWC_SYNTHETIC_AUTHORIZATION_ENABLED = os.getenv("PWC_SYNTHETIC_AUTHORIZATION_ENABLED", "0") == "1"
+PWC_AUTHORIZATION_ENVIRONMENT = os.getenv("PWC_AUTHORIZATION_ENVIRONMENT", "disabled")
