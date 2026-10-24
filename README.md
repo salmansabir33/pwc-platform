@@ -7,11 +7,15 @@ Independent repository for the Pakistan Welfare Club digital ecosystem (Faisalab
 ## Modules
 - `apps/backend`: Django REST API, shared identity, tenant-owned organization models, public projection tests.
 - `apps/mobile`: Flutter placeholder; generate SDK-native project using installed Flutter CLI before developing UI.
-- `apps/ngo-web`: reserved for NGO web administration (framework pending).
-- `apps/pwc-ops`: reserved for separately authorized platform/alliance operations (framework pending).
+- `apps/ngo-web`: independent React/TypeScript/Vite W1 foundation; no live authentication or NGO workflows.
+- `apps/pwc-ops`: separately built W1 operations shell; no operational authority or business tools enabled.
 - `docs/product`: reference planning documents.
 - `docs/decisions`: architectural decisions and outstanding sign-offs.
 - `infra`: local PostgreSQL and backend dev Docker configuration.
+
+## Web foundation (W1)
+
+The two portals use a shared npm workspace, design primitives and network-disabled API infrastructure. See [the web foundation runbook](docs/runbooks/PWC-W1-WEB-FOUNDATION.md) for Node installation, independent dev/build commands, tests and W2/W3 security gates. No production deployment or live login is enabled.
 
 ## Development setup
 Prerequisites: Python 3.11/3.12 and PostgreSQL 16, or Docker Engine with Compose v2. See [the full local setup runbook](docs/runbooks/LOCAL-SETUP.md) for environment loading, tests, troubleshooting and remote previews. Dependencies are pinned in `apps/backend/requirements.txt`.

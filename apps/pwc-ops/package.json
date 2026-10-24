@@ -1,0 +1,21 @@
+{
+  "name": "@pwc/pwc-ops",
+  "version": "0.1.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 5174 --strictPort",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0 --port 5174 --strictPort"
+  },
+  "dependencies": {
+    "@pwc/web-api": "*",
+    "@pwc/web-ui": "*",
+    "@pwc/web-i18n": "*",
+    "@pwc/design-tokens": "*",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "react-router-dom": "7.18.4"
+  }
+}

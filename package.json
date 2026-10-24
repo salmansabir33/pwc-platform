@@ -1,0 +1,48 @@
+{
+  "name": "pwc-web-foundation",
+  "private": true,
+  "version": "0.1.0",
+  "license": "UNLICENSED",
+  "packageManager": "npm@10.9.8",
+  "engines": {
+    "node": ">=22.22.3 <23",
+    "npm": ">=10 <11"
+  },
+  "workspaces": [
+    "apps/ngo-web",
+    "apps/pwc-ops",
+    "packages/design-tokens",
+    "packages/web-api",
+    "packages/web-ui",
+    "packages/web-i18n"
+  ],
+  "scripts": {
+    "dev:ngo": "npm run dev -w @pwc/ngo-web",
+    "dev:ops": "npm run dev -w @pwc/pwc-ops",
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:browser": "playwright test",
+    "format": "prettier --write package.json package-lock.json tsconfig.json \"*.config.ts\" .github/workflows/frontend.yml \"apps/{ngo-web,pwc-ops}/**/*.{ts,tsx,html,json,md}\" \"packages/{web-api,web-ui,web-i18n,design-tokens}/**/*.{ts,tsx,css,json,md}\" \"tests/web/**/*.{ts,tsx}\" docs/runbooks/PWC-W1-WEB-FOUNDATION.md",
+    "format:check": "prettier --check package.json package-lock.json tsconfig.json \"*.config.ts\" .github/workflows/frontend.yml \"apps/{ngo-web,pwc-ops}/**/*.{ts,tsx,html,json,md}\" \"packages/{web-api,web-ui,web-i18n,design-tokens}/**/*.{ts,tsx,css,json,md}\" \"tests/web/**/*.{ts,tsx}\" docs/runbooks/PWC-W1-WEB-FOUNDATION.md",
+    "check": "npm run typecheck && npm run format:check && npm test && npm run build"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react": "16.3.3",
+    "@testing-library/user-event": "14.6.8",
+    "@types/node": "22.20.5",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "axe-core": "4.14.0",
+    "jsdom": "30.1.3",
+    "prettier": "3.9.10",
+    "typescript": "5.9.3",
+    "vite": "8.3.5",
+    "vitest": "5.0.5"
+  },
+  "type": "module"
+}
