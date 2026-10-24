@@ -1,0 +1,13 @@
+{
+  "name": "@pwc/design-tokens",
+  "version": "0.1.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "type": "module",
+  "exports": {
+    ".": "./tokens.css"
+  },
+  "dependencies": {
+    "@fontsource-variable/noto-sans-arabic": "5.3.0"
+  }
+}

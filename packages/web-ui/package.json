@@ -1,0 +1,20 @@
+{
+  "name": "@pwc/web-ui",
+  "version": "0.1.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.tsx",
+    "./styles.css": "./styles.css"
+  },
+  "peerDependencies": {
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "dependencies": {
+    "@pwc/design-tokens": "*",
+    "@pwc/web-i18n": "*",
+    "react-router-dom": "7.18.4"
+  }
+}

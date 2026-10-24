@@ -23,3 +23,7 @@ coverage.xml
 *.log
 *.pem
 *.key
+
+# W1 generated browser artifacts
+playwright-report/
+test-results/
