@@ -51,6 +51,9 @@ for (const [app, port] of [
       await page.getByRole("combobox").selectOption("ur");
       await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
       await page.evaluate(() => document.fonts.ready);
+      const sidebar = await page.locator(".sidebar").boundingBox();
+      const workspace = await page.locator(".workspace").boundingBox();
+      expect(sidebar!.x).toBeGreaterThan(workspace!.x);
       await accessibility(page);
     }
     expect(apiRequests).toEqual([]);
@@ -119,6 +122,43 @@ for (const [app, port] of [
       "Nothing was submitted or saved",
     );
     await expect(input).toHaveAccessibleName("Example display label");
+    await input.focus();
+    await page.keyboard.press("Tab");
+    const focus = await page
+      .getByRole("button", { name: "Test local feedback" })
+      .evaluate((element) => ({
+        style: getComputedStyle(element).outlineStyle,
+        width: getComputedStyle(element).outlineWidth,
+      }));
+    expect(focus).toEqual({ style: "solid", width: "3px" });
+    await input.fill('<img src=x onerror="window.__injected=true">');
+    await page.getByRole("button", { name: "Test local feedback" }).click();
+    await expect(page.locator("main img")).toHaveCount(0);
+    expect(await page.evaluate(() => Object.hasOwn(window, "__injected"))).toBe(
+      false,
+    );
+  });
+  test(`${app}: all foundation pages reflow at 320px in both directions`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 320, height: 800 });
+    for (const path of [
+      "/",
+      "/foundation/accessibility",
+      "/foundation/states",
+    ]) {
+      await page.goto(url + path);
+      for (const locale of ["en", "ur"]) {
+        await page.getByRole("combobox").selectOption(locale);
+        await page.evaluate(() => document.fonts.ready);
+        expect(
+          await page.evaluate(
+            () => document.documentElement.scrollWidth <= window.innerWidth,
+          ),
+        ).toBe(true);
+        await accessibility(page);
+      }
+    }
   });
   test(`${app}: unavailable auth/business routes have only safe not-found content`, async ({
     page,

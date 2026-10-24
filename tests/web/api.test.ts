@@ -527,3 +527,60 @@ describe("additional race and authority boundaries", () => {
     expect(transport).toHaveBeenCalledTimes(1);
   });
 });
+
+describe("integration review regressions", () => {
+  it("purges local state even when logout is blocked by missing CSRF", async () => {
+    const { api, state, transport } = setup();
+    state.switchScope(scope());
+    const ticket = state.begin();
+    state.set("private", { marker: "synthetic" }, ticket);
+    ticket.finish();
+    await expect(
+      api.request("logout", () => undefined, {}),
+    ).rejects.toMatchObject({ kind: "csrf" });
+    expect(state.currentScope).toBeNull();
+    expect(state.get("private")).toBeUndefined();
+    expect(transport).not.toHaveBeenCalled();
+  });
+  it("purges local state even when logout networking is disabled", async () => {
+    const runtime = createFoundationRuntime("ngo");
+    runtime.state.switchScope(scope());
+    const ticket = runtime.state.begin();
+    runtime.state.set("private", { marker: "synthetic" }, ticket);
+    ticket.finish();
+    await expect(
+      runtime.api.request("logout", () => undefined, {}),
+    ).rejects.toMatchObject({ kind: "disabled" });
+    expect(runtime.state.currentScope).toBeNull();
+    expect(runtime.state.get("private")).toBeUndefined();
+  });
+  it.each(["stepUp", "clearHold"] as const)(
+    "discards CSRF/cache after successful %s even if decoding fails",
+    async (operation) => {
+      const { api, state, transport } = setup();
+      state.switchScope(scope());
+      const ticket = state.begin();
+      state.set("private", { marker: "synthetic" }, ticket);
+      ticket.finish();
+      transport.mockResolvedValueOnce(json({ csrf_token: token }));
+      await api.bootstrapCsrf();
+      transport.mockResolvedValueOnce(json({ malformed: true }));
+      await expect(
+        api.request(operation, parseMe, {
+          intent_id: sessionId,
+          password: "synthetic-only",
+          totp_code: "000000",
+        }),
+      ).rejects.toMatchObject({ kind: "contract" });
+      expect(state.currentScope?.sessionId).toBe(sessionId);
+      expect(state.get("private")).toBeUndefined();
+      await expect(
+        api.request(operation, (v) => v, {
+          intent_id: sessionId,
+          password: "synthetic-only",
+          totp_code: "000000",
+        }),
+      ).rejects.toMatchObject({ kind: "csrf" });
+    },
+  );
+});

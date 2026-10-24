@@ -277,13 +277,17 @@ export class ApiClient {
     body?: Bodies[O],
     signal?: AbortSignal,
   ): Promise<T> {
+    // Logout must purge local data even when a request cannot be issued.
+    // Retain only the pre-purge CSRF value long enough to send an eligible logout.
+    const csrf = this.csrf;
+    if (operation === "logout") this.state.invalidate("logout");
     if (this.config.mode === "disabled")
       throw new ApiError("disabled", 0, "W1_NETWORK_DISABLED");
     if (!Object.hasOwn(operations, operation))
       throw new ApiError("contract", 0, "UNKNOWN_OPERATION");
     const endpoint = operations[operation];
     const unsafe = endpoint.method !== "GET";
-    if (unsafe && !this.csrf) throw new ApiError("csrf", 0, "CSRF_REQUIRED");
+    if (unsafe && !csrf) throw new ApiError("csrf", 0, "CSRF_REQUIRED");
     if (unsafe && this.unsafePending)
       throw new ApiError("conflict", 0, "SECURITY_COMMAND_PENDING");
     if (!unsafe && body !== undefined)
@@ -291,16 +295,10 @@ export class ApiClient {
     const headers: Record<string, string> = { Accept: "application/json" };
     if (unsafe) {
       headers["Content-Type"] = "application/json";
-      headers["X-CSRFToken"] = this.csrf!;
+      headers["X-CSRFToken"] = csrf!;
       this.unsafePending = true;
     }
-    const ticket = this.state.begin();
-    // Clear local state on logout initiation; do not claim server revocation on failure.
-    if (operation === "logout") {
-      this.state.invalidate("logout");
-      ticket.finish();
-    }
-    const active = operation === "logout" ? this.state.begin() : ticket;
+    const active = this.state.begin();
     try {
       const combinedSignal = signal
         ? AbortSignal.any([active.signal, signal])
@@ -347,10 +345,14 @@ export class ApiClient {
         result = decode(payload);
       } catch {
         throw new ApiError("contract", response.status, "INVALID_RESPONSE");
+      } finally {
+        // The backend already reported success. Rotation is not conditional on
+        // a well-formed payload or a successful decoder. Never invalidate a
+        // different/newer identity if the decoder itself changes scope.
+        active.assertCurrent();
+        if (operation === "stepUp" || operation === "clearHold")
+          this.state.invalidate("security-rotation", true);
       }
-      active.assertCurrent();
-      if (operation === "stepUp" || operation === "clearHold")
-        this.state.invalidate("security-rotation", true);
       return result;
     } catch (error) {
       if (error instanceof ApiError || error instanceof StaleResponseError)
