@@ -132,15 +132,22 @@ def endpoint(operation):
                     return reply(FlowProblem("VALIDATION_ERROR"))
                 if len(data["password"]) > 128:
                     return reply(FlowProblem("INVALID_CREDENTIALS", 401))
+                result = sessions.login(
+                    request,
+                    data["email"],
+                    data["password"],
+                    label,
+                    "web" if operation == "web_login" else "mobile",
+                    portal_name,
+                )
                 return reply(
-                    sessions.login(
-                        request,
-                        data["email"],
-                        data["password"],
-                        label,
-                        "web" if operation == "web_login" else "mobile",
-                        portal_name,
-                    )
+                    result,
+                    (
+                        202
+                        if isinstance(result, dict)
+                        and result.get("status") == "mfa_required"
+                        else 200
+                    ),
                 )
             if operation == "refresh":
                 data = body(request, {"refresh_token"})
@@ -205,10 +212,48 @@ def endpoint(operation):
                             ).exists()
                         ):
                             return reply(FlowProblem("NOT_FOUND", 404))
-                    body(request, {"assurance_proof"})
-                    # No authenticated password shortcut, cached MFA, generic
-                    # proof or future placeholder can bypass operation assurance.
-                    return reply(FlowProblem("STEP_UP_REQUIRED", 403))
+                    data = body(request, {"assurance_proof"})
+                    if not settings.PWC_AUTH_MFA_ENABLED:
+                        return reply(FlowProblem("STEP_UP_REQUIRED", 403))
+                    from . import mfa
+
+                    mfa.configured()
+                    command = (
+                        {"session_id": str(target)} if operation == "revoke" else {}
+                    )
+                    deadline = sessions.authorization_deadline(session, snapshot)
+                    if deadline is None:
+                        return reply(sessions.invalid())
+                    with transaction.atomic():
+                        denial = mfa.consume(
+                            user,
+                            session,
+                            (
+                                "sessions.revoke"
+                                if operation == "revoke"
+                                else "sessions.logout_all"
+                            ),
+                            command,
+                            data["assurance_proof"],
+                        )
+                        if denial:
+                            return reply(denial)
+                        if operation == "all":
+                            sessions.revoke_all_locked(user, "logout_all")
+                        else:
+                            AuthSession.objects.filter(pk=target, user=user).update(
+                                revoked_at=timezone.now(),
+                                revocation_reason="device_revoke",
+                            )
+                            event("auth.session_revoked", user=user, session=session)
+                        if timezone.now() >= deadline:
+                            transaction.set_rollback(True)
+                            return reply(sessions.invalid())
+                    if session.transport == "web" and (
+                        operation == "all" or target == session.pk
+                    ):
+                        django_logout(request)
+                    return reply(None, 204)
                 if request.body and body(request, set()) != {}:
                     return reply(FlowProblem("VALIDATION_ERROR"))
                 if not sessions.authenticate_locked(request, snapshot):

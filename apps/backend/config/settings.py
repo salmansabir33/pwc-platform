@@ -112,3 +112,9 @@ SESSION_COOKIE_PATH = "/"
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = "Lax"
 AUTHENTICATION_BACKENDS = ["accounts.backends.VerifiedEmailBackend"]
+
+# Separate default-off synthetic MFA switch and external factor encryption ring.
+PWC_AUTH_MFA_ENABLED = os.getenv("PWC_AUTH_MFA_ENABLED", "0") == "1"
+PWC_AUTH_MFA_ACTIVE_KEY = os.getenv("PWC_AUTH_MFA_ACTIVE_KEY", "")
+PWC_AUTH_MFA_KEYS = json.loads(os.getenv("PWC_AUTH_MFA_KEYS", "{}"))
+PWC_AUTH_MFA_PROOF_KEY = os.getenv("PWC_AUTH_MFA_PROOF_KEY", "")

@@ -230,6 +230,9 @@ class AuthChallenge(SecurityRecord):
         default="pending",
         choices=[(v, v) for v in ["pending", "sent", "failed", "expired", "cancelled"]],
     )
+    client_digest = digest(null=True, blank=True)
+    factor_revision = models.PositiveBigIntegerField(null=True, blank=True)
+    device_label = models.CharField(max_length=100, blank=True)
     owner_links = ("target_contact",)
 
     class Meta:

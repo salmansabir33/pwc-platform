@@ -150,6 +150,40 @@ def idle_deadline(session):
     )
 
 
+def factor_matches(user, session):
+    factor = MfaFactor.objects.filter(user=user, state="active").first()
+    if not factor:
+        return session.mfa_method == ""
+    return bool(
+        settings.PWC_AUTH_MFA_ENABLED
+        and factor.enrollment_session.user_id == user.pk
+        and session.mfa_method in ("totp", "recovery_code")
+        and session.factor_revision == factor.revision
+        and session.last_mfa_at
+    )
+
+
+def authorization_deadline(session, snapshot):
+    """Original authentication cutoff; caller already holds authority locks.
+
+    Capture before sensitive transitions renew idle or deliberately revoke the
+    caller. Mutations must rollback if this cutoff passes before final commit.
+    """
+    deadline = idle_deadline(session)
+    if snapshot[1] is not None:
+        expires = (
+            MobileCredential.objects.filter(
+                pk=snapshot[1], session=session, kind="access"
+            )
+            .values_list("expires_at", flat=True)
+            .first()
+        )
+        if expires is None:
+            return None
+        deadline = min(deadline, expires)
+    return deadline
+
+
 def live(user, contact, session, now):
     return bool(
         user.is_active
@@ -165,7 +199,7 @@ def live(user, contact, session, now):
         and session.portal in DURATIONS
         and session.created_at <= now
         and now < idle_deadline(session)
-        and not MfaFactor.objects.filter(user=user, state="active").exists()
+        and factor_matches(user, session)
     )
 
 
@@ -187,7 +221,12 @@ def envelope(user, session):
             "id": str(session.pk),
             "absolute_expires_at": session.absolute_expires_at.isoformat(),
             "idle_expires_at": idle_deadline(session).isoformat(),
-            "assurance": {"method": "password", "last_mfa_at": None},
+            "assurance": {
+                "method": session.mfa_method or "password",
+                "last_mfa_at": (
+                    session.last_mfa_at.isoformat() if session.last_mfa_at else None
+                ),
+            },
         },
         "recovery_hold_state": user.recovery_hold_state,
     }
@@ -290,60 +329,80 @@ def login(request, email, password, device_label, transport, portal_name):
         ):
             return FlowProblem("INVALID_CREDENTIALS", 401)
         if factor:
-            return FlowProblem("MFA_REQUIRED", 403)
-        now = timezone.now()
-        duration = DURATIONS[portal_name][1]
-        if transport == "web":
-            # Django rotates key and CSRF, preserving neither an attacker-chosen
-            # session key nor an unrelated authenticated principal.
-            previous_key = request.session.session_key
-            if previous_key:
-                previous = (
-                    AuthSession.objects.select_for_update()
-                    .filter(
-                        user=user,
-                        transport="web",
-                        web_key_digest=web_digest(previous_key),
-                        revoked_at__isnull=True,
-                    )
-                    .first()
+            if not settings.PWC_AUTH_MFA_ENABLED:
+                return FlowProblem("MFA_REQUIRED", 403)
+            from .mfa import begin_login
+
+            return begin_login(
+                request, user, factor, device_label, transport, portal_name, contact
+            )
+        return issue_locked(request, user, device_label, transport, portal_name)
+
+
+@sensitive_variables()
+def issue_locked(
+    request, user, device_label, transport, portal_name, factor=None, method=""
+):
+    """Issuance only after caller's locked password/MFA validation."""
+    now = timezone.now()
+    duration = DURATIONS[portal_name][1]
+    if transport == "web":
+        # Django rotates key and CSRF, preserving neither an attacker-chosen
+        # session key nor an unrelated authenticated principal.
+        previous_key = request.session.session_key
+        if previous_key:
+            previous = (
+                AuthSession.objects.select_for_update()
+                .filter(
+                    user=user,
+                    transport="web",
+                    web_key_digest=web_digest(previous_key),
+                    revoked_at__isnull=True,
                 )
-                if previous:
-                    previous.revoked_at, previous.revocation_reason = (
-                        now,
-                        "reauthentication",
-                    )
-                    previous.save(update_fields=["revoked_at", "revocation_reason"])
-            django_login(request, user, backend=BACKEND)
-            request.session.cycle_key()  # rotate even same-user reauthentication
-            request.session.set_expiry(now + duration)
-            request.session.save()
-            key_digest = web_digest(request.session.session_key)
-        else:
-            key_digest = None
-        session = AuthSession.objects.create(
-            user=user,
-            transport=transport,
-            portal=portal_name,
-            auth_epoch=user.auth_epoch,
-            web_key_digest=key_digest,
-            device_label=device_label,
-            created_at=now,
-            last_interactive_at=now,
-            absolute_expires_at=now + duration,
-        )
-        if transport == "web":
-            request.session["pwc_session_id"] = str(session.pk)
-            request.session.save()
-        result = envelope(user, session)
-        if transport == "mobile":
-            result.update(issue_pair(user, session, now))
-        event(
-            "auth.login_completed",
-            user=user,
-            session=session,
-            auth_epoch=user.auth_epoch,
-        )
+                .first()
+            )
+            if previous:
+                previous.revoked_at, previous.revocation_reason = (
+                    now,
+                    "reauthentication",
+                )
+                previous.save(update_fields=["revoked_at", "revocation_reason"])
+        django_login(request, user, backend=BACKEND)
+        request.session.cycle_key()  # rotate even same-user reauthentication
+        request.session.set_expiry(now + duration)
+        request.session.save()
+        key_digest = web_digest(request.session.session_key)
+    else:
+        key_digest = None
+    session = AuthSession.objects.create(
+        user=user,
+        transport=transport,
+        portal=portal_name,
+        auth_epoch=user.auth_epoch,
+        web_key_digest=key_digest,
+        device_label=device_label,
+        created_at=now,
+        last_interactive_at=now,
+        absolute_expires_at=now + duration,
+    )
+    if transport == "web":
+        request.session["pwc_session_id"] = str(session.pk)
+        request.session.save()
+    result = envelope(user, session)
+    if transport == "mobile":
+        result.update(issue_pair(user, session, now))
+    event(
+        "auth.login_completed",
+        user=user,
+        session=session,
+        auth_epoch=user.auth_epoch,
+    )
+    if factor:
+        session.last_mfa_at = now
+        session.mfa_method = method
+        session.factor_revision = factor.revision
+        session.save(update_fields=["last_mfa_at", "mfa_method", "factor_revision"])
+        result.update(envelope(user, session))
     return result
 
 
