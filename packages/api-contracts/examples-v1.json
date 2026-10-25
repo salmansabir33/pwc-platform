@@ -1,0 +1,750 @@
+{
+  "cases": [
+    {
+      "body": {
+        "csrf_token": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "kind": "response",
+      "operationId": "csrf",
+      "status": 200
+    },
+    {
+      "body": {
+        "email": "person@example.invalid"
+      },
+      "kind": "request",
+      "operationId": "registrationRequest"
+    },
+    {
+      "body": {
+        "expires_in": 300,
+        "flow_control": "<synthetic-only-not-a-credential>",
+        "flow_id": "00000000-0000-4000-8000-000000000001",
+        "status": "accepted"
+      },
+      "kind": "response",
+      "operationId": "registrationRequest",
+      "status": 202
+    },
+    {
+      "body": {
+        "flow_id": "00000000-0000-4000-8000-000000000001",
+        "password": "<synthetic-only-not-a-credential>",
+        "proof": "<synthetic-only-not-a-credential>"
+      },
+      "kind": "request",
+      "operationId": "registrationConfirm"
+    },
+    {
+      "body": {
+        "status": "verified"
+      },
+      "kind": "response",
+      "operationId": "registrationConfirm",
+      "status": 201
+    },
+    {
+      "body": {
+        "flow_control": "<synthetic-only-not-a-credential>",
+        "flow_id": "00000000-0000-4000-8000-000000000001"
+      },
+      "kind": "request",
+      "operationId": "registrationResend"
+    },
+    {
+      "body": {
+        "status": "accepted"
+      },
+      "kind": "response",
+      "operationId": "registrationResend",
+      "status": 202
+    },
+    {
+      "body": {
+        "email": "person@example.invalid"
+      },
+      "kind": "request",
+      "operationId": "resetRequest"
+    },
+    {
+      "body": {
+        "expires_in": 300,
+        "flow_control": "<synthetic-only-not-a-credential>",
+        "flow_id": "00000000-0000-4000-8000-000000000001",
+        "status": "accepted"
+      },
+      "kind": "response",
+      "operationId": "resetRequest",
+      "status": 202
+    },
+    {
+      "body": {
+        "flow_id": "00000000-0000-4000-8000-000000000001",
+        "new_password": "<synthetic-only-not-a-credential>",
+        "proof": "<synthetic-only-not-a-credential>"
+      },
+      "kind": "request",
+      "operationId": "resetConfirm"
+    },
+    {
+      "body": {
+        "flow_control": "<synthetic-only-not-a-credential>",
+        "flow_id": "00000000-0000-4000-8000-000000000001"
+      },
+      "kind": "request",
+      "operationId": "resetResend"
+    },
+    {
+      "body": {
+        "status": "accepted"
+      },
+      "kind": "response",
+      "operationId": "resetResend",
+      "status": 202
+    },
+    {
+      "body": {
+        "email": "person@example.invalid",
+        "password": "<synthetic-only-not-a-credential>"
+      },
+      "kind": "request",
+      "operationId": "webLogin"
+    },
+    {
+      "body": {
+        "recovery_hold_state": "clear",
+        "session": {
+          "absolute_expires_at": "2026-10-24T00:00:00Z",
+          "assurance": {
+            "last_mfa_at": "2026-10-24T00:00:00Z",
+            "method": "Synthetic example"
+          },
+          "id": "00000000-0000-4000-8000-000000000001",
+          "idle_expires_at": "2026-10-24T00:00:00Z"
+        },
+        "user": {
+          "id": "00000000-0000-4000-8000-000000000001",
+          "preferred_language": "Synthetic example"
+        }
+      },
+      "kind": "response",
+      "operationId": "webLogin",
+      "status": 200
+    },
+    {
+      "body": {
+        "challenge_id": "00000000-0000-4000-8000-000000000001",
+        "expires_in": 300,
+        "preauth_control": "<synthetic-only-not-a-credential>",
+        "status": "mfa_required"
+      },
+      "kind": "response",
+      "operationId": "webLogin",
+      "status": 202
+    },
+    {
+      "body": {
+        "email": "person@example.invalid",
+        "password": "<synthetic-only-not-a-credential>"
+      },
+      "kind": "request",
+      "operationId": "mobileLogin"
+    },
+    {
+      "body": {
+        "access_token": "<synthetic-only-not-a-credential>",
+        "expires_in": 300,
+        "recovery_hold_state": "clear",
+        "refresh_expires_at": "2026-10-24T00:00:00Z",
+        "refresh_token": "<synthetic-only-not-a-credential>",
+        "session": {
+          "absolute_expires_at": "2026-10-24T00:00:00Z",
+          "assurance": {
+            "last_mfa_at": "2026-10-24T00:00:00Z",
+            "method": "Synthetic example"
+          },
+          "id": "00000000-0000-4000-8000-000000000001",
+          "idle_expires_at": "2026-10-24T00:00:00Z"
+        },
+        "token_type": "Bearer",
+        "user": {
+          "id": "00000000-0000-4000-8000-000000000001",
+          "preferred_language": "Synthetic example"
+        }
+      },
+      "kind": "response",
+      "operationId": "mobileLogin",
+      "status": 200
+    },
+    {
+      "body": {
+        "challenge_id": "00000000-0000-4000-8000-000000000001",
+        "expires_in": 300,
+        "preauth_control": "<synthetic-only-not-a-credential>",
+        "status": "mfa_required"
+      },
+      "kind": "response",
+      "operationId": "mobileLogin",
+      "status": 202
+    },
+    {
+      "body": {
+        "refresh_token": "<synthetic-only-not-a-credential>"
+      },
+      "kind": "request",
+      "operationId": "mobileRefresh"
+    },
+    {
+      "body": {
+        "access_token": "<synthetic-only-not-a-credential>",
+        "expires_in": 300,
+        "recovery_hold_state": "clear",
+        "refresh_expires_at": "2026-10-24T00:00:00Z",
+        "refresh_token": "<synthetic-only-not-a-credential>",
+        "session": {
+          "absolute_expires_at": "2026-10-24T00:00:00Z",
+          "assurance": {
+            "last_mfa_at": "2026-10-24T00:00:00Z",
+            "method": "Synthetic example"
+          },
+          "id": "00000000-0000-4000-8000-000000000001",
+          "idle_expires_at": "2026-10-24T00:00:00Z"
+        },
+        "token_type": "Bearer",
+        "user": {
+          "id": "00000000-0000-4000-8000-000000000001",
+          "preferred_language": "Synthetic example"
+        }
+      },
+      "kind": "response",
+      "operationId": "mobileRefresh",
+      "status": 200
+    },
+    {
+      "body": {
+        "email_verified": false,
+        "recovery_hold_state": "clear",
+        "session": {
+          "absolute_expires_at": "2026-10-24T00:00:00Z",
+          "assurance": {
+            "last_mfa_at": "2026-10-24T00:00:00Z",
+            "method": "Synthetic example"
+          },
+          "id": "00000000-0000-4000-8000-000000000001",
+          "idle_expires_at": "2026-10-24T00:00:00Z"
+        },
+        "user": {
+          "id": "00000000-0000-4000-8000-000000000001",
+          "preferred_language": "Synthetic example"
+        }
+      },
+      "kind": "response",
+      "operationId": "me",
+      "status": 200
+    },
+    {
+      "body": {},
+      "kind": "request",
+      "operationId": "logout"
+    },
+    {
+      "body": {
+        "assurance_proof": "<synthetic-only-not-a-credential>"
+      },
+      "kind": "request",
+      "operationId": "logoutAll"
+    },
+    {
+      "body": {
+        "assurance_proof": "<synthetic-only-not-a-credential>"
+      },
+      "kind": "request",
+      "operationId": "revokeSession"
+    },
+    {
+      "body": {
+        "results": []
+      },
+      "kind": "response",
+      "operationId": "sessions",
+      "status": 200
+    },
+    {
+      "body": {
+        "challenge_id": "00000000-0000-4000-8000-000000000001",
+        "code": "<synthetic-only-not-a-credential>",
+        "method": "totp",
+        "preauth_control": "<synthetic-only-not-a-credential>"
+      },
+      "kind": "request",
+      "operationId": "webMfaConfirm"
+    },
+    {
+      "body": {
+        "recovery_hold_state": "clear",
+        "session": {
+          "absolute_expires_at": "2026-10-24T00:00:00Z",
+          "assurance": {
+            "last_mfa_at": "2026-10-24T00:00:00Z",
+            "method": "Synthetic example"
+          },
+          "id": "00000000-0000-4000-8000-000000000001",
+          "idle_expires_at": "2026-10-24T00:00:00Z"
+        },
+        "user": {
+          "id": "00000000-0000-4000-8000-000000000001",
+          "preferred_language": "Synthetic example"
+        }
+      },
+      "kind": "response",
+      "operationId": "webMfaConfirm",
+      "status": 200
+    },
+    {
+      "body": {
+        "challenge_id": "00000000-0000-4000-8000-000000000001",
+        "code": "<synthetic-only-not-a-credential>",
+        "method": "totp",
+        "preauth_control": "<synthetic-only-not-a-credential>"
+      },
+      "kind": "request",
+      "operationId": "mobileMfaConfirm"
+    },
+    {
+      "body": {
+        "access_token": "<synthetic-only-not-a-credential>",
+        "expires_in": 300,
+        "recovery_hold_state": "clear",
+        "refresh_expires_at": "2026-10-24T00:00:00Z",
+        "refresh_token": "<synthetic-only-not-a-credential>",
+        "session": {
+          "absolute_expires_at": "2026-10-24T00:00:00Z",
+          "assurance": {
+            "last_mfa_at": "2026-10-24T00:00:00Z",
+            "method": "Synthetic example"
+          },
+          "id": "00000000-0000-4000-8000-000000000001",
+          "idle_expires_at": "2026-10-24T00:00:00Z"
+        },
+        "token_type": "Bearer",
+        "user": {
+          "id": "00000000-0000-4000-8000-000000000001",
+          "preferred_language": "Synthetic example"
+        }
+      },
+      "kind": "response",
+      "operationId": "mobileMfaConfirm",
+      "status": 200
+    },
+    {
+      "body": {
+        "enabled": false,
+        "pending": false,
+        "recovery_hold_state": "clear"
+      },
+      "kind": "response",
+      "operationId": "mfaStatus",
+      "status": 200
+    },
+    {
+      "body": {
+        "assurance_proof": "<synthetic-only-not-a-credential>"
+      },
+      "kind": "request",
+      "operationId": "enrollMfa"
+    },
+    {
+      "body": {
+        "enrollment_id": "00000000-0000-4000-8000-000000000001",
+        "expires_at": "2026-10-24T00:00:00Z",
+        "otpauth_uri": "<synthetic-only-not-a-credential>",
+        "secret": "<synthetic-only-not-a-credential>"
+      },
+      "kind": "response",
+      "operationId": "enrollMfa",
+      "status": 201
+    },
+    {
+      "body": {
+        "code": "Synthetic example",
+        "enrollment_id": "00000000-0000-4000-8000-000000000001"
+      },
+      "kind": "request",
+      "operationId": "confirmMfa"
+    },
+    {
+      "body": {
+        "recovery_codes": [],
+        "status": "active"
+      },
+      "kind": "response",
+      "operationId": "confirmMfa",
+      "status": 200
+    },
+    {
+      "body": {
+        "assurance_proof": "<synthetic-only-not-a-credential>"
+      },
+      "kind": "request",
+      "operationId": "removeMfa"
+    },
+    {
+      "body": {
+        "assurance_proof": "<synthetic-only-not-a-credential>"
+      },
+      "kind": "request",
+      "operationId": "rotateRecovery"
+    },
+    {
+      "body": {
+        "recovery_codes": []
+      },
+      "kind": "response",
+      "operationId": "rotateRecovery",
+      "status": 200
+    },
+    {
+      "body": {
+        "command": {},
+        "context": {
+          "id": "00000000-0000-4000-8000-000000000001",
+          "kind": "personal"
+        },
+        "operation": "mfa.enroll"
+      },
+      "kind": "request",
+      "operationId": "createIntent"
+    },
+    {
+      "body": {
+        "expires_at": "2026-10-24T00:00:00Z",
+        "intent_id": "00000000-0000-4000-8000-000000000001",
+        "required_methods": []
+      },
+      "kind": "response",
+      "operationId": "createIntent",
+      "status": 201
+    },
+    {
+      "body": {
+        "intent_id": "00000000-0000-4000-8000-000000000001",
+        "password": "<synthetic-only-not-a-credential>"
+      },
+      "kind": "request",
+      "operationId": "stepUp"
+    },
+    {
+      "body": {
+        "assurance_proof": "<synthetic-only-not-a-credential>",
+        "expires_at": "2026-10-24T00:00:00Z"
+      },
+      "kind": "response",
+      "operationId": "stepUp",
+      "status": 200
+    },
+    {
+      "body": {
+        "intent_id": "00000000-0000-4000-8000-000000000001",
+        "password": "<synthetic-only-not-a-credential>",
+        "totp_code": "Synthetic example"
+      },
+      "kind": "request",
+      "operationId": "clearHold"
+    },
+    {
+      "body": {
+        "next_cursor": "Synthetic example",
+        "results": []
+      },
+      "kind": "response",
+      "operationId": "discoverSyntheticContexts",
+      "status": 200
+    },
+    {
+      "body": {
+        "actions": [],
+        "context": {
+          "kind": "ngo",
+          "organization_id": "00000000-0000-4000-8000-000000000001"
+        },
+        "context_revision": 300,
+        "earliest_grant_expires_at": "2026-10-24T00:00:00Z",
+        "registry_version": "ngo_kernel_v1"
+      },
+      "kind": "response",
+      "operationId": "syntheticCapabilities",
+      "status": 200
+    },
+    {
+      "body": {
+        "context_revision": 300,
+        "label": "Synthetic example",
+        "organization_id": "00000000-0000-4000-8000-000000000001",
+        "probe_code": "Synthetic example"
+      },
+      "kind": "response",
+      "operationId": "syntheticPrivateProbe",
+      "status": 200
+    },
+    {
+      "body": {
+        "context_revision": 300,
+        "label": "Synthetic example",
+        "organization_id": "00000000-0000-4000-8000-000000000001",
+        "probe_code": "Synthetic example"
+      },
+      "kind": "response",
+      "operationId": "syntheticKernelSettings",
+      "status": 200
+    },
+    {
+      "body": {
+        "service": "pwc-api",
+        "status": "ok"
+      },
+      "kind": "response",
+      "operationId": "health",
+      "status": 200
+    },
+    {
+      "body": {
+        "service": "pwc-api",
+        "status": "ok"
+      },
+      "kind": "response",
+      "operationId": "healthPost",
+      "status": 200
+    },
+    {
+      "body": {
+        "service": "pwc-api",
+        "status": "ok"
+      },
+      "kind": "response",
+      "operationId": "healthPut",
+      "status": 200
+    },
+    {
+      "body": {
+        "service": "pwc-api",
+        "status": "ok"
+      },
+      "kind": "response",
+      "operationId": "healthPatch",
+      "status": 200
+    },
+    {
+      "body": {
+        "service": "pwc-api",
+        "status": "ok"
+      },
+      "kind": "response",
+      "operationId": "healthDelete",
+      "status": 200
+    },
+    {
+      "body": {
+        "service": "pwc-api",
+        "status": "ok"
+      },
+      "kind": "response",
+      "operationId": "healthOptions",
+      "status": 200
+    },
+    {
+      "body": {
+        "service": "pwc-api",
+        "status": "ok"
+      },
+      "kind": "response",
+      "operationId": "healthTrace",
+      "status": 200
+    },
+    {
+      "body": [],
+      "kind": "response",
+      "operationId": "publicOrganizations",
+      "status": 200
+    },
+    {
+      "body": {},
+      "kind": "response",
+      "operationId": "publicOrganizationsOptions",
+      "status": 200
+    },
+    {
+      "body": {
+        "city": "Synthetic example",
+        "classification": "registered",
+        "id": "00000000-0000-4000-8000-000000000001",
+        "name": "Synthetic example"
+      },
+      "kind": "response",
+      "operationId": "publicOrganization",
+      "status": 200
+    },
+    {
+      "body": {},
+      "kind": "response",
+      "operationId": "publicOrganizationOptions",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": {
+          "code": "AUTH_UNAVAILABLE",
+          "field_errors": {},
+          "message": "Synthetic safe error message",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "registrationRequest",
+      "status": 503
+    },
+    {
+      "body": {
+        "error": {
+          "code": "INVALID_CREDENTIALS",
+          "field_errors": {},
+          "message": "Synthetic safe error message",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "webLogin",
+      "status": 401
+    },
+    {
+      "body": {
+        "error": {
+          "code": "RATE_LIMITED",
+          "field_errors": {},
+          "message": "Synthetic safe error message",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "webLogin",
+      "status": 429
+    },
+    {
+      "body": {
+        "error": {
+          "code": "AMBIGUOUS_CREDENTIALS",
+          "field_errors": {},
+          "message": "Synthetic safe error message",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "me",
+      "status": 400
+    },
+    {
+      "body": {
+        "error": {
+          "code": "STEP_UP_REQUIRED",
+          "field_errors": {},
+          "message": "Synthetic safe error message",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "stepUp",
+      "status": 403
+    },
+    {
+      "body": {
+        "error": {
+          "code": "STATE_CONFLICT",
+          "field_errors": {},
+          "message": "Synthetic safe error message",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "clearHold",
+      "status": 409
+    },
+    {
+      "body": {
+        "error": {
+          "code": "invalid_context",
+          "correlation_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "discoverSyntheticContexts",
+      "status": 400
+    },
+    {
+      "body": {
+        "error": {
+          "code": "authentication_required",
+          "correlation_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "discoverSyntheticContexts",
+      "status": 401
+    },
+    {
+      "body": {
+        "error": {
+          "code": "permission_denied",
+          "correlation_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "discoverSyntheticContexts",
+      "status": 403
+    },
+    {
+      "body": {
+        "error": {
+          "code": "not_found",
+          "correlation_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "discoverSyntheticContexts",
+      "status": 404
+    },
+    {
+      "body": {
+        "error": {
+          "code": "method_not_allowed",
+          "correlation_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "discoverSyntheticContexts",
+      "status": 405
+    },
+    {
+      "body": {
+        "error": {
+          "code": "state_conflict",
+          "correlation_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "discoverSyntheticContexts",
+      "status": 409
+    },
+    {
+      "body": {
+        "error": {
+          "code": "authorization_unavailable",
+          "correlation_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "discoverSyntheticContexts",
+      "status": 503
+    }
+  ],
+  "contract_version": "1.0.0",
+  "scope": "Synthetic structural examples only; values are inert placeholders, not production credentials, permissions or backend-test evidence."
+}
