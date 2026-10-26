@@ -10,6 +10,8 @@
 below. Institutional, operational, finance, signatory, governance, sharing and support
 policies are not approved by this status. No implementation is performed or started here.
 
+**Product-policy addendum — 27 October 2026:** The product owner's explicit consolidated owner-approval instruction adopts concrete NGO authority product direction and conditionally endorses cross-owner recommendations as individually recorded for E01–E18 and GM01–GM12 in [the consolidated matrix](../reviews/PWC-02E-VERIFICATION-AUTHORITY-DECISION-REGISTER.md#8-consolidated-product-owner-approval--27-october-2026) and [ADR-0004](ADR-0004-ngo-verification-and-representative-authority.md). This supplements, **does not expand**, the original 24 October core/synthetic implementation approval above. It does not approve command atoms/bundles, nonpersonal proofs, schema/writer/lock contracts, independent security/NGO-governance/legal/privacy/operations gates or real activation. D03/D05/D08–D10/D12–D14 retain their applicable non-product blockers; D04/D06/D07 finance/signatory/governance powers remain separately gated. Original D decision IDs, technical invariants and historical register are preserved. No legacy/synthetic promotion or runtime change follows.
+
 **Date:** 2026-10-24
 
 **Ticket:** PWC-02C; P1 architecture and contract decisions
@@ -971,6 +973,8 @@ strategy and commands/results in implementation evidence. Audit performance/load
 production privilege provisioning remain explicit review gates.
 
 ## 12. Decision register, documented gates and handoff
+
+The table below retains its **24 October 2026** disposition/provenance. For the owner product-policy portion accepted on **27 October 2026**, see the scoped addendum above and the thirty-decision matrix; no technical/independent approval is inferred and the core ADR status is unchanged.
 
 Status vocabulary: **Approved for initial kernel** means the bounded synthetic .1
 contract is resolved; **Approved in principle / narrower contract required** approves

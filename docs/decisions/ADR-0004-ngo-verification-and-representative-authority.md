@@ -1,6 +1,6 @@
 # ADR-0004 — NGO verification and representative authority
 
-**Status: PROPOSED — PRODUCT/SECURITY APPROVAL REQUIRED**
+**Status: PRODUCT-POLICY DIRECTION APPROVED — SECURITY / NGO-GOVERNANCE / LEGAL / PRIVACY / OPERATIONS AND IMPLEMENTATION GATES REMAIN**
 
 Date: 26 October 2026. Package: **PWC-02E**, design and policy only.
 
@@ -8,7 +8,9 @@ Base inspected: `origin/main` at `beffabf697af7e1d443e68a2afa3eb16aaef41d9`, inc
 
 Decision owners: product owner, NGO-policy representatives, security/authentication and database reviewers; privacy/legal/operations reviewers for their respective gates. These are required reviewer functions, not recorded approvals.
 
-**Merging this proposed architecture does not authorize real NGO authority activation, approve legal policy, or authorize PWC-03B.3/PWC-04 implementation. No production code, migrations, grant bundles, assurance operations or canonical OpenAPI contracts change.**
+**Product approval date: 27 October 2026 (Asia/Karachi). Approval authority: PWC product owner, explicit “Consolidated Owner Approval of NGO Authority Policies” instruction in this conversation.** The [consolidated thirty-decision matrix](../reviews/PWC-02E-VERIFICATION-AUTHORITY-DECISION-REGISTER.md#8-consolidated-product-owner-approval--27-october-2026) records 14 concrete product selections and 16 conditional endorsements, their scope and all remaining gates. No named independent reviewer sign-off is inferred. Original 26 October design/base/branch provenance above is retained; approval-recording baseline is latest main `b6eac75426571109f76b78884d3aaa39e2272179`, including merged PR #9.
+
+**This is partial, scoped approval, not blanket adoption of all technical proposals, legal policy or actual NGO powers. Merging this record does not authorize real NGO activation or PWC-03B.3/PWC-04 implementation. No production code, migrations, grant bundles, assurance operations or canonical OpenAPI contracts change.**
 
 ## 1. Context, precedence and executable reality
 
@@ -21,7 +23,7 @@ Approved decisions remain controlling within their recorded scope:
 - [ADR-0001 authentication](ADR-0001-authentication-and-recovery.md): one personal identity, current online session/epoch/hold checks, operation-bound assurance, recovery does not confer business powers. The separately named [repository ADR-0001](ADR-0001-repository.md) is the historical starter decision, not the authentication approval.
 - [ADR-0002](ADR-0002-multi-ngo-authorization-and-tenant-isolation.md), especially §§3–5, 8–12: shared-schema isolation, immutable pinned bundles, provenance, terminal revocation, lock order, audit atomicity, no legacy promotion. D03/D05/D08–D10/D12–D14 retain real-authority/operational gates.
 - [ADR-0003](ADR-0003-web-frontend-architecture.md): independent React NGO and OPS surfaces; backend authority; no Board/portal/route shortcut; W1 is not real-workspace activation.
-- [PWC-03B.3 register](../reviews/PWC-03B3-PRIVILEGED-GRANT-DECISION-REGISTER.md): GM01–GM12 and REAL01–REAL04 remain unresolved where not explicitly accepted by human reviewers. This ADR provides proposed inputs, not closure.
+- [PWC-03B.3 register](../reviews/PWC-03B3-PRIVILEGED-GRANT-DECISION-REGISTER.md): GM01–GM12 and REAL01–REAL04 remain unresolved where not explicitly accepted by human reviewers. The 27 October record adopts concrete product direction only; remaining command/security/REAL contracts are not closed.
 
 | Inspected implementation                                                                                               | Constraint for subsequent development                                                                                                                                                                                         |
 | ---------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -33,9 +35,9 @@ Approved decisions remain controlling within their recorded scope:
 | [PWC-03C contracts](../runbooks/PWC-03C-SHARED-API-CONTRACTS.md)                                                       | Canonical OpenAPI 3.1 describes current 32 paths/47 operations/39 schemas, not proposed onboarding. Existing context discovery is synthetic, not real affiliations.                                                           |
 | [Flutter foundation](../runbooks/PWC-03D-FLUTTER-MOBILE-FOUNDATION.md), [W1 web](../runbooks/PWC-W1-WEB-FOUNDATION.md) | Personal foundation and tenant cache fences exist; NGO onboarding/OPS business tools are not enabled. Networking/device/live-integration gates remain.                                                                        |
 
-## 2. Proposed decision: independent trust planes
+## 2. Product-policy decision and gated design: independent trust planes
 
-Adopt the following **only after the decisions in the [decision register](../reviews/PWC-02E-VERIFICATION-AUTHORITY-DECISION-REGISTER.md) are accepted**:
+The product owner adopts the following independent trust-plane direction on **27 October 2026**, within the per-ID limits of the [decision register §8](../reviews/PWC-02E-VERIFICATION-AUTHORITY-DECISION-REGISTER.md#8-consolidated-product-owner-approval--27-october-2026). Its technical, evidence, governance, assurance, legal/privacy and operational details still require their recorded independent approvals before affected implementation/activation:
 
 1. **Organizational identity** is the persistent institutional subject, not property owned by a login. A creator is an applicant, never the automatic owner of existing NGO data.
 2. **Platform eligibility verification** establishes the NGO/group's suitability for the software under a versioned rubric. It is neither government registration nor a legal/fundraising certification.
@@ -46,7 +48,7 @@ Adopt the following **only after the decisions in the [decision register](../rev
 
 No relationship implies another: personal account owner; organizational contact; founder/creator claimant; verified legal/designated representative; appointed administrator; member; volunteer; finance operator; financial signatory; alliance representative; Board/committee member; verification officer. One person may hold several, each established independently in its own context. Holding one never supplies another relationship's missing evidence or permissions.
 
-## 3. Proposed verification and authority model
+## 3. Product-approved direction and still-gated verification design
 
 Use separate, revisioned state machines for organization verification, case adjudication, mandate, appointment, grant, workspace restriction and publication. Do not encode them in one `verified` boolean. Full transitions and all twelve workflows are specified in the [workflow architecture](../architecture/PWC-02E-NGO-VERIFICATION-AND-AUTHORITY-WORKFLOWS.md).
 
@@ -96,4 +98,12 @@ Alternatives rejected as recommendations: creator/contact possession as ownershi
 
 The [decision register](../reviews/PWC-02E-VERIFICATION-AUTHORITY-DECISION-REGISTER.md) separates approved invariants from recommendations and records exact approvals, alternatives, consequences and blockers. It cross-maps GM01–GM12/REAL01–REAL04 and PWC-04A–D. No entry is self-approved here.
 
-Readiness: suitable for owner/security/legal/NGO review and preparation of bounded implementation contracts. PWC-04 policy-dependent transitions, PWC-03B.3 privileged commands and all real activation remain blocked until their applicable approvals and tests are accepted. Storage/retention/legal/operations gates block real evidence and release; finance/signatory/support/collaboration remain separately gated domains. Deferred elections, national chapters and production business modules are outside PWC-02E.
+Readiness: product-policy direction recorded; remaining security/legal/NGO-governance/privacy/operations review and bounded implementation contracts are still required. PWC-04 policy-dependent transitions, PWC-03B.3 privileged commands and all real activation remain blocked until their applicable approvals and tests are accepted. Storage/retention/legal/operations gates block real evidence and release; finance/signatory/support/collaboration remain separately gated domains. Deferred elections, national chapters and production business modules are outside PWC-02E.
+
+### 6.1 Reconciliation of scoped approval
+
+Concrete product choices include registered/informal eligibility tracks, private segregated claims/no initial operational merge, independent mandate review and recipient acceptance, the existing E05 product upper bounds, separate consent/badges, safe appointment/last-admin/recovery policy, initial delegation exclusion and separation of finance/alliance powers. They are **not merely unselected proposals any longer**, but their joint-review gates remain. No operational parameter, quorum or evidence standard absent from the original recommendation is supplied.
+
+In particular: E03's documented two platform reviewers is not an NGO/signatory quorum; E05's real upper bounds do not alter synthetic 24-hour grants or existing auth proof deadlines; E15 remains disabled initially despite owner endorsement of later bounded delegation; GM01's exact command list and GM06's MFA-retention fork remain incomplete. E13's restrict-only responder direction is conditional under ADR-0002 D08, not a new support/browse/appointment permission. Independent mandate-backed appointment and live-parent delegation require an exact source/cascade contract, not a weaker authority path. Revocation retains ADR-0002's committed-transition semantics and no grace, not a promise to recall delivered bytes or acknowledge a failed write.
+
+The original workflow specification and technical recommendations remain a gated blueprint. The consolidated matrix, original E/GM rows and their alternatives/acceptance requirements jointly define the effective record. No product-owner endorsement substitutes for legal authority, NGO governance, security assurance or operational deployment approval.
