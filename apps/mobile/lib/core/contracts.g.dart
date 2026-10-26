@@ -8,7 +8,7 @@ final List<dynamic> personalOperations = jsonDecode(r'''[{"id":"createIntent","p
 class Activation {
   final Json _data;
   Activation.fromJson(Json data) : _data = checkedObject(data, schemaActivation, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'Activation(<redacted>)';
   List<String> get recoveryCodes => (_data['recovery_codes'] as List).map((v) => v as String).toList(growable: false);
@@ -18,7 +18,7 @@ final Map<String, dynamic> schemaActivation = jsonDecode(r'''{"additionalPropert
 class Assurance {
   final Json _data;
   Assurance.fromJson(Json data) : _data = checkedObject(data, schemaAssurance, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'Assurance(<redacted>)';
   String get assuranceProof => _data['assurance_proof'] as String;
@@ -28,7 +28,7 @@ final Map<String, dynamic> schemaAssurance = jsonDecode(r'''{"additionalProperti
 class ClearHold {
   final Json _data;
   ClearHold.fromJson(Json data) : _data = checkedObject(data, schemaClearHold, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'ClearHold(<redacted>)';
   String get intentId => _data['intent_id'] as String;
@@ -39,7 +39,7 @@ final Map<String, dynamic> schemaClearHold = jsonDecode(r'''{"additionalProperti
 class Empty {
   final Json _data;
   Empty.fromJson(Json data) : _data = checkedObject(data, schemaEmpty, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'Empty(<redacted>)';
 }
@@ -47,7 +47,7 @@ final Map<String, dynamic> schemaEmpty = jsonDecode(r'''{"additionalProperties":
 class Enrollment {
   final Json _data;
   Enrollment.fromJson(Json data) : _data = checkedObject(data, schemaEnrollment, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'Enrollment(<redacted>)';
   String get enrollmentId => _data['enrollment_id'] as String;
@@ -59,7 +59,7 @@ final Map<String, dynamic> schemaEnrollment = jsonDecode(r'''{"additionalPropert
 class EnrollmentConfirm {
   final Json _data;
   EnrollmentConfirm.fromJson(Json data) : _data = checkedObject(data, schemaEnrollmentConfirm, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'EnrollmentConfirm(<redacted>)';
   String get code => _data['code'] as String;
@@ -69,7 +69,7 @@ final Map<String, dynamic> schemaEnrollmentConfirm = jsonDecode(r'''{"additional
 class FlowAccepted {
   final Json _data;
   FlowAccepted.fromJson(Json data) : _data = checkedObject(data, schemaFlowAccepted, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'FlowAccepted(<redacted>)';
   int get expiresIn => _data['expires_in'] as int;
@@ -81,7 +81,7 @@ final Map<String, dynamic> schemaFlowAccepted = jsonDecode(r'''{"additionalPrope
 class FlowRequest {
   final Json _data;
   FlowRequest.fromJson(Json data) : _data = checkedObject(data, schemaFlowRequest, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'FlowRequest(<redacted>)';
   String get email => _data['email'] as String;
@@ -90,7 +90,7 @@ final Map<String, dynamic> schemaFlowRequest = jsonDecode(r'''{"additionalProper
 class FlowResend {
   final Json _data;
   FlowResend.fromJson(Json data) : _data = checkedObject(data, schemaFlowResend, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'FlowResend(<redacted>)';
   String get flowControl => _data['flow_control'] as String;
@@ -100,7 +100,7 @@ final Map<String, dynamic> schemaFlowResend = jsonDecode(r'''{"additionalPropert
 class Intent {
   final Json _data;
   Intent.fromJson(Json data) : _data = checkedObject(data, schemaIntent, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'Intent(<redacted>)';
   String get expiresAt => _data['expires_at'] as String;
@@ -111,7 +111,7 @@ final Map<String, dynamic> schemaIntent = jsonDecode(r'''{"additionalProperties"
 class Login {
   final Json _data;
   Login.fromJson(Json data) : _data = checkedObject(data, schemaLogin, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'Login(<redacted>)';
   String? get deviceLabel => _data['device_label'] == null ? null : _data['device_label'] as String;
@@ -122,7 +122,7 @@ final Map<String, dynamic> schemaLogin = jsonDecode(r'''{"additionalProperties":
 class Me {
   final Json _data;
   Me.fromJson(Json data) : _data = checkedObject(data, schemaMe, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'Me(<redacted>)';
   bool get emailVerified => _data['email_verified'] as bool;
@@ -134,7 +134,7 @@ final Map<String, dynamic> schemaMe = jsonDecode(r'''{"additionalProperties":fal
 class MfaLogin {
   final Json _data;
   MfaLogin.fromJson(Json data) : _data = checkedObject(data, schemaMfaLogin, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'MfaLogin(<redacted>)';
   String get challengeId => _data['challenge_id'] as String;
@@ -146,7 +146,7 @@ final Map<String, dynamic> schemaMfaLogin = jsonDecode(r'''{"additionalPropertie
 class MfaStatus {
   final Json _data;
   MfaStatus.fromJson(Json data) : _data = checkedObject(data, schemaMfaStatus, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'MfaStatus(<redacted>)';
   bool get enabled => _data['enabled'] as bool;
@@ -157,7 +157,7 @@ final Map<String, dynamic> schemaMfaStatus = jsonDecode(r'''{"additionalProperti
 class MobileSession {
   final Json _data;
   MobileSession.fromJson(Json data) : _data = checkedObject(data, schemaMobileSession, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'MobileSession(<redacted>)';
   String get accessToken => _data['access_token'] as String;
@@ -173,7 +173,7 @@ final Map<String, dynamic> schemaMobileSession = jsonDecode(r'''{"additionalProp
 class Preauth {
   final Json _data;
   Preauth.fromJson(Json data) : _data = checkedObject(data, schemaPreauth, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'Preauth(<redacted>)';
   String get challengeId => _data['challenge_id'] as String;
@@ -185,7 +185,7 @@ final Map<String, dynamic> schemaPreauth = jsonDecode(r'''{"additionalProperties
 class ProofCommand {
   final Json _data;
   ProofCommand.fromJson(Json data) : _data = checkedObject(data, schemaProofCommand, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'ProofCommand(<redacted>)';
   String get assuranceProof => _data['assurance_proof'] as String;
@@ -194,7 +194,7 @@ final Map<String, dynamic> schemaProofCommand = jsonDecode(r'''{"additionalPrope
 class RecoveryCodes {
   final Json _data;
   RecoveryCodes.fromJson(Json data) : _data = checkedObject(data, schemaRecoveryCodes, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'RecoveryCodes(<redacted>)';
   List<String> get recoveryCodes => (_data['recovery_codes'] as List).map((v) => v as String).toList(growable: false);
@@ -203,7 +203,7 @@ final Map<String, dynamic> schemaRecoveryCodes = jsonDecode(r'''{"additionalProp
 class Refresh {
   final Json _data;
   Refresh.fromJson(Json data) : _data = checkedObject(data, schemaRefresh, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'Refresh(<redacted>)';
   String get refreshToken => _data['refresh_token'] as String;
@@ -212,7 +212,7 @@ final Map<String, dynamic> schemaRefresh = jsonDecode(r'''{"additionalProperties
 class RegistrationConfirm {
   final Json _data;
   RegistrationConfirm.fromJson(Json data) : _data = checkedObject(data, schemaRegistrationConfirm, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'RegistrationConfirm(<redacted>)';
   String get flowId => _data['flow_id'] as String;
@@ -223,7 +223,7 @@ final Map<String, dynamic> schemaRegistrationConfirm = jsonDecode(r'''{"addition
 class ResendAccepted {
   final Json _data;
   ResendAccepted.fromJson(Json data) : _data = checkedObject(data, schemaResendAccepted, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'ResendAccepted(<redacted>)';
   String get status => _data['status'] as String;
@@ -232,7 +232,7 @@ final Map<String, dynamic> schemaResendAccepted = jsonDecode(r'''{"additionalPro
 class ResetConfirm {
   final Json _data;
   ResetConfirm.fromJson(Json data) : _data = checkedObject(data, schemaResetConfirm, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'ResetConfirm(<redacted>)';
   String get flowId => _data['flow_id'] as String;
@@ -243,7 +243,7 @@ final Map<String, dynamic> schemaResetConfirm = jsonDecode(r'''{"additionalPrope
 class Sessions {
   final Json _data;
   Sessions.fromJson(Json data) : _data = checkedObject(data, schemaSessions, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'Sessions(<redacted>)';
   List<SessionsResultsItem> get results => (_data['results'] as List).map((v) => SessionsResultsItem.fromJson(Map<String, Object?>.from(v as Map))).toList(growable: false);
@@ -252,7 +252,7 @@ final Map<String, dynamic> schemaSessions = jsonDecode(r'''{"additionalPropertie
 class StepUp {
   final Json _data;
   StepUp.fromJson(Json data) : _data = checkedObject(data, schemaStepUp, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'StepUp(<redacted>)';
   String get intentId => _data['intent_id'] as String;
@@ -263,7 +263,7 @@ final Map<String, dynamic> schemaStepUp = jsonDecode(r'''{"additionalProperties"
 class Verified {
   final Json _data;
   Verified.fromJson(Json data) : _data = checkedObject(data, schemaVerified, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'Verified(<redacted>)';
   String get status => _data['status'] as String;
@@ -272,7 +272,7 @@ final Map<String, dynamic> schemaVerified = jsonDecode(r'''{"additionalPropertie
 class MeSession {
   final Json _data;
   MeSession.fromJson(Json data) : _data = checkedObject(data, schemaMeSession, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'MeSession(<redacted>)';
   String get absoluteExpiresAt => _data['absolute_expires_at'] as String;
@@ -284,7 +284,7 @@ final Map<String, dynamic> schemaMeSession = jsonDecode(r'''{"additionalProperti
 class MeUser {
   final Json _data;
   MeUser.fromJson(Json data) : _data = checkedObject(data, schemaMeUser, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'MeUser(<redacted>)';
   String get id => _data['id'] as String;
@@ -294,7 +294,7 @@ final Map<String, dynamic> schemaMeUser = jsonDecode(r'''{"additionalProperties"
 class MobileSessionSession {
   final Json _data;
   MobileSessionSession.fromJson(Json data) : _data = checkedObject(data, schemaMobileSessionSession, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'MobileSessionSession(<redacted>)';
   String get absoluteExpiresAt => _data['absolute_expires_at'] as String;
@@ -306,7 +306,7 @@ final Map<String, dynamic> schemaMobileSessionSession = jsonDecode(r'''{"additio
 class MobileSessionUser {
   final Json _data;
   MobileSessionUser.fromJson(Json data) : _data = checkedObject(data, schemaMobileSessionUser, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'MobileSessionUser(<redacted>)';
   String get id => _data['id'] as String;
@@ -316,7 +316,7 @@ final Map<String, dynamic> schemaMobileSessionUser = jsonDecode(r'''{"additional
 class SessionsResultsItem {
   final Json _data;
   SessionsResultsItem.fromJson(Json data) : _data = checkedObject(data, schemaSessionsResultsItem, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'SessionsResultsItem(<redacted>)';
   String get createdAt => _data['created_at'] as String;
@@ -330,7 +330,7 @@ final Map<String, dynamic> schemaSessionsResultsItem = jsonDecode(r'''{"addition
 class MeSessionAssurance {
   final Json _data;
   MeSessionAssurance.fromJson(Json data) : _data = checkedObject(data, schemaMeSessionAssurance, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'MeSessionAssurance(<redacted>)';
   String? get lastMfaAt => _data['last_mfa_at'] == null ? null : _data['last_mfa_at'] as String;
@@ -340,7 +340,7 @@ final Map<String, dynamic> schemaMeSessionAssurance = jsonDecode(r'''{"additiona
 class MobileSessionSessionAssurance {
   final Json _data;
   MobileSessionSessionAssurance.fromJson(Json data) : _data = checkedObject(data, schemaMobileSessionSessionAssurance, canonicalSchemas);
-  Json toJson() => Map<String, Object?>.from(_data);
+  Json toJson() => Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
   @override
   String toString() => 'MobileSessionSessionAssurance(<redacted>)';
   String? get lastMfaAt => _data['last_mfa_at'] == null ? null : _data['last_mfa_at'] as String;

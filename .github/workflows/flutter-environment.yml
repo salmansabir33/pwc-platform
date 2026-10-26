@@ -86,14 +86,16 @@ jobs:
       - name: Bootstrap native project source (temporary acquisition checkpoint)
         run: |
           flutter create --no-pub --org=pk.org.pwc --platforms=android,ios --project-name=pwc_mobile "$RUNNER_TEMP/pwc_native"
-          cp -R "$RUNNER_TEMP/pwc_native/android" "$RUNNER_TEMP/pwc_native/ios" apps/mobile/
+          cp -Rn "$RUNNER_TEMP/pwc_native/android" "$RUNNER_TEMP/pwc_native/ios" apps/mobile/
           cp "$RUNNER_TEMP/pwc_native/.metadata" apps/mobile/
       - name: Resolve actual PWC dependencies
         working-directory: apps/mobile
         run: flutter pub get
       - name: Canonicalize actual project Dart source (bootstrap only)
         working-directory: apps/mobile
-        run: dart format lib test
+        run: |
+          dart fix --apply
+          dart format lib test
       - name: Capture source-only native templates and real lockfile
         run: python3 scripts/mobile_ci_evidence.py
       - name: Analyze actual PWC source

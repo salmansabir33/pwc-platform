@@ -29,7 +29,7 @@ with tarfile.open(fileobj=stream,mode='w:gz') as archive:
     for p in sorted(set(files)):
         archive.add(p,arcname=p.relative_to(root).as_posix())
 encoded=base64.b64encode(stream.getvalue()).decode()
-chunks=[encoded[i:i+24000] for i in range(0,len(encoded),24000)]
+chunks=[encoded[i:i+3000] for i in range(0,len(encoded),3000)]
 for i, chunk in enumerate(chunks):
     print(f'::notice title=PWC source bootstrap {i+1}/{len(chunks)}::{chunk}')
 print(f'::notice title=PWC bootstrap file count::{len(set(files))} source/lock files; no SDK/cache/build outputs')

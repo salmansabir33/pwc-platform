@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:convert';
 
 // Deliberately never include a response/body/value in an exception.
 class ContractFailure implements Exception {
@@ -10,7 +11,7 @@ class ContractFailure implements Exception {
 Map<String, Object?> checkedObject(Map<String, Object?> data,
     Map<String, dynamic> schema, Map<String, dynamic> schemas) {
   validateContract(data, schema, schemas);
-  return UnmodifiableMapView(Map<String, Object?>.from(data));
+  return UnmodifiableMapView(Map<String, Object?>.from(jsonDecode(jsonEncode(data)) as Map));
 }
 
 void validateContract(Object? data, Map<String, dynamic> schema,
