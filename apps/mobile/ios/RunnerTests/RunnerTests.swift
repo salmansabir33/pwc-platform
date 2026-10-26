@@ -3,10 +3,7 @@ import UIKit
 import XCTest
 
 class RunnerTests: XCTestCase {
-
-  func testExample() {
-    // If you add code to the Runner application, consider adding tests here.
-    // See https://developer.apple.com/documentation/xctest for more information about using XCTest.
+  func testNativeDeviceAcceptanceRequiresDedicatedHarness() throws {
+    throw XCTSkip("Run integration_test/credential_lifecycle_test.dart on a real iOS simulator/device; this host stub is not security acceptance.")
   }
-
 }
