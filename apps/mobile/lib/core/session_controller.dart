@@ -139,7 +139,11 @@ class SessionController extends ChangeNotifier {
   Future<void> _accept(MobileSession session, int captured, {required DateTime requestedAt}) async {
     _fence(captured);
     _validateLifetime(session);
-    final accessDeadline = requestedAt.add(Duration(seconds: session.expiresIn));
+    var accessDeadline = requestedAt.add(Duration(seconds: session.expiresIn));
+    for (final stamp in [session.refreshExpiresAt, session.session.idleExpiresAt, session.session.absoluteExpiresAt]) {
+      final bound = DateTime.parse(stamp);
+      if (bound.isBefore(accessDeadline)) { accessDeadline = bound; }
+    }
     if (!accessDeadline.isAfter(now())) { throw const ApiFailure('SESSION_INVALID'); }
     final me = Me.fromJson(
       (await api.call('me', {}, access: session.accessToken)).body,
@@ -152,13 +156,17 @@ class SessionController extends ChangeNotifier {
         !DateTime.parse(me.session.idleExpiresAt).isAfter(now())) {
       throw const ApiFailure('SESSION_INVALID');
     }
+    for (final stamp in [me.session.idleExpiresAt, me.session.absoluteExpiresAt]) {
+      final bound = DateTime.parse(stamp);
+      if (bound.isBefore(accessDeadline)) { accessDeadline = bound; }
+    }
     await store.replace(session);
     _fence(captured);
+    if (!accessDeadline.isAfter(now())) { throw const ApiFailure('SESSION_INVALID'); }
     storageBlocked = false;
     _credentials = session;
     identity = me;
     suspended = false;
-    if (!accessDeadline.isAfter(now())) { throw const ApiFailure('SESSION_INVALID'); }
     _accessUntil = accessDeadline;
     context.clear();
     _transients();

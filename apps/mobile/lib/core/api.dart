@@ -164,6 +164,7 @@ class NativeApi implements PersonalApi {
     } on ContractFailure {
       rethrow;
     } on TimeoutException {
+      cancel();
       throw const ApiFailure('NETWORK_UNCERTAIN');
     } on SocketException {
       throw const ApiFailure('NETWORK_UNCERTAIN');
