@@ -105,18 +105,20 @@ class _RegistryScreenState extends State<RegistryScreen> {
     try {
       await work(generation);
     } catch (_) {
-      if (mounted && generation == _generation)
+      if (mounted && generation == _generation) {
         setState(() {
           _message = t(
             'Request unavailable or conflicting. Reload status before retrying. No automatic replay.',
             'درخواست دستیاب نہیں۔ دوبارہ کوشش سے پہلے حالت دیکھیں۔',
           );
         });
+      }
     } finally {
-      if (mounted && generation == _generation)
+      if (mounted && generation == _generation) {
         setState(() {
           _busy = false;
         });
+      }
     }
   }
 
@@ -168,8 +170,9 @@ class _RegistryScreenState extends State<RegistryScreen> {
           onPressed: !enabled
               ? null
               : () => run((g) async {
-                  if (_query.text.trim().length < 2)
+                  if (_query.text.trim().length < 2) {
                     throw const FormatException();
+                  }
                   final page = await widget.gateway!.search(
                     _query.text,
                     _city.text,

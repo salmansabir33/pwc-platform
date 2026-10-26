@@ -24,7 +24,7 @@ This assignment supplies authority to implement the **safe claimant foundation**
 | Stale client state / implicit workspace | Synthetic gateway components only; scope/language/unmount guards discard late values, default controls unavailable; no browser/live registry transport or private UI |
 | Initial adapter defect | Read-only kernel negotiator had no request parser; replaced with registry-specific fixed JSON negotiation/parser before acceptance |
 | Initial serializer defect | Incorrect claim model tuple corrected and claimed workflow tests rerun |
-| Full-suite migration regression | Historical auth tests left organizations at old migration target; teardown now restores all current leaf migrations. Isolated and combined migration/concurrency tests rerun; full suite required at final head |
+| Full-suite migration regression | Historical auth tests left organizations at old migration target; teardown now restores all current leaf migrations. Isolated and combined migration/concurrency tests rerun; full rerun passed (397 tests / 211 HTTP combinations); final-head CI remains required |
 
 No confirmed Critical/High finding is intentionally left open in the bounded slice. This is engineering review, not adversarial certification or production performance/abuse assurance. Production DB-owner tampering, privacy/retention, provider/HTTPS ingress and actual native-device acceptance remain external gates.
 
@@ -32,14 +32,14 @@ No confirmed Critical/High finding is intentionally left open in the bounded sli
 
 Results here distinguish executed local evidence from final-head CI; the final PR report/comment records exact SHA and workflow conclusions without claiming source tests against their own future commit.
 
-- Local Python 3.11.2 / **actual PostgreSQL 16.2**: 31 registry tests passed, including real DB constraints, immutable history, rollback, upgrade and four concurrent connection tests. Temporary `pgserver` supplied the disposable local PostgreSQL binary; it is not an app dependency or committed tool.
+- Local Python 3.11.2 / **actual PostgreSQL 16.2**: 31 registry tests passed, plus two later deterministic hold-versus-create and submit-versus-withdraw race tests passed, including real DB constraints, immutable history, rollback, upgrade and four concurrent connection tests. Temporary `pgserver` supplied the disposable local PostgreSQL binary; it is not an app dependency or committed tool.
 - Migration regression selection: 32 tests passed before the additional migration/deadline/JSON cases (registry plus historical authentication migration tests plus repeated concurrency selection).
-- Full initial contract-runner execution: 394 tests, four errors due to old-test schema restoration, **not accepted as passing**. Teardown defect corrected; final full rerun/CI must pass.
+- Full initial contract-runner execution: 394 tests, four errors due to old-test schema restoration, **not accepted as passing**. Teardown defect corrected; the complete local rerun passed **397 tests / 211 distinct HTTP combinations**. The two subsequently added deterministic races also passed separately; final-head CI checks the complete 399-test selection. An attempted parallel local race rerun was blocked by the occupied disposable test database; it was rerun successfully after the full suite exited (not treated as a test failure/pass).
 - Local OpenAPI generation/inventory/source/frozen-compatibility and specification/checked examples passed; Django checks/drift and migration plan/application/check passed. Final regeneration follows any source changes.
 - Local React TypeScript, formatter, unit/component suite: 118 tests passed; both production builds passed. New ORG-01/02 component cases cover gate, search/claim, create/transitions, redacted conflict and stale-scope result denial.
 - Local production-browser Playwright: **12 passed**, including both portal foundations and disconnected ORG-01/02 in English/Urdu at mobile width. First attempt could not start Chromium because sandbox system libraries were missing; temporary npm Chromium runtime libraries resolved that tool limitation without repository/dependency changes. Not a live-auth browser test.
 - Local scoped Ruff, tracked-file secret/config/workflow scanner, six tooling tests, dependency consistency and diff whitespace checks passed. No runtime dependency version changed.
-- Flutter/Dart/Android unavailable locally. Added canonical registry DTO/example and widget tests; pinned real CI analysis/tests/Android build and formatting evidence are required. No local mobile pass is claimed.
+- Flutter/Dart/Android unavailable locally. Initial actual CI caught formatting and three analyzer style findings; applied the pinned Dart formatter suggestion and corrected required braces, without weakening checks. Added canonical registry DTO/example and widget tests; pinned real CI analysis/tests/Android build and formatting evidence are required. No local mobile pass is claimed.
 
 ## Remaining acceptance
 
