@@ -146,8 +146,13 @@ class SessionController extends ChangeNotifier {
     if (me.user.id != session.user.id || me.session.id != session.session.id) {
       throw const ApiFailure('SESSION_INVALID');
     }
+    if (!DateTime.parse(me.session.absoluteExpiresAt).isAfter(now()) ||
+        !DateTime.parse(me.session.idleExpiresAt).isAfter(now())) {
+      throw const ApiFailure('SESSION_INVALID');
+    }
     await store.replace(session);
     _fence(captured);
+    storageBlocked = false;
     _credentials = session;
     identity = me;
     suspended = false;

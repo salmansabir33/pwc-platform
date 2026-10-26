@@ -8,6 +8,9 @@ import json
 from pathlib import Path
 import re
 import sys
+import subprocess
+import tempfile
+import shutil
 
 root = Path(__file__).resolve().parent.parent
 source = root / 'packages/api-contracts/openapi-v1.json'
@@ -75,6 +78,13 @@ for name,s in models.items():
 text='\n'.join(lines)+'\n'
 target=root/'apps/mobile/lib/core/contracts.g.dart'
 if '--check' in sys.argv:
-    if target.read_text()!=text: raise SystemExit('Mobile contract generation drift')
-else:target.write_text(text)
+    if not shutil.which('dart'): raise SystemExit('Contract drift check requires pinned Dart formatter')
+    with tempfile.TemporaryDirectory(dir=target.parent) as temporary:
+        expected=Path(temporary)/'contracts.g.dart'
+        expected.write_text(text)
+        subprocess.run(['dart','format',str(expected)],check=True,stdout=subprocess.DEVNULL)
+        if target.read_text()!=expected.read_text(): raise SystemExit('Mobile contract generation drift')
+else:
+    target.write_text(text)
+    if shutil.which('dart'):subprocess.run(['dart','format',str(target)],check=True)
 print(f'{len(models)} typed models; {len(ops)} personal operations; source SHA256 bound')

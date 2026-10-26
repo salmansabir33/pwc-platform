@@ -84,7 +84,16 @@ void main() {
     });
   }
   test('all English UI strings in translation catalog are translated', () {
-    expect(urdu.keys, containsAll(['Email', 'Password', 'ID-01 · Sign in', 'ID-05 · Privacy and security', 'Protected view hidden']));
+    expect(
+      urdu.keys,
+      containsAll([
+        'Email',
+        'Password',
+        'ID-01 · Sign in',
+        'ID-05 · Privacy and security',
+        'Protected view hidden',
+      ]),
+    );
     expect(
       urdu.values.every((v) => RegExp(r'[\u0600-\u06ff]').hasMatch(v)),
       true,
