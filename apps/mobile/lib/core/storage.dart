@@ -57,7 +57,9 @@ class NativeCredentialStore implements CredentialStore {
 
   @override
   Future<void> replace(MobileSession session, {required String lease}) async {
-    if (await _installation() != lease) { throw StateError('Stale credential lease'); }
+    if (await _installation() != lease) {
+      throw StateError('Stale credential lease');
+    }
     final binding = lease;
     final text = jsonEncode({
       'version': 1,
@@ -66,7 +68,8 @@ class NativeCredentialStore implements CredentialStore {
     });
     // One native record, never independently persisted access/refresh keys.
     await _storage.write(key: _key, value: text);
-    if (await _storage.read(key: _key) != text || await _installation() != lease) {
+    if (await _storage.read(key: _key) != text ||
+        await _installation() != lease) {
       await clear();
       throw StateError('Secure storage verification failed');
     }

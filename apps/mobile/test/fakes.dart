@@ -60,8 +60,12 @@ class MemoryStore implements CredentialStore {
   @override
   Future<void> replace(MobileSession session, {required String lease}) async {
     writeStarted?.complete();
-    if (writeGate != null) { await writeGate; }
-    if (lease != '$generation') { throw StateError('Stale lease'); }
+    if (writeGate != null) {
+      await writeGate;
+    }
+    if (lease != '$generation') {
+      throw StateError('Stale lease');
+    }
     if (failWrite) throw StateError('unavailable');
     writes++;
     value = session;

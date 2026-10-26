@@ -514,22 +514,24 @@ void main() {
     expect(store.value, null);
     expect(session.authenticated, false);
   });
-  test('logout invalidates durable lease before a blocked write can complete', () async {
-    final gate = Completer<void>();
-    store.writeGate = gate.future;
-    store.writeStarted = Completer<void>();
-    final pending = login();
-    final failure = expectLater(pending, throwsA(anything));
-    await store.writeStarted!.future;
-    final oldGeneration = store.generation;
-    final out = session.logout();
-    await Future<void>.delayed(Duration.zero);
-    expect(store.generation, greaterThan(oldGeneration));
-    gate.complete();
-    await failure;
-    await out;
-    expect(store.value, null);
-    expect(session.authenticated, false);
-  });
-
+  test(
+    'logout invalidates durable lease before a blocked write can complete',
+    () async {
+      final gate = Completer<void>();
+      store.writeGate = gate.future;
+      store.writeStarted = Completer<void>();
+      final pending = login();
+      final failure = expectLater(pending, throwsA(anything));
+      await store.writeStarted!.future;
+      final oldGeneration = store.generation;
+      final out = session.logout();
+      await Future<void>.delayed(Duration.zero);
+      expect(store.generation, greaterThan(oldGeneration));
+      gate.complete();
+      await failure;
+      await out;
+      expect(store.value, null);
+      expect(session.authenticated, false);
+    },
+  );
 }

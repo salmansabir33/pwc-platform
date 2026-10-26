@@ -311,7 +311,7 @@ class SessionController extends ChangeNotifier {
             MobileSession.fromJson(result.body),
             captured,
             requestedAt: requestedAt,
-          lease: lease,
+            lease: lease,
           );
         } catch (_) {
           await _erase();
@@ -517,20 +517,27 @@ class SessionController extends ChangeNotifier {
   // the post-logout generation, even if its OS write completes after deletion.
   Future<bool> _barrierNow() {
     storageBlocked = true;
-    return store.clear().then((_) => true, onError: (Object _, StackTrace __) => false);
+    return store.clear().then(
+      (_) => true,
+      onError: (Object _, StackTrace __) => false,
+    );
   }
+
   void _invalidatePending() {
     final barrier = _barrierNow();
-    _tail = _tail.then((_) async {
-      await barrier;
-      await _erase();
-      _notify();
-    }).catchError((Object _, StackTrace __) {
-      storageBlocked = true;
-      error = 'FAILED';
-      _notify();
-    });
+    _tail = _tail
+        .then((_) async {
+          await barrier;
+          await _erase();
+          _notify();
+        })
+        .catchError((Object _, StackTrace __) {
+          storageBlocked = true;
+          error = 'FAILED';
+          _notify();
+        });
   }
+
   Future<void> logout() {
     final old = _credentials;
     _epoch++;
@@ -542,12 +549,22 @@ class SessionController extends ChangeNotifier {
     return _serial((captured) async {
       await barrier;
       bool eraseFailed = false;
-      try { await _erase(); } catch (_) { eraseFailed = true; }
-      if (old != null) {
-        try { await api.call('logout', {}, access: old.accessToken); }
-        catch (_) { error = 'LOGOUT_UNCONFIRMED'; _notify(); }
+      try {
+        await _erase();
+      } catch (_) {
+        eraseFailed = true;
       }
-      if (eraseFailed) { throw StateError('Secure deletion unconfirmed'); }
+      if (old != null) {
+        try {
+          await api.call('logout', {}, access: old.accessToken);
+        } catch (_) {
+          error = 'LOGOUT_UNCONFIRMED';
+          _notify();
+        }
+      }
+      if (eraseFailed) {
+        throw StateError('Secure deletion unconfirmed');
+      }
     });
   }
 
@@ -557,7 +574,11 @@ class SessionController extends ChangeNotifier {
     api.cancel();
     _transients();
     context.clear();
-    if (pending) { _privateClear(); suspended = true; _invalidatePending(); }
+    if (pending) {
+      _privateClear();
+      suspended = true;
+      _invalidatePending();
+    }
     _notify();
   }
 
@@ -567,7 +588,9 @@ class SessionController extends ChangeNotifier {
     api.cancel();
     suspended = true;
     _privateClear();
-    if (pending) { _invalidatePending(); }
+    if (pending) {
+      _invalidatePending();
+    }
     _notify();
   }
 
