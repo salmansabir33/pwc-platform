@@ -203,6 +203,7 @@ class SessionController extends ChangeNotifier {
   Future<void> confirmFlow(String proof, String password) => _serial((captured) async {
     final pending = _validFlow(); final reset = resetFlow;
     flow = null;
+    if (reset) { await _erase(); _fence(captured); }
     await api.call(reset ? 'resetConfirm' : 'registrationConfirm', {
       'flow_id': pending.flowId, 'proof': proof, reset ? 'new_password' : 'password': password});
     _fence(captured);

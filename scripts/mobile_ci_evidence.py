@@ -24,12 +24,17 @@ for base in ['android','ios']:
 files += [p for p in [mobile/'pubspec.lock',mobile/'.metadata'] if p.exists()]
 # Exact Dart formatter output, including generated contract models, is source.
 files += list((mobile/'lib').rglob('*.dart'))+list((mobile/'test').rglob('*.dart'))
-stream=io.BytesIO()
-with tarfile.open(fileobj=stream,mode='w:gz') as archive:
-    for p in sorted(set(files)):
-        archive.add(p,arcname=p.relative_to(root).as_posix())
-encoded=base64.b64encode(stream.getvalue()).decode()
-chunks=[encoded[i:i+3000] for i in range(0,len(encoded),3000)]
+cache=Path(os.environ['RUNNER_TEMP'])/'pwc-source-evidence.b64'
+if not cache.exists():
+    stream=io.BytesIO()
+    with tarfile.open(fileobj=stream,mode='w:gz') as archive:
+        for p in sorted(set(files)):
+            archive.add(p,arcname=p.relative_to(root).as_posix())
+    cache.write_text(base64.b64encode(stream.getvalue()).decode())
+encoded=cache.read_text()
+chunks=[encoded[i:i+3900] for i in range(0,len(encoded),3900)]
+assert len(chunks)<=40, 'Source evidence exceeds bounded bootstrap budget'
+group=int(os.environ.get('EVIDENCE_GROUP','0'))
 for i, chunk in enumerate(chunks):
-    print(f'::notice title=PWC source bootstrap {i+1}/{len(chunks)}::{chunk}')
-print(f'::notice title=PWC bootstrap file count::{len(set(files))} source/lock files; no SDK/cache/build outputs')
+    if i//8==group:
+        print(f'::notice title=PWC source bootstrap {i+1}/{len(chunks)}::{chunk}')

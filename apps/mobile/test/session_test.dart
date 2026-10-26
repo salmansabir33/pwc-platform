@@ -97,4 +97,79 @@ void main(){
     expect(()=>context.organization(intentId),throwsA(isA<ApiFailure>()));expect(context.get('private'),null);
     context.put('private','late',old);expect(context.get('private'),null);
   });
+  test('registration confirms only a verified flow then clears the proof',()async{
+    api.handler=(op,b,a,id)async{
+      if(op=='registrationRequest')return const ApiReply(202,{'status':'accepted','flow_id':intentId,'flow_control':'synthetic-control','expires_in':300});
+      if(op=='registrationConfirm'){
+        expect(b,{'flow_id':intentId,'proof':'synthetic-proof','password':'synthetic-password'});
+        return const ApiReply(201,{'status':'verified'});
+      }
+      throw StateError('unexpected');
+    };
+    await session.startFlow('person@example.invalid',reset:false);expect(store.value,null);
+    await session.confirmFlow('synthetic-proof','synthetic-password');expect(session.flow,null);expect(session.authenticated,false);
+  });
+  test('password reset uses new_password and invalidates the local session',()async{
+    await login();
+    api.handler=(op,b,a,id)async{
+      if(op=='resetRequest')return const ApiReply(202,{'status':'accepted','flow_id':intentId,'flow_control':'synthetic-control','expires_in':300});
+      expect(op,'resetConfirm');expect(b.containsKey('password'),false);expect(b['new_password'],'synthetic-new-password');
+      return const ApiReply(204,{});
+    };
+    await session.startFlow('person@example.invalid',reset:true);
+    await session.confirmFlow('synthetic-proof','synthetic-new-password');expect(store.value,null);expect(session.authenticated,false);
+  });
+  test('expired verification flow never dispatches a proof',()async{
+    api.handler=(op,b,a,id)async=>const ApiReply(202,{'status':'accepted','flow_id':intentId,'flow_control':'synthetic-control','expires_in':1});
+    await session.startFlow('person@example.invalid',reset:false);clock=clock.add(const Duration(seconds:2));
+    await expectLater(session.confirmFlow('synthetic-proof','synthetic-password'),throwsA(isA<ApiFailure>()));expect(api.calls.length,1);
+  });
+  test('session revocation binds personal context, object and command exactly',()async{
+    await login();
+    api.handler=(op,b,a,id)async{
+      if(op=='createIntent'){
+        expect(b,{'operation':'sessions.revoke','context':{'kind':'personal','id':userId},'command':{'session_id':intentId},'object_id':intentId});
+        return ApiReply(201,{'intent_id':intentId,'expires_at':clock.add(const Duration(minutes:5)).toIso8601String(),'required_methods':['password','totp']});
+      }
+      if(op=='stepUp'){
+        expect(b,{'intent_id':intentId,'password':'synthetic-password','totp_code':'123456'});
+        return ApiReply(200,{'assurance_proof':'synthetic-single-use','expires_at':clock.add(const Duration(minutes:5)).toIso8601String()});
+      }
+      if(op=='revokeSession'){expect(id,intentId);expect(b,{'assurance_proof':'synthetic-single-use'});return const ApiReply(204,{});}
+      if(op=='me')return ApiReply(200,meData());
+      throw StateError('unexpected');
+    };
+    await session.securityCommand('sessions.revoke','synthetic-password','123456',targetSession:intentId);
+    expect(session.authenticated,true);expect(store.value!.toString(),isNot(contains('synthetic-single-use')));
+  });
+  test('restricted hold clear uses dedicated password/factor request, not generic proof',()async{
+    api.handler=(op,b,a,id)async=>op=='mobileLogin'?ApiReply(200,sessionData(hold:'restricted')):ApiReply(200,meData(hold:'restricted'));
+    await login();
+    api.handler=(op,b,a,id)async{
+      if(op=='createIntent')return ApiReply(201,{'intent_id':intentId,'expires_at':clock.add(const Duration(minutes:5)).toIso8601String(),'required_methods':['password','totp']});
+      if(op=='clearHold'){expect(b,{'intent_id':intentId,'password':'synthetic-password','totp_code':'123456'});return const ApiReply(204,{});}
+      if(op=='me')return ApiReply(200,meData());
+      throw StateError('unexpected');
+    };
+    await session.securityCommand('recovery_hold.clear','synthetic-password','123456');
+    expect(session.hold,'clear');expect(api.calls.where((c)=>c.$1=='stepUp'),isEmpty);
+  });
+  test('MFA enrollment and activation return transient codes only',()async{
+    await login();
+    api.handler=(op,b,a,id)async{
+      final expires=clock.add(const Duration(minutes:5)).toIso8601String();
+      return switch(op){
+        'createIntent'=>ApiReply(201,{'intent_id':intentId,'expires_at':expires,'required_methods':['password']}),
+        'stepUp'=>ApiReply(200,{'assurance_proof':'synthetic-proof','expires_at':expires}),
+        'enrollMfa'=>ApiReply(201,{'enrollment_id':intentId,'secret':'SYNTHETICSECRET','otpauth_uri':'otpauth://totp/synthetic','expires_at':expires}),
+        'confirmMfa'=>const ApiReply(200,{'status':'active','recovery_codes':['synthetic-code']}),
+        'me'=>ApiReply(200,meData()),
+        _=>throw StateError('unexpected'),
+      };
+    };
+    await session.securityCommand('mfa.enroll','synthetic-password','');expect(session.enrollment,isNotNull);
+    final codes=await session.confirmEnrollment('123456');expect(codes.recoveryCodes,['synthetic-code']);expect(session.enrollment,null);
+    expect(store.value!.toJson().containsKey('recovery_codes'),false);
+  });
+
 }

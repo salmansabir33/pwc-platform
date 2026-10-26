@@ -94,9 +94,28 @@ jobs:
       - name: Canonicalize actual project Dart source (bootstrap only)
         working-directory: apps/mobile
         run: |
+          dart format lib test
           dart fix --apply
           dart format lib test
-      - name: Capture source-only native templates and real lockfile
+      - name: Source-only bootstrap batch 1
+        env:
+          EVIDENCE_GROUP: "0"
+        run: python3 scripts/mobile_ci_evidence.py
+      - name: Source-only bootstrap batch 2
+        env:
+          EVIDENCE_GROUP: "1"
+        run: python3 scripts/mobile_ci_evidence.py
+      - name: Source-only bootstrap batch 3
+        env:
+          EVIDENCE_GROUP: "2"
+        run: python3 scripts/mobile_ci_evidence.py
+      - name: Source-only bootstrap batch 4
+        env:
+          EVIDENCE_GROUP: "3"
+        run: python3 scripts/mobile_ci_evidence.py
+      - name: Source-only bootstrap batch 5
+        env:
+          EVIDENCE_GROUP: "4"
         run: python3 scripts/mobile_ci_evidence.py
       - name: Analyze actual PWC source
         working-directory: apps/mobile
@@ -117,6 +136,8 @@ jobs:
           for name in ('pwc-analyze.txt','pwc-tests.txt'):
               path=Path(os.environ['RUNNER_TEMP'])/name
               if path.exists():
-                  text=path.read_text()[-12000:].replace('%','%25').replace('\r','%0D').replace('\n','%0A')
-                  print(f'::notice title={name}::{text}')
+                  text=path.read_text()[-12000:]
+                  for index in range(0,len(text),3000):
+                      chunk=text[index:index+3000].replace('%','%25').replace('\r','%0D').replace('\n','%0A')
+                      print(f'::notice title={name} {index//3000+1}::{chunk}')
           PYTHON
