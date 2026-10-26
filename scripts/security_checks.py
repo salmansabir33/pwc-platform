@@ -26,6 +26,8 @@ def inspect_file(name, data):
         for part in path.parts
     ):
         errors.append("machine-cache")
+    if path.suffix.lower() in {".key", ".p12", ".pfx", ".jks", ".keystore"}:
+        errors.append("credential-container")
     errors.extend(label for label, pattern in PATTERNS.items() if pattern.search(data))
     return errors
 

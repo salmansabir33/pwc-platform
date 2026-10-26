@@ -182,6 +182,14 @@ assert settings.SESSION_COOKIE_SECURE and settings.CSRF_COOKIE_SECURE
 assert settings.PWC_AUTH_DELIVERY_MODE == 'synthetic'
 assert not settings.PWC_AUTH_SESSIONS_ENABLED
 assert not settings.PWC_SYNTHETIC_AUTHORIZATION_ENABLED
+from django.test import Client
+client = Client()
+response = client.get('/api/v1/health/', HTTP_HOST='api.pwc.example.org', HTTP_X_FORWARDED_PROTO='https')
+assert response.status_code == 301
+assert response['Location'] == 'https://api.pwc.example.org/api/v1/health/'
+response = client.get('/api/v1/health/', secure=True, HTTP_HOST='api.pwc.example.org', HTTP_X_FORWARDED_HOST='attacker.invalid')
+assert response.status_code == 200
+assert client.get('/api/v1/health/', secure=True, HTTP_HOST='attacker.invalid').status_code == 400
 """
         result = subprocess.run(
             [sys.executable, "-c", code],

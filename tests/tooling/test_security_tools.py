@@ -15,6 +15,7 @@ class SecurityToolTests(unittest.TestCase):
         self.assertIn(
             "environment-file", inspect_file("apps/backend/.env.production", b"")
         )
+        self.assertIn("credential-container", inspect_file("credentials.p12", b""))
         self.assertIn("machine-cache", inspect_file(".venv/a", b""))
         self.assertEqual(inspect_file(".env.example", b"replace-local-value"), [])
 

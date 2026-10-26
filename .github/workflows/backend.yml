@@ -91,6 +91,14 @@ jobs:
       - name: Backend coverage evidence
         if: always() && hashFiles('apps/backend/.coverage') != ''
         run: coverage xml -o coverage.xml && coverage report
+      - name: Validate development image and secret exclusion
+        if: matrix.python == '3.12'
+        working-directory: .
+        run: |
+          printf '%s\n' 'synthetic-build-boundary-canary' > apps/backend/.env.build-canary
+          trap 'rm -f apps/backend/.env.build-canary' EXIT
+          docker build --tag pwc-backend:ci apps/backend
+          docker run --rm --env DJANGO_SECRET_KEY=test-only-ci-container-check pwc-backend:ci sh -c 'test ! -e /app/.env.build-canary && python manage.py check'
       - name: Retain backend coverage
         if: always()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6

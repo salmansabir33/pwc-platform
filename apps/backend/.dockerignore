@@ -12,3 +12,12 @@ htmlcov
 *.sqlite3
 media
 *.log
+
+# Credential containers and auxiliary coverage files are not build inputs.
+.coverage*
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore

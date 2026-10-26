@@ -90,7 +90,7 @@ def main():
     for item in report:
         print(f"FAIL advisory: {item['name']} {item['version']} {item['id']}")
     print(
-        f"Python advisory review: {len(packages)} pinned versions, {len(report)} findings"
+        f"::notice title=Python advisory review::{len(packages)} pinned versions, {len(report)} findings"
     )
     return bool(report)
 

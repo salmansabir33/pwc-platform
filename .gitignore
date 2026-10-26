@@ -27,3 +27,8 @@ coverage.xml
 # W1 generated browser artifacts
 playwright-report/
 test-results/
+# Private signing/credential containers must never enter the repository.
+*.p12
+*.pfx
+*.jks
+*.keystore

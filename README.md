@@ -43,7 +43,7 @@ Compose applies migrations before startup. Open `http://localhost:8000/api/v1/he
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install -r apps/backend/requirements.txt
+python -m pip install --require-hashes -r requirements-ci.lock
 python -m pip check
 cp .env.example .env
 # Edit development secrets; Django does not load .env automatically.
