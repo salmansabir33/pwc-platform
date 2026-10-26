@@ -2,7 +2,9 @@
 
 Date: 26 October 2026.
 
-**Outcome: Arena remains unable to run Flutter. PWC-03D application implementation is stopped, incomplete and not merge-ready. No PR is opened.** This is environment recovery in the same subphase, not a reduced implementation ticket. No mobile authentication, secure storage, MFA, screen or application test has been delivered.
+**Current update:** [standard Flutter CI verification succeeded](PWC-03D-STANDARD-FLUTTER-CI.md), including real SDK installation, pub dependency resolution, analysis and generated widget smoke testing on GitHub-hosted Ubuntu. The local Arena restrictions below remain, but a separate CI execution environment is no longer an unproven fallback. This document preserves the historical custom-probe results; it must not be read as a current assertion that GitHub Actions cannot run Flutter.
+
+**Historical local outcome: Arena remains unable to run Flutter. PWC-03D application implementation is stopped, incomplete and not merge-ready. No PR is opened.** This is environment recovery in the same subphase, not a reduced implementation ticket. No mobile authentication, secure storage, MFA, screen or application test has been delivered.
 
 ## Correction: standard action verification follow-up
 
@@ -137,7 +139,7 @@ After provisioning, resolve and test a disposable sample first, pin the verified
 
 Linux cannot establish iOS acceptance: a macOS/Xcode environment and actual simulator/device testing remain necessary for Keychain accessibility/reinstall/backup, app lifecycle, screenshots/snapshots and native integration. Android secure-store/backup/restore and refresh concurrency likewise need the requested app implementation/tests, not merely a compiling sample.
 
-## 6. Handoff
+## 6. Historical handoff (superseded for GitHub-hosted execution by the standard CI result)
 
 A different verified toolchain/package-enabled execution environment, or a repaired official SDK/package path plus usable verified local caches, is required before application implementation resumes. No application-security requirement is weakened. No backend endpoint, NGO authority, web authentication, W2 or finance work is added. Existing `f1adea79` remains an ancestor, and no documentation-only PR is opened.
 
