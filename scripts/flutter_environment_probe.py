@@ -68,4 +68,13 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as error:
+        # Official public URLs only; do not dump environment or credentials.
+        # Emit a bounded annotation because raw Actions log hosts may be
+        # inaccessible from the workspace even when api.github.com works.
+        message = f"SDK acquisition failed: {type(error).__name__}: {error}"
+        message = message[:1200].replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+        print(f"::error title=Flutter SDK acquisition::{message}", flush=True)
+        raise SystemExit(1) from None
