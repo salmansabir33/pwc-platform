@@ -14,6 +14,8 @@ root=Path(__file__).resolve().parent.parent/'apps/mobile/android'
 init=Path(os.environ['RUNNER_TEMP'])/'pwc-resolved-runtime.gradle'
 init.write_text(r'''gradle.projectsEvaluated {
     def application = gradle.rootProject.findProject(':app')
+    // Init scripts also execute in Flutter's included Gradle plugin build.
+    if (application == null) { return }
     application.tasks.register('pwcResolvedRuntime') {
         doLast {
             application.configurations.getByName('debugRuntimeClasspath').incoming.resolutionResult.allComponents.each { component ->
