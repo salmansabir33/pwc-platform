@@ -50,7 +50,7 @@ void main() {
   });
   test('native adapter stores a single versioned credential pair', () async {
     final store = NativeCredentialStore();
-    await store.replace(MobileSession.fromJson(sessionData()));
+    await store.replace(MobileSession.fromJson(sessionData()), lease: await store.lease());
     expect(memory.length, 1);
     final data = jsonDecode(memory.values.single) as Map;
     expect(data['version'], 1);
@@ -63,7 +63,7 @@ void main() {
     'reinstall binding mismatch wipes retained native credentials',
     () async {
       final store = NativeCredentialStore();
-      await store.replace(MobileSession.fromJson(sessionData()));
+      await store.replace(MobileSession.fromJson(sessionData()), lease: await store.lease());
       binding = 'synthetic-install-B';
       expect(await store.read(), null);
       expect(memory, isEmpty);
@@ -79,7 +79,7 @@ void main() {
     dropWrites = true;
     final store = NativeCredentialStore();
     await expectLater(
-      store.replace(MobileSession.fromJson(sessionData())),
+      store.replace(MobileSession.fromJson(sessionData()), lease: await store.lease()),
       throwsStateError,
     );
     expect(memory, isEmpty);
@@ -88,7 +88,7 @@ void main() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(privacy, (call) async => null);
     await expectLater(
-      NativeCredentialStore().replace(MobileSession.fromJson(sessionData())),
+      NativeCredentialStore().replace(MobileSession.fromJson(sessionData()), lease: 'unavailable-lease'),
       throwsStateError,
     );
     expect(memory, isEmpty);
@@ -97,7 +97,7 @@ void main() {
     'a pre-deletion encrypted snapshot is rejected after durable invalidation',
     () async {
       final store = NativeCredentialStore();
-      await store.replace(MobileSession.fromJson(sessionData()));
+      await store.replace(MobileSession.fromJson(sessionData()), lease: await store.lease());
       final oldRecord = memory.values.single;
       final oldBinding = binding;
       await store.clear();
@@ -108,4 +108,12 @@ void main() {
       expect(memory, isEmpty);
     },
   );
+  test('a lease captured before logout cannot bind a late credential write', () async {
+    final store = NativeCredentialStore();
+    final oldLease = await store.lease();
+    await store.clear();
+    await expectLater(store.replace(MobileSession.fromJson(sessionData()), lease: oldLease), throwsStateError);
+    expect(memory, isEmpty);
+  });
+
 }

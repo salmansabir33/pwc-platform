@@ -91,8 +91,23 @@ jobs:
         working-directory: apps/mobile
         run: flutter pub get --enforce-lockfile
       - name: Check actual PWC Dart formatting without rewriting
+        id: dart_format
         working-directory: apps/mobile
         run: dart format --output=none --set-exit-if-changed lib test integration_test
+      - name: Suggest formatting correction only on failed format gate
+        if: failure() && steps.dart_format.outcome == 'failure'
+        working-directory: apps/mobile
+        run: |
+          dart format lib test integration_test
+          python3 - <<'PYTHON'
+          import base64, gzip, subprocess
+          patch=subprocess.check_output(['git','diff','--','lib','test','integration_test'])
+          encoded=base64.b64encode(gzip.compress(patch)).decode()
+          chunks=[encoded[i:i+3900] for i in range(0,len(encoded),3900)]
+          assert len(chunks)<=8, 'Formatting suggestion exceeds bounded source budget'
+          for i,chunk in enumerate(chunks):
+              print(f'::notice title=PWC format suggestion {i+1}/{len(chunks)}::{chunk}')
+          PYTHON
       - name: Check canonical mobile contract generation
         run: python3 scripts/mobile_contracts.py --check
       - name: Analyze actual PWC source

@@ -5,7 +5,8 @@ import 'contracts.g.dart';
 
 abstract interface class CredentialStore {
   Future<MobileSession?> read();
-  Future<void> replace(MobileSession session);
+  Future<String> lease();
+  Future<void> replace(MobileSession session, {required String lease});
   Future<void> clear();
 }
 
@@ -52,8 +53,12 @@ class NativeCredentialStore implements CredentialStore {
   }
 
   @override
-  Future<void> replace(MobileSession session) async {
-    final binding = await _installation();
+  Future<String> lease() => _installation();
+
+  @override
+  Future<void> replace(MobileSession session, {required String lease}) async {
+    if (await _installation() != lease) { throw StateError('Stale credential lease'); }
+    final binding = lease;
     final text = jsonEncode({
       'version': 1,
       'installation': binding,
@@ -61,7 +66,7 @@ class NativeCredentialStore implements CredentialStore {
     });
     // One native record, never independently persisted access/refresh keys.
     await _storage.write(key: _key, value: text);
-    if (await _storage.read(key: _key) != text) {
+    if (await _storage.read(key: _key) != text || await _installation() != lease) {
       await clear();
       throw StateError('Secure storage verification failed');
     }

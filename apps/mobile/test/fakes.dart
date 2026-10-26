@@ -46,6 +46,9 @@ class MemoryStore implements CredentialStore {
   MobileSession? value;
   bool failRead = false, failWrite = false, failClear = false;
   int writes = 0;
+  int generation = 0;
+  Future<void>? writeGate;
+  Completer<void>? writeStarted;
   @override
   Future<MobileSession?> read() async {
     if (failRead) throw StateError('unavailable');
@@ -53,7 +56,12 @@ class MemoryStore implements CredentialStore {
   }
 
   @override
-  Future<void> replace(MobileSession session) async {
+  Future<String> lease() async => '$generation';
+  @override
+  Future<void> replace(MobileSession session, {required String lease}) async {
+    writeStarted?.complete();
+    if (writeGate != null) { await writeGate; }
+    if (lease != '$generation') { throw StateError('Stale lease'); }
     if (failWrite) throw StateError('unavailable');
     writes++;
     value = session;
@@ -62,6 +70,7 @@ class MemoryStore implements CredentialStore {
   @override
   Future<void> clear() async {
     if (failClear) throw StateError('unavailable');
+    generation++;
     value = null;
   }
 }

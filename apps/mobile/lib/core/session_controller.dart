@@ -140,6 +140,7 @@ class SessionController extends ChangeNotifier {
     MobileSession session,
     int captured, {
     required DateTime requestedAt,
+    required String lease,
   }) async {
     _fence(captured);
     _validateLifetime(session);
@@ -177,7 +178,7 @@ class SessionController extends ChangeNotifier {
         accessDeadline = bound;
       }
     }
-    await store.replace(session);
+    await store.replace(session, lease: lease);
     _fence(captured);
     if (!accessDeadline.isAfter(now())) {
       throw const ApiFailure('SESSION_INVALID');
@@ -218,6 +219,8 @@ class SessionController extends ChangeNotifier {
       throw StateError('Rotation preparation failed');
     }
     _fence(captured);
+    final lease = await store.lease();
+    _fence(captured);
     final requestedAt = now();
     final rotated = MobileSession.fromJson(
       (await api.call(
@@ -232,7 +235,7 @@ class SessionController extends ChangeNotifier {
         rotated.accessToken == old.accessToken) {
       throw const ApiFailure('SESSION_INVALID');
     }
-    await _accept(rotated, captured, requestedAt: requestedAt);
+    await _accept(rotated, captured, requestedAt: requestedAt, lease: lease);
   }
 
   Future<void> restore() => _serial((captured) async {
@@ -258,6 +261,8 @@ class SessionController extends ChangeNotifier {
     await _erase();
     _fence(captured);
     try {
+      final lease = await store.lease();
+      _fence(captured);
       final requestedAt = now();
       final reply = await api.call(
         'mobileLogin',
@@ -272,6 +277,7 @@ class SessionController extends ChangeNotifier {
           MobileSession.fromJson(reply.body),
           captured,
           requestedAt: requestedAt,
+          lease: lease,
         );
       }
     } catch (_) {
@@ -288,6 +294,8 @@ class SessionController extends ChangeNotifier {
           throw const ApiFailure('CHALLENGE_INVALID');
         }
         try {
+          final lease = await store.lease();
+          _fence(captured);
           final requestedAt = now();
           final result = await api.call(
             'mobileMfaConfirm',
@@ -303,6 +311,7 @@ class SessionController extends ChangeNotifier {
             MobileSession.fromJson(result.body),
             captured,
             requestedAt: requestedAt,
+          lease: lease,
           );
         } catch (_) {
           await _erase();
@@ -503,38 +512,62 @@ class SessionController extends ChangeNotifier {
     _notify();
     return result;
   });
+  // Dispatch invalidation immediately, not behind a blocked network/native
+  // write. A pre-issuance lease ensures an old writer cannot bind its record to
+  // the post-logout generation, even if its OS write completes after deletion.
+  Future<bool> _barrierNow() {
+    storageBlocked = true;
+    return store.clear().then((_) => true, onError: (Object _, StackTrace __) => false);
+  }
+  void _invalidatePending() {
+    final barrier = _barrierNow();
+    _tail = _tail.then((_) async {
+      await barrier;
+      await _erase();
+      _notify();
+    }).catchError((Object _, StackTrace __) {
+      storageBlocked = true;
+      error = 'FAILED';
+      _notify();
+    });
+  }
   Future<void> logout() {
     final old = _credentials;
     _epoch++;
     api.cancel();
+    final barrier = _barrierNow();
     _privateClear();
     suspended = false;
     _notify();
     return _serial((captured) async {
-      await _erase();
-      if (old == null) return;
-      try {
-        await api.call('logout', {}, access: old.accessToken);
-      } catch (_) {
-        error = 'LOGOUT_UNCONFIRMED';
-        _notify();
+      await barrier;
+      bool eraseFailed = false;
+      try { await _erase(); } catch (_) { eraseFailed = true; }
+      if (old != null) {
+        try { await api.call('logout', {}, access: old.accessToken); }
+        catch (_) { error = 'LOGOUT_UNCONFIRMED'; _notify(); }
       }
+      if (eraseFailed) { throw StateError('Secure deletion unconfirmed'); }
     });
   }
 
   void cancelCeremonies() {
+    final pending = busy;
     _epoch++;
     api.cancel();
     _transients();
     context.clear();
+    if (pending) { _privateClear(); suspended = true; _invalidatePending(); }
     _notify();
   }
 
   void suspend() {
+    final pending = busy;
     _epoch++;
     api.cancel();
     suspended = true;
     _privateClear();
+    if (pending) { _invalidatePending(); }
     _notify();
   }
 

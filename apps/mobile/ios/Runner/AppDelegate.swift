@@ -17,7 +17,7 @@ import UIKit
             let directory = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
             var marker = directory.appendingPathComponent("pwc-installation-v1")
             if !FileManager.default.fileExists(atPath: marker.path) || call.method == "invalidate" {
-              try UUID().uuidString.data(using: .utf8)!.write(to: marker, options: [.atomic, .completeFileProtection])
+              try UUID().uuidString.data(using: .utf8)!.write(to: marker, options: [.atomic, .noFileProtection])
               let handle = try FileHandle(forWritingTo: marker)
               try handle.synchronize()
               try handle.close()
