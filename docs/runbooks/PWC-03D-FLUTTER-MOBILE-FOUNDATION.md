@@ -105,3 +105,7 @@ Before the consolidated PWC-03D PR: contract parsing/error/environment tests; re
 This checkpoint changed documentation only. Flutter/Dart analysis, mobile tests and Android/iOS builds are **not run**. Backend/web regressions were not rerun because their implementation and dependencies were not modified; previous CI results must not be presented as mobile evidence.
 
 See [the blocked mobile review record](../reviews/PWC-03D-MOBILE-INTEGRATION-REVIEW.md). Resume the same PWC-03D assignment after the environment dependency is resolved; do not proceed to NGO onboarding, W2, finance or deployment.
+
+## Environment recovery follow-up
+
+The [environment diagnostic](PWC-03D-FLUTTER-ENVIRONMENT-DIAGNOSTIC.md) supersedes the earlier untested Actions observation: two actual isolated GitHub probe runs now exist, but SDK acquisition failed; no Flutter analysis/test/build ran. Local DNS/TCP work while TLS closes for required artifact/package hosts. A restricted, checksum/revision-validating environment workflow and installer were added, not PWC application CI or mobile implementation. The exact remote HTTP 404 and minimum Linux setup are recorded there. The original `f1adea79` checkpoint remains preserved; PWC-03D is still incomplete and no PR is opened.

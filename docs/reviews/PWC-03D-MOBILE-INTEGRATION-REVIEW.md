@@ -62,3 +62,7 @@ Do not substitute previously reported PWC-03C backend/web counts for PWC-03D res
 5. Only after implementation and validation, make tested incremental checkpoints and prepare the single consolidated PWC-03D PR with an actual security verdict. Do not merge automatically.
 
 Live email delivery, trusted HTTPS/Host/Origin/source-IP acceptance, real NGO verification/authority and deployment remain independent gates even after the toolchain becomes available. Shared audit and private-file primitives remain separately scoped. No NGO onboarding, W2 or finance work begins here.
+
+## Environment-recovery addendum
+
+See the [precise recovery diagnostic](../runbooks/PWC-03D-FLUTTER-ENVIRONMENT-DIAGNOSTIC.md). GitHub execution was tested, rather than inferred: the annotated official-SDK probe [40252904537](https://github.com/salmansabir33/pwc-platform/actions/runs/40252904537) failed fetching release metadata with HTTP 404. All downstream Flutter/sample validation steps were skipped. The runner reported Java/Javac on PATH, not Flutter/Dart/adb/sdkmanager; complete Android capability is unverified. Local repeated probes establish working DNS/TCP but early TLS closure for pub/Flutter/Android hosts, with verified TLS controls succeeding elsewhere. No insecure TLS, mirror, app implementation or mobile test success is substituted. The added diagnostic workflow is not a delivered mobile application or a completed security review; the verdict remains **not implemented / not merge-ready**.
