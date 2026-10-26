@@ -1,23 +1,27 @@
-name: Flutter CI baseline (upstream smoke only)
+name: PWC mobile Flutter CI
 on:
   push:
     branches: [main, arena/f54f895c-pwc-platform]
     paths:
       - .github/workflows/flutter-environment.yml
       - scripts/flutter_environment_probe.py
+      - scripts/mobile_*.py
+      - packages/api-contracts/**
       - apps/mobile/**
   pull_request:
     branches: [main]
     paths:
       - .github/workflows/flutter-environment.yml
       - scripts/flutter_environment_probe.py
+      - scripts/mobile_*.py
+      - packages/api-contracts/**
       - apps/mobile/**
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
   smoke:
-    name: Ubuntu Flutter setup and disposable smoke test (not PWC app tests)
+    name: Actual PWC mobile source validation (bootstrap checkpoint)
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     env:
@@ -79,38 +83,38 @@ jobs:
           assert data['name'] == 'flutter_lints'
           print(f"::notice title=Registry HTTPS::pub.dev flutter_lints metadata retrieved; latest {data['latest']['version']}")
           PYTHON
-      - name: Create disposable upstream sample without resolving dependencies
-        run: flutter create --no-pub --platforms=android --project-name=pwc_ci_smoke "$RUNNER_TEMP/pwc_ci_smoke"
-      - name: Resolve real sample dependencies from pub.dev
-        working-directory: ${{ runner.temp }}/pwc_ci_smoke
+      - name: Bootstrap native project source (temporary acquisition checkpoint)
+        run: |
+          flutter create --no-pub --org=pk.org.pwc --platforms=android,ios --project-name=pwc_mobile "$RUNNER_TEMP/pwc_native"
+          cp -R "$RUNNER_TEMP/pwc_native/android" "$RUNNER_TEMP/pwc_native/ios" apps/mobile/
+          cp "$RUNNER_TEMP/pwc_native/.metadata" apps/mobile/
+      - name: Resolve actual PWC dependencies
+        working-directory: apps/mobile
         run: flutter pub get
-      - name: Check sample Dart formatting
-        working-directory: ${{ runner.temp }}/pwc_ci_smoke
-        run: dart format --output=none --set-exit-if-changed lib test
-      - name: Analyze sample
-        working-directory: ${{ runner.temp }}/pwc_ci_smoke
+      - name: Canonicalize actual project Dart source (bootstrap only)
+        working-directory: apps/mobile
+        run: dart format lib test
+      - name: Capture source-only native templates and real lockfile
+        run: python3 scripts/mobile_ci_evidence.py
+      - name: Analyze actual PWC source
+        working-directory: apps/mobile
         run: |
-          flutter analyze --no-pub
-          echo '::notice title=Sample analysis::flutter analyze --no-pub passed'
-      - name: Run upstream counter widget smoke test
-        working-directory: ${{ runner.temp }}/pwc_ci_smoke
+          set -o pipefail
+          flutter analyze --no-pub 2>&1 | tee "$RUNNER_TEMP/pwc-analyze.txt"
+      - name: Test actual PWC contracts
+        working-directory: apps/mobile
         run: |
-          set -euo pipefail
-          flutter test --no-pub --reporter expanded
-          echo '::notice title=Upstream smoke tests::Generated counter widget smoke test passed (not PWC application tests)'
-      - name: Record setup outcome and limited scope
+          set -o pipefail
+          flutter test --no-pub --reporter expanded 2>&1 | tee "$RUNNER_TEMP/pwc-tests.txt"
+      - name: Bounded source diagnostics
         if: always()
-        env:
-          STEP_RESULTS: ${{ toJSON(steps) }}
         run: |
           python3 - <<'PYTHON'
-          import json, os
-          steps = json.loads(os.environ['STEP_RESULTS'])
-          print(f"::notice title=Standard Flutter setup outcome::{steps.get('setup', {}).get('outcome', 'unknown')}; later steps must be inspected individually")
-          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
-              summary.write('## Standard Flutter environment smoke verification\n\n')
-              summary.write('Pinned Flutter 3.35.7 stable, pinned subosito/flutter-action v2 revision. No cache/mirror/TLS bypass.\n\n')
-              summary.write('Only an upstream generated sample in RUNNER_TEMP is exercised. No PWC identity, storage, MFA, localization or security functionality is implemented/tested.\n\n')
-              summary.write('No Android build, iOS/Xcode/device acceptance or application dependency compatibility is claimed. Doctor output is diagnostic, not a native build pass.\n\n')
-              summary.write('See individual job steps for exact failures/skips; missing checks are not passes. No SDK, cache or generated project is committed/uploaded.\n')
+          import os
+          from pathlib import Path
+          for name in ('pwc-analyze.txt','pwc-tests.txt'):
+              path=Path(os.environ['RUNNER_TEMP'])/name
+              if path.exists():
+                  text=path.read_text()[-12000:].replace('%','%25').replace('\r','%0D').replace('\n','%0A')
+                  print(f'::notice title={name}::{text}')
           PYTHON
