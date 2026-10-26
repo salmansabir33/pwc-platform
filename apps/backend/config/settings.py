@@ -133,3 +133,6 @@ SECURE_SSL_REDIRECT = PWC_ENVIRONMENT in {"staging", "production"}
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_REFERRER_POLICY = "no-referrer"
 X_FRAME_OPTIONS = "DENY"
+
+# Claimant-only 04A synthetic exercise; real intake/production remain gated.
+PWC_REGISTRY_ENABLED = ENVIRONMENT["PWC_REGISTRY_ENABLED"]

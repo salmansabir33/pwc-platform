@@ -399,6 +399,13 @@ class SecurityFoundationTests(TestCase):
 
 
 class MigrationCompatibilityTests(TransactionTestCase):
+    def tearDown(self):
+        # Historical targets must not leave later-app migrations unapplied for
+        # following tests (04A adds organizations leaves beyond the old target).
+        executor = MigrationExecutor(connection)
+        executor.migrate(executor.loader.graph.leaf_nodes())
+        super().tearDown()
+
     old = [
         ("accounts", "0002_alter_user_options_alter_user_is_active"),
         ("organizations", "0002_alter_organizationaccess_id_and_more"),

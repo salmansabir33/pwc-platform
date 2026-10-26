@@ -137,6 +137,7 @@ AUTH = [
     ("clearHold", "recovery-hold/clear/", "post", "personal", "ClearHold", 204, None, "mfa"),
 ]
 GATES = {
+    "registry": ["PWC_REGISTRY_ENABLED", "PWC_AUTH_SESSIONS_ENABLED"],
     "flows": ["PWC_AUTH_FLOWS_ENABLED"],
     "sessions": ["PWC_AUTH_SESSIONS_ENABLED"],
     "mfa": ["PWC_AUTH_SESSIONS_ENABLED", "PWC_AUTH_MFA_ENABLED"],
@@ -248,6 +249,9 @@ def build():
     definitions["PublicMetadata"] = {"type": "object", "description": "DRF SimpleMetadata; not capabilities or authority"}
     definitions["PublicOrganizations"] = arr(ref("PublicOrganization"))
     assert settings.SESSION_COOKIE_NAME == "__Host-pwc_session"
+    from organizations.registry_contract import paths as registry_paths, definitions as registry_definitions
+    paths.update(registry_paths())
+    definitions.update(registry_definitions())
     return {"openapi": "3.1.0", "info": {"title": "PWC implemented API contracts", "version": VERSION,
         "description": "Versioned offline contract of existing Django APIs. No planned routes included. /api/v1 is the API major; info.version is the contract release. No runtime version-header negotiation exists."},
         "servers": [{"url": "/"}], "paths": paths,
