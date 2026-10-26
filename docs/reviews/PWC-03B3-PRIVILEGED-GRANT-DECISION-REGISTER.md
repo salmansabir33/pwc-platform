@@ -2,7 +2,7 @@
 
 **Date:** 24 October 2026
 
-**Status: REVIEW PROPOSALS — NOT PRODUCT/SECURITY APPROVAL; COMMAND IMPLEMENTATION BLOCKED**
+**Status: PRODUCT-POLICY DISPOSITION RECORDED 27 OCTOBER 2026 — SECURITY/CONTRACT GATES REMAIN; COMMAND IMPLEMENTATION BLOCKED**
 
 **Reviewed foundation:** `c443b60aa12eb7a5d63f6d2d2f4448eaf29815e6` (03B.2), including predecessor `b42bd0ec791f766aaf83fb9c5102d9bb9376e9d0` (03B.1).
 
@@ -14,11 +14,11 @@ The core shared-schema architecture, synthetic read contexts, immutable `ngo_ker
 
 Neither current bundle has a grant-management atom. `ngo_kernel_admin_probe / 1` is not a real administrator or grant issuer. `FixtureBatch` is an offline synthetic writer, not a command authorization source. Existing grant source/process constraints describe `synthetic_fixture` / `kernel_fixture_v1`; a human HTTP command must not falsely record itself as that process. Personal-only assurance registration does not implement NGO intents.
 
-**A passed foundation suite or merger into main would not approve any of the following decisions.** All recommendations below remain proposals until named product/security owners accept a dated, explicit command contract. The owners listed are required reviewer functions, not claims that any particular person has approved anything.
+**A passed foundation suite or merger into main does not approve privileged commands.** The explicit product-owner instruction of **27 October 2026** now adopts concrete product direction and conditionally endorses technical/cross-owner recommendations; see §5 and the consolidated matrix. No complete security/command contract or independent reviewer approval is inferred. The owner functions in the original rows still identify required approvals, not claims that those reviewers accepted them.
 
 ## 2. Required decisions before any human privileged-command slice
 
-Each entry is **UNRESOLVED / BLOCKING the affected command implementation**. No grant-management routes, new actions, proof operations or schema changes are introduced by this register.
+Each entry retains an **unresolved security/contract gate blocking the affected command implementation**. The unchanged rows below are the **original 24 October 2026 proposal record**, including required evidence; their “not approved” column refers to that historical scope. Current product dispositions are in §5 and the consolidated thirty-decision matrix. No grant-management routes, new actions, proof operations or schema changes are introduced.
 
 | ID / ADR link | Precise approval required | Recommended bounded option (not approved) | Required owner / acceptance evidence |
 |---|---|---|---|
@@ -50,6 +50,19 @@ These are **not blockers for merging the default-off synthetic read foundation**
 
 ## 4. Approval record and next assignment
 
-Every approved entry must name the accepted option, accountable owner/reviewer, date, command/version scope, amended contract reference, acceptance tests and remaining exclusions. None is recorded as approved in this document. Core ADR acceptance on 24 October 2026 does not imply acceptance of these new command details.
+Every approved entry must name the accepted option, accountable owner/reviewer, date, command/version scope, amended contract reference, acceptance tests and remaining exclusions. The product portion is recorded below; no complete command contract or separate security/NGO-governance/legal/privacy/operations approval is recorded. Core ADR acceptance on 24 October 2026 did not approve these command details.
 
-**Recommended next decision task:** a design-only PWC-03B.3 command contract/approval pack addressing GM01–GM12, with an explicit synthetic-only versus real boundary. Do not start command implementation until the affected approvals are recorded. If approved later, use a separate PR from the foundation integration PR. REAL01–REAL04 remain independent activation gates; resolving synthetic commands cannot close them.
+**Remaining decision work (not started):** a design-only PWC-03B.3 command contract/approval pack addressing GM01–GM12, with an explicit synthetic-only versus real boundary. Do not start command implementation until the affected approvals are recorded. If approved later, use a separate PR from the foundation integration PR. REAL01–REAL04 remain independent activation gates; resolving synthetic commands cannot close them.
+
+## 5. Product-owner disposition — 27 October 2026
+
+**Approval source:** the PWC product owner's explicit “Consolidated Owner Approval of NGO Authority Policies” instruction in this conversation, 27 October 2026 (Asia/Karachi). Inspected main includes merged PR #9 at `b6eac75426571109f76b78884d3aaa39e2272179`. This is recording an owner decision, not agent self-approval or a new roadmap subphase.
+
+The authoritative per-ID disposition, remaining reviewer functions, exact blockers, alternatives/source preservation and conflict analysis for **all E01–E18 and GM01–GM12** are in [the consolidated matrix, §8](PWC-02E-VERIFICATION-AUTHORITY-DECISION-REGISTER.md#8-consolidated-product-owner-approval--27-october-2026). The original rows above remain intact.
+
+- **P — concrete product direction adopted:** GM01 synthetic-first scope/exclusions (not a complete allowlist); GM03 audited one-time synthetic bootstrap without legacy promotion; GM05 same-batch/nonmatching/no-hold-bypass boundaries with unchanged synthetic ceiling; GM09 no self-escalation and no compromised-last-admin immunity.
+- **C — conditional product endorsement, incomplete technical/cross-owner decision:** GM02, GM04, GM06, GM07, GM08, GM10, GM11, GM12. Their concrete safeguards are endorsed; exact atoms/matrices/source models/assurance/failure/lock/writer/wire contracts are not invented or declared approved.
+- **All twelve still block their affected command implementation.** GM01's “preferably” issue/revoke subset is not an exact signed command charter; GM06's factor-removal versus protected-action-unavailability branch is unchosen. Two E03 platform reviewers are not a GM09 NGO quorum. E05 real-grant upper bounds do not amend GM05's synthetic 24-hour ceiling or personal proof lifetimes.
+- REAL01–REAL04 retain their independent activation/evidence/deployment gates after the product portion is recorded. E03 evidence-based **real** mandate review cannot be replaced by GM03 fixture bootstrap. E15 one-hop delegation remains disabled initially; no finance/signatory/support powers or synthetic-to-real source conversion follow.
+
+ADR-0002's approved core, immutable v1 bundles, current-session/hold checks, tenant scope, immediate committed revocation, source provenance and atomic audited transition requirements are preserved. Existing personal-only assurance, runtime DB restrictions and default-off production profiles remain unchanged. No implementation, migration, activation or automatic merge is authorized by this recording step.
