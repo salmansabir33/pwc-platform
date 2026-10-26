@@ -67,6 +67,8 @@ def check_lock(path, specs):
                 raise ValueError("Invalid lock hash")
             hashes += 1
         else:
+            if not line.endswith(" " + chr(92)):
+                raise ValueError("Missing lock continuation")
             if headers and not hashes:
                 raise ValueError("Missing lock hashes")
             match = re.fullmatch(

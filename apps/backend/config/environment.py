@@ -50,6 +50,9 @@ def origin(value, key):
             or parsed.username is not None
             or parsed.password is not None
             or parsed.path
+            or "?" in value
+            or "#" in value
+            or parsed.netloc.endswith(":")
             or parsed.query
             or parsed.fragment
             or parsed.port == 0

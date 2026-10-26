@@ -37,10 +37,10 @@ jobs:
         working-directory: apps/backend
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: ${{ matrix.python }}
           cache: pip
@@ -71,13 +71,29 @@ jobs:
         if: matrix.python == '3.12'
         working-directory: .
         run: python scripts/python_dependency_review.py
-      - run: coverage run --source=accounts,access,organizations,config,contracts manage.py test --testrunner contracts.testing.ContractRunner --verbosity 2
+      - name: Complete backend contract-instrumented regression suite
+        run: |
+          set -o pipefail
+          coverage run --source=accounts,access,organizations,config,contracts manage.py test --testrunner contracts.testing.ContractRunner --verbosity 2 2>&1 | tee "$RUNNER_TEMP/pwc-backend-tests.txt"
+      - name: Redacted backend count evidence
+        if: always()
+        run: |
+          python - <<'PYTHON'
+          import os, re
+          from pathlib import Path
+          path = Path(os.environ['RUNNER_TEMP']) / 'pwc-backend-tests.txt'
+          if path.exists():
+              text = path.read_text()
+              for pattern in (r'Ran [0-9]+ tests in [0-9.]+s', r'Contract runner checked [0-9]+ distinct route/method/status combinations'):
+                  for value in re.findall(pattern, text):
+                      print('::notice title=Backend execution evidence::' + value)
+          PYTHON
       - name: Backend coverage evidence
         if: always() && hashFiles('apps/backend/.coverage') != ''
         run: coverage xml -o coverage.xml && coverage report
       - name: Retain backend coverage
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: backend-coverage-${{ matrix.python }}
           path: apps/backend/coverage.xml
