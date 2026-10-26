@@ -97,6 +97,25 @@ Initial inspection verified clean assigned branch equal to freshly fetched `orig
 
 Documentation validation and final checkpoint evidence are recorded below after the review pass. Production workflow tests VA01–VA20 are specified only: **NOT IMPLEMENTED / NOT RUN**. This package does not claim to rerun PostgreSQL races, real document storage, native devices or iOS/Xcode tests. Existing CI checks, when run by GitHub on these documentation commits, validate unchanged foundations, not the proposed policy.
 
+### 6.1 Review corrections and executed documentation checks
+
+The initial complete proposal was normally committed/pushed as `a0627d605a79caf62f22ca806d29a46cf978eaf0`. The final review pass made these documentation corrections, without changing any authority implementation:
+
+1. Added explicit cross-machine synchronization: organization/source invalidation fences workspace eligibility and publication atomically; restoration cannot silently resume disputed/revoked grants or old activation controls. Verified-but-unpublished workspaces require a real publication integration, not reliance on today's four-field queryset.
+2. Distinguished reviewer eligibility at decision time from later normal employment/session expiry. A legitimate historical decision persists; fresh decisions need current authority, and compromised decisions require explicit restriction/re-review. Activation does not require historical reviewers to stay logged in.
+3. Recorded residual collusion, undeclared conflicts, external forgery, privileged DB/configuration ownership and already-delivered document risks rather than representing two accounts or constraints as proof of authenticity.
+
+Executed on the final documentation content:
+
+- `git fetch origin main` and `git fetch --unshallow origin main`: main remains the inspected base; retrieved history without changing branches or rewriting commits.
+- `git merge-base --is-ancestor <merge-sha> HEAD` for PRs #3–#7: **PASS** for `889fc2f`, `cb4ae6c`, `cf82dec`, `0445840` and `beffabf`.
+- Sandbox-only validation helper `/home/user/pwc-02e-validate.py`: **PASS**. Asserted four-file documentation-only changed/untracked scope, exact proposed statuses, **35 valid local links**, twelve complete actor/precondition/evidence/decision/transition/action/audit/notification/failure/security/privacy workflow checklists, E01–E18 decision entries, VA01–VA20 threat criteria and **16 proposed API table rows, each explicitly NOT IMPLEMENTED**. This checks document structure, not policy truth or runtime security.
+- Compared SHA256 bytes for **222 tracked protected files** against `origin/main`: **PASS** for all application code, migrations, API packages/contracts, scripts, workflows, infrastructure, product drafts, existing ADRs, AGENTS and README. All other tracked paths are also outside the four-file diff. No dependency/SDK/generated artifact/credential changes.
+- Parsed existing canonical OpenAPI: **3.1.0, 32 paths, 47 operations, 39 schemas**, unchanged. No proposed endpoint entered that contract.
+- `npx --yes prettier@3.9.10 --check` for the four changed Markdown files: **PASS**; `git diff --check`: **PASS**. Formatting does not approve semantics.
+
+The final commit and consolidated PR are reported in the handoff rather than embedded as a self-referential SHA. GitHub's backend/web checks are inspected on the exact final PR head after push; their results are CI regression evidence for unchanged foundations, not execution of VA01–VA20. Flutter CI is path-filtered and is not required or claimed rerun for this documentation-only diff. Independent human product/security/legal/NGO review remains **NOT PERFORMED / APPROVAL REQUIRED**.
+
 ## 7. Readiness verdict
 
 **Design package ready for human product/security/NGO-policy review, with legal/privacy/operations decisions explicitly assigned. Not approved for authority activation or production evidence intake.** No Critical/High implementation vulnerability is claimed resolved by a document; threat controls and acceptance criteria require later implementation and independent validation. No production authority functionality, Django migration, API artifact, existing ADR or business module is changed. Do not start PWC-03B.3 or PWC-04 automatically.
