@@ -10,11 +10,26 @@ import re
 import subprocess
 import urllib.request
 root=Path(__file__).resolve().parent.parent/'apps/mobile/android'
-text=subprocess.check_output(['./gradlew',':app:dependencies','--configuration','debugRuntimeClasspath','--console=plain'],cwd=root,text=True)
+# Inspect selected components, not textual constraints or evicted graph versions.
+init=Path(os.environ['RUNNER_TEMP'])/'pwc-resolved-runtime.gradle'
+init.write_text(r'''gradle.projectsEvaluated {
+    def application = gradle.rootProject.findProject(':app')
+    application.tasks.register('pwcResolvedRuntime') {
+        doLast {
+            application.configurations.getByName('debugRuntimeClasspath').incoming.resolutionResult.allComponents.each { component ->
+                def id = component.id
+                if (id instanceof org.gradle.api.artifacts.component.ModuleComponentIdentifier) {
+                    println("PWC_RESOLVED|${id.group}:${id.module}|${id.version}")
+                }
+            }
+        }
+    }
+}
+''')
+text=subprocess.check_output(['./gradlew','-I',str(init),':app:pwcResolvedRuntime','--console=plain'],cwd=root,text=True)
 coordinates=set()
-for name,version,selected in re.findall(r'([A-Za-z0-9_.-]+:[A-Za-z0-9_.-]+):([^\s:]+)(?: -> ([^\s]+))?',text):
-    version=selected or version
-    if name.startswith('io.flutter:') or not re.fullmatch(r'[0-9][A-Za-z0-9_.+-]*',version):continue
+for name,version in re.findall(r'^PWC_RESOLVED\|([^|]+)\|([^|\s]+)$',text,re.MULTILINE):
+    if name.startswith('io.flutter:'):continue
     coordinates.add((name,version))
 assert coordinates,'No resolved Android Maven coordinates captured'
 coordinates=sorted(coordinates)
