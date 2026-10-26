@@ -1,5 +1,7 @@
 # PWC-03D — Standard Flutter CI verification
 
+**Current implementation update:** The standard pinned Flutter/Dart setup is retained, but the workflow now validates the actual `apps/mobile` project, not the disposable sample. See the [foundation runbook](PWC-03D-FLUTTER-MOBILE-FOUNDATION.md) and [integration review](../reviews/PWC-03D-MOBILE-INTEGRATION-REVIEW.md) for actual PWC source/test/build evidence and final pins. The sample-only scope/results below remain historical proof of SDK acquisition, not current application coverage. Checkout/setup-java pins were advanced to reviewed maintained v6/v5 revisions in the mobile workflow; Flutter 3.35.7 / Dart 3.9.2 and the pinned subosito v2 revision remain unchanged.
+
 ## Scope and pins
 
 This verifies standard GitHub-hosted Ubuntu setup, not the PWC application. No mobile features, PR, Android build or iOS/device acceptance are delivered by this check.

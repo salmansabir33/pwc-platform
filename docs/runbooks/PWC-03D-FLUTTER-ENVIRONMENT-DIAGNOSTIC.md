@@ -2,6 +2,8 @@
 
 Date: 26 October 2026.
 
+**Implementation update:** the same PWC-03D assignment has resumed using verified GitHub-hosted Flutter. Actual app source, real resolver lockfile, personal identity/security flows and Android compilation now exist. See the [current foundation runbook](PWC-03D-FLUTTER-MOBILE-FOUNDATION.md) and [current integration review](../reviews/PWC-03D-MOBILE-INTEGRATION-REVIEW.md). The blocked/unimplemented verdicts below are historical environment checkpoints, not the current source status. No local Arena Flutter execution is implied.
+
 **Current update:** [standard Flutter CI verification succeeded](PWC-03D-STANDARD-FLUTTER-CI.md), including real SDK installation, pub dependency resolution, analysis and generated widget smoke testing on GitHub-hosted Ubuntu. The local Arena restrictions below remain, but a separate CI execution environment is no longer an unproven fallback. This document preserves the historical custom-probe results; it must not be read as a current assertion that GitHub Actions cannot run Flutter.
 
 **Historical local outcome: Arena remains unable to run Flutter. PWC-03D application implementation is stopped, incomplete and not merge-ready. No PR is opened.** This is environment recovery in the same subphase, not a reduced implementation ticket. No mobile authentication, secure storage, MFA, screen or application test has been delivered.
