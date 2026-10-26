@@ -399,50 +399,119 @@ void main() {
     expect(session.enrollment, null);
     expect(store.value!.toJson().containsKey('recovery_codes'), false);
   });
-  test('recovery-code preauth completion uses no session authority before me',()async{
-    api.handler=(op,b,a,id)async{
-      if(op=='mobileLogin')return const ApiReply(202,{'status':'mfa_required','challenge_id':intentId,'preauth_control':'synthetic-control','expires_in':60});
-      if(op=='mobileMfaConfirm'){
-        expect(a,null);expect(b,{'challenge_id':intentId,'preauth_control':'synthetic-control','method':'recovery_code','code':'synthetic-code'});
-        return ApiReply(200,sessionData(hold:'restricted'));
-      }
-      if(op=='me')return ApiReply(200,meData(hold:'restricted'));
-      throw StateError('unexpected');
-    };
-    await login();expect(session.authenticated,false);
-    await session.completeMfa('recovery_code','synthetic-code');
-    expect(session.authenticated,true);expect(session.hold,'restricted');expect(session.challenge,null);
-  });
-  for(final entry in {'mfa.remove':'removeMfa','sessions.logout_all':'logoutAll','mfa.recovery_codes.rotate':'rotateRecovery'}.entries){
-    test('single-use assurance ${entry.key} has correct local lifecycle',()async{
-      await login();
-      api.handler=(op,b,a,id)async{
-        final expires=clock.add(const Duration(minutes:5)).toIso8601String();
-        if(op=='createIntent')return ApiReply(201,{'intent_id':intentId,'expires_at':expires,'required_methods':['password','totp']});
-        if(op=='stepUp')return ApiReply(200,{'assurance_proof':'synthetic-proof','expires_at':expires});
-        if(op==entry.value){expect(b,{'assurance_proof':'synthetic-proof'});return entry.value=='rotateRecovery'?const ApiReply(200,{'recovery_codes':['synthetic-code']}):const ApiReply(204,{});}
-        if(op=='me')return ApiReply(200,meData());
+  test(
+    'recovery-code preauth completion uses no session authority before me',
+    () async {
+      api.handler = (op, b, a, id) async {
+        if (op == 'mobileLogin') {
+          return const ApiReply(202, {
+            'status': 'mfa_required',
+            'challenge_id': intentId,
+            'preauth_control': 'synthetic-control',
+            'expires_in': 60,
+          });
+        }
+        if (op == 'mobileMfaConfirm') {
+          expect(a, null);
+          expect(b, {
+            'challenge_id': intentId,
+            'preauth_control': 'synthetic-control',
+            'method': 'recovery_code',
+            'code': 'synthetic-code',
+          });
+          return ApiReply(200, sessionData(hold: 'restricted'));
+        }
+        if (op == 'me') return ApiReply(200, meData(hold: 'restricted'));
         throw StateError('unexpected');
       };
-      final reply=await session.securityCommand(entry.key,'synthetic-password','123456');
-      expect(api.calls.where((c)=>c.$1==entry.value).length,1);
-      if(entry.value=='rotateRecovery'){
-        expect(session.authenticated,true);expect(RecoveryCodes.fromJson(reply.body).recoveryCodes,['synthetic-code']);
-      }else{expect(session.authenticated,false);expect(store.value,null);}
-    });
+      await login();
+      expect(session.authenticated, false);
+      await session.completeMfa('recovery_code', 'synthetic-code');
+      expect(session.authenticated, true);
+      expect(session.hold, 'restricted');
+      expect(session.challenge, null);
+    },
+  );
+  for (final entry in {
+    'mfa.remove': 'removeMfa',
+    'sessions.logout_all': 'logoutAll',
+    'mfa.recovery_codes.rotate': 'rotateRecovery',
+  }.entries) {
+    test(
+      'single-use assurance ${entry.key} has correct local lifecycle',
+      () async {
+        await login();
+        api.handler = (op, b, a, id) async {
+          final expires = clock
+              .add(const Duration(minutes: 5))
+              .toIso8601String();
+          if (op == 'createIntent') {
+            return ApiReply(201, {
+              'intent_id': intentId,
+              'expires_at': expires,
+              'required_methods': ['password', 'totp'],
+            });
+          }
+          if (op == 'stepUp') {
+            return ApiReply(200, {
+              'assurance_proof': 'synthetic-proof',
+              'expires_at': expires,
+            });
+          }
+          if (op == entry.value) {
+            expect(b, {'assurance_proof': 'synthetic-proof'});
+            return entry.value == 'rotateRecovery'
+                ? const ApiReply(200, {
+                    'recovery_codes': ['synthetic-code'],
+                  })
+                : const ApiReply(204, {});
+          }
+          if (op == 'me') return ApiReply(200, meData());
+          throw StateError('unexpected');
+        };
+        final reply = await session.securityCommand(
+          entry.key,
+          'synthetic-password',
+          '123456',
+        );
+        expect(api.calls.where((c) => c.$1 == entry.value).length, 1);
+        if (entry.value == 'rotateRecovery') {
+          expect(session.authenticated, true);
+          expect(RecoveryCodes.fromJson(reply.body).recoveryCodes, [
+            'synthetic-code',
+          ]);
+        } else {
+          expect(session.authenticated, false);
+          expect(store.value, null);
+        }
+      },
+    );
   }
-  test('a rotated response cannot reuse either old credential',()async{
-    await login();clock=clock.add(const Duration(seconds:301));
-    api.handler=(op,b,a,id)async=>ApiReply(200,sessionData(access:'new-access',refresh:'synthetic-refresh-1'));
-    await expectLater(session.readSecurity('sessions'),throwsA(isA<ApiFailure>()));expect(store.value,null);expect(session.authenticated,false);
+  test('a rotated response cannot reuse either old credential', () async {
+    await login();
+    clock = clock.add(const Duration(seconds: 301));
+    api.handler = (op, b, a, id) async => ApiReply(
+      200,
+      sessionData(access: 'new-access', refresh: 'synthetic-refresh-1'),
+    );
+    await expectLater(
+      session.readSecurity('sessions'),
+      throwsA(isA<ApiFailure>()),
+    );
+    expect(store.value, null);
+    expect(session.authenticated, false);
   });
 
-  test('slow issuance cannot extend the local access deadline',()async{
-    api.handler=(op,b,a,id)async{
-      if(op=='mobileLogin'){clock=clock.add(const Duration(seconds:301));return ApiReply(200,sessionData());}
-      return ApiReply(200,meData());
+  test('slow issuance cannot extend the local access deadline', () async {
+    api.handler = (op, b, a, id) async {
+      if (op == 'mobileLogin') {
+        clock = clock.add(const Duration(seconds: 301));
+        return ApiReply(200, sessionData());
+      }
+      return ApiReply(200, meData());
     };
-    await expectLater(login(),throwsA(isA<ApiFailure>()));expect(store.value,null);expect(session.authenticated,false);
+    await expectLater(login(), throwsA(isA<ApiFailure>()));
+    expect(store.value, null);
+    expect(session.authenticated, false);
   });
-
 }

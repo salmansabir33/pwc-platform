@@ -22,8 +22,8 @@ class SecretField extends StatelessWidget {
       enableInteractiveSelection: !secret,
       autocorrect: false,
       enableSuggestions: false,
-        enableIMEPersonalizedLearning: false,
-      autofillHints: const [],
+      enableIMEPersonalizedLearning: false,
+      autofillHints: null,
       textInputAction: TextInputAction.next,
       decoration: InputDecoration(
         labelText: translated(label, ur),

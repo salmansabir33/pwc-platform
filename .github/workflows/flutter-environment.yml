@@ -17,11 +17,14 @@ on:
       - packages/api-contracts/**
       - apps/mobile/**
   workflow_dispatch:
+concurrency:
+  group: pwc-mobile-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
   smoke:
-    name: Actual PWC mobile source validation (bootstrap checkpoint)
+    name: PWC mobile locked dependencies, format, contracts, analysis and tests
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     env:
@@ -86,33 +89,12 @@ jobs:
           PYTHON
       - name: Resolve actual PWC dependencies
         working-directory: apps/mobile
-        run: flutter pub get
-      - name: Canonicalize actual project Dart source (bootstrap only)
+        run: flutter pub get --enforce-lockfile
+      - name: Check actual PWC Dart formatting without rewriting
         working-directory: apps/mobile
-        run: |
-          dart format lib test integration_test
-          dart fix --apply
-          dart format lib test integration_test
-      - name: Source-only bootstrap batch 1
-        env:
-          EVIDENCE_GROUP: "0"
-        run: python3 scripts/mobile_ci_evidence.py
-      - name: Source-only bootstrap batch 2
-        env:
-          EVIDENCE_GROUP: "1"
-        run: python3 scripts/mobile_ci_evidence.py
-      - name: Source-only bootstrap batch 3
-        env:
-          EVIDENCE_GROUP: "2"
-        run: python3 scripts/mobile_ci_evidence.py
-      - name: Source-only bootstrap batch 4
-        env:
-          EVIDENCE_GROUP: "3"
-        run: python3 scripts/mobile_ci_evidence.py
-      - name: Source-only bootstrap batch 5
-        env:
-          EVIDENCE_GROUP: "4"
-        run: python3 scripts/mobile_ci_evidence.py
+        run: dart format --output=none --set-exit-if-changed lib test integration_test
+      - name: Check canonical mobile contract generation
+        run: python3 scripts/mobile_contracts.py --check
       - name: Analyze actual PWC source
         working-directory: apps/mobile
         run: |
@@ -173,12 +155,17 @@ jobs:
           "$SDKMANAGER" "platform-tools" "platforms;android-36" "build-tools;35.0.0" "ndk;27.0.12077973"
       - name: Resolve actual PWC mobile packages
         working-directory: apps/mobile
-        run: flutter pub get
+        run: flutter pub get --enforce-lockfile
       - name: Build actual PWC Android debug APK
         working-directory: apps/mobile
         run: |
           set -o pipefail
           flutter build apk --debug --no-pub 2>&1 | tee "$RUNNER_TEMP/pwc-android-build.txt"
+      - name: Compile native integration harness (not a device test)
+        working-directory: apps/mobile
+        run: |
+          set -o pipefail
+          flutter build apk --debug --no-pub --target=integration_test/credential_lifecycle_test.dart 2>&1 | tee -a "$RUNNER_TEMP/pwc-android-build.txt"
       - name: Review resolved Android runtime advisories
         run: python3 scripts/mobile_android_review.py
       - name: Bounded Android build evidence

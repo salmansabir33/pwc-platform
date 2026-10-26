@@ -41,16 +41,3 @@ android {
 flutter {
     source = "../.."
 }
-
-// Security floors for transitive runtime coordinates. These constraints do not
-// add a dependency if absent; selected artifacts are audited by CI via Gradle.
-dependencies {
-    constraints {
-        implementation("com.google.guava:guava:33.4.8-android") {
-            because("Avoid GHSA-5mg8-w23w-74h3 and GHSA-7g45-4rm6-3mm3 temporary-file exposure")
-        }
-        implementation("junit:junit:4.13.2") {
-            because("Avoid GHSA-269g-pwp5-87pp temporary-folder exposure")
-        }
-    }
-}

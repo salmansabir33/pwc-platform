@@ -90,8 +90,8 @@ class _SecurityState extends ConsumerState<SecurityScreen> {
                       enableInteractiveSelection: false,
                       autocorrect: false,
                       enableSuggestions: false,
-                        enableIMEPersonalizedLearning: false,
-                        autofillHints: const [],
+                      enableIMEPersonalizedLearning: false,
+                      autofillHints: null,
                       decoration: InputDecoration(
                         labelText: translated('Authenticator code', ur),
                         border: const OutlineInputBorder(),

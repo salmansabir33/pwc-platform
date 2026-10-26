@@ -1,115 +1,103 @@
-# PWC-03D — Flutter Mobile Foundation
+# PWC-03D — Flutter Mobile Identity & Application Foundation
 
-Date: 26 October 2026.
+Date: 26 October 2026. Same comprehensive PWC-03D assignment, not a new subphase.
 
-**Status: BLOCKED BEFORE IMPLEMENTATION — inspection checkpoint only.** No mobile architecture, screen, credential store, client, Flutter project, dependency lockfile or test suite has been implemented by this checkpoint. PWC-03D is not complete. The sections below record verified prerequisites and the continuation contract, not delivered functionality.
+## Status and provenance
 
-## Repository and authority
+Actual mobile source now exists in `apps/mobile`; the prior **blocked-before-implementation** verdict is historical. Required checkpoint `aa1c41c506f068521fb327124a1b7bbf8a18a07a` and the earlier `f1adea79` diagnostics are preserved as ancestors. No reset, force push, backend/web/ADR change or new API is authorized by this work.
 
-Active branch `arena/f54f895c-pwc-platform` began clean at `0445840ab5d0850169d20e9a90099ab8b0c13cc6`, equal to freshly fetched `origin/main`. GitHub reports PRs #3–#6 merged. After fetching the existing shallow history, local ancestry checks confirmed their merge commits:
+The [environment diagnostic](PWC-03D-FLUTTER-ENVIRONMENT-DIAGNOSTIC.md) and [standard setup evidence](PWC-03D-STANDARD-FLUTTER-CI.md) remain retained. Local Arena cannot execute Flutter; GitHub-hosted Ubuntu is the execution environment. The initial real-project [run 40270238837](https://github.com/salmansabir33/pwc-platform/actions/runs/40270238837) passed analysis, **95 actual PWC tests**, hosted-package review and Android debug compilation. This was a bootstrap checkpoint, not the final strict formatting/lockfile gate. Final evidence is recorded in the [integration review](../reviews/PWC-03D-MOBILE-INTEGRATION-REVIEW.md).
 
-| PR  | Foundation       | Merge commit                               |
-| --- | ---------------- | ------------------------------------------ |
-| 3   | Authentication   | `889fc2f6a6bddd384bcf7c3f907eb693459ddfd1` |
-| 4   | Authorization    | `cb4ae6c7c1b7f08bd8b6c4a5b5a0a304f1276445` |
-| 5   | Web              | `cf82dec7adfc6f57e1152cabc6d1f0491d09a5b7` |
-| 6   | Shared contracts | `0445840ab5d0850169d20e9a90099ab8b0c13cc6` |
+PWC mobile is not production deployed. Live delivery, rich profiles, NGO workspaces and device-security acceptance are not manufactured by this foundation.
 
-Inspected root AGENTS, [Roadmap v2.0](../development/PWC_AI_Agent_Implementation_Roadmap_v2.0.md), the Flutter architecture, IA, detailed screen specification, Strategic/Product Foundation, approved auth/authorization/web ADRs, Django route/adapters and PWC-03C contracts/runbook. Historical scaffold statements do not supersede the current task authorization. No approved decision or product status is altered.
+## Toolchain and dependencies
 
-`apps/mobile/` contains only its reserved-path README. There is no existing Flutter source or lockfile to overwrite. Keep this path; do not copy the architecture draft's illustrative alternate directory name.
+- Flutter **3.35.7 stable**, framework revision `adc901062556672b4138e18a4dc62a4be8f4b3c2`, bundled Dart **3.9.2**.
+- `subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2` (maintained v2); official HTTPS SDK storage, caches disabled. This action does not independently enforce SDK archive SHA256; installed framework revision/version/channel are asserted. Do not attribute the historical custom installer's checksum validation to this action.
+- Direct pins: Riverpod 2.6.1, go_router 16.3.0, flutter_secure_storage 9.2.4, http 1.5.0; Flutter SDK localization/test/integration_test packages and flutter_lints 5.0.0. These are tested exact baseline pins, not claims to be the newest package releases. Riverpod's non-codegen ChangeNotifier provider API avoids generated state/tooling drift.
+- `pubspec.lock` is real Flutter/Dart resolver output recovered from CI, with published package SHA256s; no guessed lockfile. All platform templates originate from the exact pinned `flutter create` command, then receive reviewed native hardening. No SDK/cache/signing key is committed.
+- Android: Temurin JDK 17; SDK platform 36 and NDK 27.0.12077973 (verified against the pinned Flutter `FlutterExtension.kt`), build-tools 35.0.0. Release signing is deliberately unconfigured; release is not silently debug-signed.
+- Supported generated hosts: Android (minimum SDK 24 from Flutter) and iOS (template deployment target 13). No Flutter Web or Linux desktop delivery is approved by this implementation.
 
-## Confirmed environment blocker
+## Architecture
 
-- `flutter` and `dart` were not found on PATH; a bounded search of `/opt`, `/usr/local` and `/home/user` found no executable installation.
-- `java`, `adb`, `sdkmanager` and `xcodebuild` were not found on PATH. Absence on PATH alone is not proof that every possible SDK location was searched; no usable installation was identified.
-- Direct HTTPS connection attempts to `https://pub.dev` and the official Flutter release metadata URL under `https://storage.googleapis.com/flutter_infra_release/flutter/releases/` failed with curl exit 35 (`SSL_ERROR_SYSCALL`). No credentials were sent.
-- GitHub source access works. The upstream Flutter `bin/internal/update_dart_sdk.sh` explicitly downloads the Dart SDK from `storage.googleapis.com` by default. Flutter's cache implementation also uses that artifact host. A source checkout alone is not a runnable, dependency-resolved SDK.
-- No unreviewed mirror, hand-written fake lockfile, downloaded toolchain binary in Git or unvalidated replacement credential library was introduced.
+| Area                                | Responsibility                                                                                                                              |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `lib/app`                           | Riverpod dependency composition, go_router redirects, locale state, lifecycle cover, adaptive personal shell                                |
+| `lib/core/contracts.g.dart`         | 32 deterministic typed models/nested models and 22 consumed personal operations, generated from canonical PWC-03C                           |
+| `lib/core/contract_validation.dart` | Required/extra-field/type/union/enum/UUID/time and bounded-value validation; safe exceptions                                                |
+| `lib/core/api.dart`                 | HTTPS native transport, operation allowlist, JSON/status checks, size/total timeout limits, no cookies/provenance/redirects/retries/logging |
+| `lib/core/storage.dart`             | One versioned native encrypted credential record, native generation binding and read-back verification                                      |
+| `lib/core/session_controller.dart`  | Serialized authentication/refresh/commands, server-validated identity, stale-result fencing, transient challenges, context clearing         |
+| `lib/features`                      | Identity ceremonies; read-only personal profile; explicit unavailable affiliations/workspaces; personal security                            |
+| `lib/design`                        | Accessible labeled secret fields and safe live-region feedback                                                                              |
+| `test`                              | Canonical examples, transport/model/controller/storage-channel/navigation/widget/localization tests                                         |
+| `integration_test`                  | Real native-vault lifecycle harness with synthetic API; requires device/emulator, not counted as executed unit/widget coverage              |
 
-This is an acquisition/validation dependency, not a request to reapprove ordinary Riverpod/go_router decisions or split PWC-03D into smaller user-facing tickets. Resume the same complete assignment when a verified Flutter toolchain and package-resolution environment are available. GitHub-hosted Flutter validation is a possible future execution environment, but no mobile workflow or remote Flutter bootstrap was configured or tested in this checkpoint; existing backend/web CI is not mobile validation.
+All private caches are memory-only and scoped to a disposable generation. Every actor/session restoration, invalidation, context attempt and navigation switch clears the generation. There is no active NGO cache/registry: organization activation is explicitly denied. Future private-context code must add actual server-granted contexts and context/registry-revision keys, not turn this denial surface into synthetic discovery.
 
-### What is needed to resume
+## Implemented canonical screens and flows
 
-Provide either a Flutter-capable development environment with access to the official SDK artifacts and Dart packages, or a verified offline Flutter/Dart SDK plus compatible package cache. Native acceptance additionally needs Android SDK/JDK/emulator or devices, and macOS/Xcode with iOS simulators/devices. Pin and verify the chosen stable SDK and package versions when they can actually be resolved and tested; this document intentionally does not invent version pins.
+| Screen | Delivered behavior                                                                                                                                                                                                                                                 | Honest boundary                                                                                                                                             |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ID-01  | Native email/password sign-in; 202 preauth; TOTP or recovery-code completion; registration request/resend/proof+password confirmation; reset request/resend/proof+new-password confirmation; cancellation/expiry/error states; cold/explicit resume                | Synthetic backend delivery only. No inbox/SMS/social promises, deep-link proof ingestion or credential-bearing URLs                                         |
+| ID-02  | Backend `me` identity UUID, session UUID/absolute expiry, verification and recovery hold status, local/server sign-out result                                                                                                                                      | Read-only; API does not expose rich profile/email/contact editing or password-change commands                                                               |
+| ID-03  | Affiliations unavailable explanation                                                                                                                                                                                                                               | No fake memberships, volunteering or relationships                                                                                                          |
+| ID-04  | Explicit personal context and unavailable NGO workspace surface; context invalidation architecture                                                                                                                                                                 | Does not call synthetic NGO discovery/capability/probe/settings endpoints; no Board/staff/admin shortcut                                                    |
+| ID-05  | MFA status; operation-bound password/TOTP assurance; enrollment secret/manual authenticator confirmation; one-time recovery-code display/rotation; factor removal; session inventory/revocation/logout-all; restricted-hold clearance; review-required explanation | Personal MFA is not NGO authority. Review-required recovery cannot be cleared by factor codes. User-controlled device labels/server messages are not echoed |
 
-## Intended architecture — not implemented
+The personal shell uses a navigation rail on wide layouts and bottom navigation on narrow layouts, scrollable width-bounded forms, native Material touch targets, semantic labels/live feedback, explicit English/Urdu selection and Flutter RTL localization delegates. No NGO onboarding/W2/finance/operations feature is enabled.
 
-The task authorizes feature-oriented Flutter/Dart, Riverpod DI/state and go_router. Separate:
+## Contract consumption
 
-- `lib/app/`: composition, router/redirects, lifecycle integration and locale selection.
-- `lib/core/`: environment restrictions, typed contracts/transport, safe errors, secure credential/session abstractions and cancellation/generation fencing.
-- `lib/design/` and localization resources: semantic reusable fields/buttons/feedback, responsive layouts, English and early Urdu/RTL.
-- `lib/features/`: identity flows, personal summary, personal security/MFA/session management and an explicitly unavailable NGO-workspace surface.
-- `test/`: deterministic model/controller/storage/transport/router/widget tests; `integration_test/` for separately evidenced native integration.
+Canonical source remains `packages/api-contracts/openapi-v1.json`, OpenAPI 3.1 / release 1.0.0, 32 paths / 47 operations / 39 schemas. It is unchanged. The generator binds its SHA256 and consumes only 22 native/public-personal operations; 40 canonical positive request/response examples exercise the consumed subset.
 
-Choose maintained compatible dependencies and commit the resolver-produced lockfile, not manually guessed checksums. Prefer a bounded set of consumed DTOs from the canonical schema over a broad unused generated SDK. No generated source, package selection or architecture conformance is claimed yet.
+Consumed IDs: `registrationRequest`, `registrationResend`, `registrationConfirm`, `resetRequest`, `resetResend`, `resetConfirm`, `mobileLogin`, `mobileMfaConfirm`, `mobileRefresh`, `me`, `logout`, `sessions`, `revokeSession`, `logoutAll`, `mfaStatus`, `createIntent`, `stepUp`, `enrollMfa`, `confirmMfa`, `removeMfa`, `rotateRecovery`, `clearHold`.
 
-## Verified contract boundaries
+No native call can invoke browser login/CSRF, synthetic NGO context APIs, arbitrary URL paths, role/capability fields or unavailable mutations. Request bodies and status-dependent responses are checked against the consumed canonical schemas. A 202 response is never a session; unknown success statuses/extra fields/malformed responses fail closed. Serialized models detach nested JSON and redact `toString`.
 
-Canonical contract: `packages/api-contracts/openapi-v1.json`, OpenAPI 3.1, release 1.0.0, **32 paths / 47 operations / 39 schemas**. Its examples and historical fixtures remain synthetic; schemas do not activate APIs.
-
-- Registration/verification and reset use implemented request/confirm/resend POST routes. Verification precedes password creation. Delivery is synthetic-only; do not promise an actual inbox email, SMS OTP or provider.
-- Native login is `POST /api/v1/auth/mobile/login/`; native MFA completion is `POST /api/v1/auth/mobile/mfa/confirm/`. HTTP 202 is preauthentication, not a session.
-- Native issuance, MFA completion and `POST /api/v1/auth/mobile/refresh/` must not send browser provenance, cookies or an access Authorization header. Refresh proof is body-only. Later personal requests use exactly one native opaque Bearer credential.
-- Personal `me/`, logout, session inventory/revocation/logout-all, MFA enrollment/status/confirmation/removal/recovery-code rotation, personal intents/step-up/hold-clear exist behind default-off configuration. Operation-bound assurance must be obtained and consumed exactly as implemented.
-- Password/contact-change APIs and editable rich profile APIs are not implemented. Existing password reset is not permission to invent those routes.
-- The four NGO context read endpoints are isolated synthetic-only verification surfaces, not real mobile NGO discovery, administration, memberships or finance. Do not place them into a production workspace switcher.
-- Keep backend direct-HTTPS, proxy-trust, expiry, revocation and hold guards intact. W1 web networking remains disabled.
-
-## Screen mapping — planned subsets only
-
-| Canonical ID | Safe task scope after implementation resumes                                         | Not yet available                                         |
-| ------------ | ------------------------------------------------------------------------------------ | --------------------------------------------------------- |
-| ID-01        | Registration/verification/password creation, native login, MFA preauth and reset     | Live email/provider acceptance; phone/social login        |
-| ID-02        | Read-only personal identity/session summary supported by `me/`                       | Rich profile, contact/password mutation endpoints         |
-| ID-03        | Clearly unavailable affiliations surface if needed for canonical navigation          | Real membership/volunteer/project relationship discovery  |
-| ID-04        | Personal context and isolated switching architecture, explicit unavailable NGO state | Real NGO/PWC/committee workspace access                   |
-| ID-05        | Supported personal MFA, assurance, recovery holds and sessions                       | Unimplemented security commands, privileged NGO authority |
-
-No screen in this table is delivered by this inspection checkpoint. Do not manufacture dashboards, memberships, grants or records.
-
-## Credential and transport acceptance to implement
-
-- Native-backed secure storage must fail closed on unavailable/corrupt storage. No token in SharedPreferences, URLs, logs, ordinary files or source control. Keep temporary challenges/passwords/assurance/recovery codes transient and purge them at their display/request lifecycle boundaries.
-- Serialize refresh. Persist a coherent versioned credential replacement; test write/read/cleanup failures and crash boundaries. A consumed refresh cannot be replayed safely: ambiguous results require clearing local credentials and re-login, not automatic retry.
-- Restore a session only through current backend validation; never authorize a cached identity offline. Respect access expiry (300 seconds), mobile idle expiry (7 days) and absolute expiry (30 days); GET/status/list/refresh is not an idle keepalive.
-- Clear local credentials, proofs and private caches on logout/invalidation even if a request fails; do not claim backend revocation without acknowledgement. Cancellation does not prove an unsafe command was rolled back.
-- Prevent parallel rotation/logout and late responses from resurrecting credentials. Partition caches by personal/logical session/context/registry/revision/generation and suspend private views during required revalidation.
-- Keep restricted and review-required holds distinct. Restricted hold clearance needs a new single-use captured pre-hold factor code; MFA does not grant NGO authority.
-- Native backup exclusions, iOS Keychain accessibility/reinstall behavior, Android Keystore loss/restore and installation binding must be implemented and exercised, not inferred from a package name. Screenshot/recording/background-snapshot protection is platform-specific; document iOS limitations and avoid clipboard actions for displayed secrets.
-- Use timeouts/cancellation, no-store sensitive transport and safe normalized errors. Bound any safe-read retry; never retry consumed refresh, proof or mutation ceremonies automatically.
-
-## Setup/test/build commands — future, not executable project instructions yet
-
-After provisioning and pinning the actual SDK, scaffold into the preserved reserved path and resolve/pin the selected dependencies. Only then will these application commands be meaningful:
+Regenerate with the pinned toolchain:
 
 ```bash
-flutter --version
-flutter doctor -v
-cd apps/mobile
-flutter pub get
-flutter analyze
-flutter test
-flutter build apk --debug
-# On a provisioned macOS/Xcode runner:
-flutter build ios --no-codesign
+python3 scripts/mobile_contracts.py
+python3 scripts/mobile_contracts.py --check
 ```
 
-There is currently no `pubspec.yaml`, so do not report these application commands as run or passed. SDK pinning, generated platform projects, resolver lockfile, CI configuration and actual command results must be added during implementation.
+The drift check needs Dart formatting, not hand-edited generated output or a new contract version.
 
-## Required completion evidence
+## Credential lifecycle and native privacy
 
-Before the consolidated PWC-03D PR: contract parsing/error/environment tests; registration/reset/login/MFA/hold/session tests; secure-store failure/backup/reinstall/atomic replacement tests; concurrent refresh/logout/stale-completion tests; route and NGO exclusion tests; English/Urdu/RTL/semantics/small-screen widgets; relevant native builds and honest device omissions; dependency/license review; complete internal security review and defect regressions.
+1. Passwords, challenges, verification controls, TOTP codes, enrollment material, intents, proofs and recovery codes are transient. Secret fields disable selection, suggestions, autocorrect, autofill hints and IME personalized learning; fields are cleared on submission/disposal. Recovery codes have no clipboard/share/copy action. Dart immutable strings cannot promise memory zeroization or defense from a privileged debugger/keyboard/accessibility service.
+2. Only the native credential store persists access/refresh credentials, together in one versioned encrypted record. Android uses the plugin's encrypted preferences backed by Keystore; iOS uses non-synchronizable `unlocked_this_device` Keychain accessibility. There is no SharedPreferences/plaintext/log/URL credential fallback; only a **non-secret generation UUID** is stored in an app-private native marker.
+3. The marker is excluded from backup. Native invalidation synchronously replaces it before deleting the encrypted record. Android uses AtomicFile plus fd sync; iOS atomic protected-file write plus synchronization. This addresses Android plugin 9.2.4's asynchronous `SharedPreferences.apply()` deletion: an older encrypted record reappearing after a crash has the wrong generation and is rejected.
+4. Before refresh, invalidate/delete/read-verify the old record **before** sending the single-use proof. On interruption, corruption, uncertain network outcome, failed replacement/read-back or stale response, erase local authority and require sign-in. No consumed proof is retried. A crash may sacrifice a session; availability is never preferred over replay safety.
+5. Restore requires rotation and fresh `me`; offline cached identity is never authority. The access deadline is conservatively bounded from request start and by refresh/idle/absolute deadlines, including fresh `me`. Background/access expiry hides identity, cancels I/O, clears transient/private state and requires revalidation; no background keepalive extends idle life.
+6. Epoch fences plus a serialized queue prevent concurrent rotation or late login/refresh/mutation responses from resurrecting credentials after logout/navigation/invalidation. Failed secure deletion locks access until deletion can be verified. Local logout happens even if server revocation cannot be confirmed, with a distinct warning.
+7. Android disables backup/transfer of app-private domains, cleartext traffic and screenshots/recording through FLAG_SECURE; singleTask limits ordinary duplicate foreground engines. iOS uses ATS and a native inactive-window cover plus Flutter lifecycle cover. iOS cannot generally prevent user screenshots/recording. Reinstall/restore/OS rollback/Keystore/Keychain failure and physical crash guarantees still need device acceptance; a passing APK is not that evidence.
 
-This checkpoint changed documentation only. Flutter/Dart analysis, mobile tests and Android/iOS builds are **not run**. Backend/web regressions were not rerun because their implementation and dependencies were not modified; previous CI results must not be presented as mobile evidence.
+## Run and validate
 
-See [the blocked mobile review record](../reviews/PWC-03D-MOBILE-INTEGRATION-REVIEW.md). Resume the same PWC-03D assignment after the environment dependency is resolved; do not proceed to NGO onboarding, W2, finance or deployment.
+Use the pinned SDK in a toolchain/package-enabled environment. The API origin must be an operator-approved **bare HTTPS origin**, without credentials/path/query/fragment. Default builds have networking disabled and visibly state that fact. Backend registration/session/MFA feature flags remain default-off; enabling a test backend is a separate operator configuration, not an app capability claim.
 
-## Environment recovery follow-up
+```bash
+cd apps/mobile
+flutter --version
+flutter doctor -v
+flutter pub get --enforce-lockfile
+dart format --output=none --set-exit-if-changed lib test integration_test
+flutter analyze --no-pub
+flutter test --no-pub --reporter expanded
+flutter build apk --debug --no-pub
+# Only for an approved, enabled synthetic HTTPS test backend:
+flutter run --dart-define=PWC_API_ORIGIN=https://approved-test-api.example.invalid
+# Separate physical/emulator native acceptance, not executed by the VM suite:
+flutter test integration_test/credential_lifecycle_test.dart -d DEVICE_ID
+```
 
-The [environment diagnostic](PWC-03D-FLUTTER-ENVIRONMENT-DIAGNOSTIC.md) supersedes the earlier untested Actions observation: two actual isolated GitHub probe runs now exist, but SDK acquisition failed; no Flutter analysis/test/build ran. Local DNS/TCP work while TLS closes for required artifact/package hosts. A restricted, checksum/revision-validating environment workflow and installer were added, not PWC application CI or mobile implementation. The exact remote HTTP 404 and minimum Linux setup are recorded there. The original `f1adea79` checkpoint remains preserved; PWC-03D is still incomplete and no PR is opened.
+From repository root, run the contract drift check and dependency reviews in the configured CI environment. The final workflow must check, not rewrite, formatting and lockfile resolution. Diagnostic bootstrap notices were temporary source acquisition (including actual resolver output), never SDK/APK/secret upload or a disposable counter-app substitute.
 
-## Standard Flutter CI verification update
+## Device and deployment gates
 
-The [standard-action verification report](PWC-03D-STANDARD-FLUTTER-CI.md) supersedes the earlier unestablished GitHub fallback: conventional pinned `subosito/flutter-action@v2` setup **succeeded**, verifying Flutter 3.35.7 stable / Dart 3.9.2, registry access, dependency resolution, sample formatting/analysis and generated upstream widget smoke testing. The old custom URL contained an extra `/flutter/` segment; its 404 did not prove standard installation impossible. The pinned smoke workflow is retained with scoped main/assigned-branch push and main-targeting PR triggers. This does not implement/test PWC application functionality, prove native builds or remove local Arena restrictions. No PWC-03D completion, security-review completion or merge-readiness is claimed, and no diagnostic-only PR is opened.
+- Android devices/emulators: actual native vault lifecycle harness; process kill at every barrier/delete/issue/write boundary; backup/cloud/device transfer/reinstall; Keystore invalidation; FLAG_SECURE/recents/lifecycle/multiwindow; accessibility at large text scales; Urdu glyphs/RTL on actual fonts; revoked-session and hold flows against enabled HTTPS backend.
+- macOS/Xcode + iOS simulator/device: host compilation/signing/entitlements, native channel/Keychain accessibility and retained-keychain reinstall mismatch, protected-data lock/unlock, backup/restore, inactive snapshots, screenshot limitations, VoiceOver/RTL. Linux cannot certify these.
+- Live email/provider delivery, approved app links, production endpoint configuration, release signing, privacy/legal/operational review, deployment and NGO/finance authority are not delivered here. No deployment or NGO onboarding follows automatically from this subphase.

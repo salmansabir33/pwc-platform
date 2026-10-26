@@ -136,15 +136,27 @@ class SessionController extends ChangeNotifier {
     }
   }
 
-  Future<void> _accept(MobileSession session, int captured, {required DateTime requestedAt}) async {
+  Future<void> _accept(
+    MobileSession session,
+    int captured, {
+    required DateTime requestedAt,
+  }) async {
     _fence(captured);
     _validateLifetime(session);
     var accessDeadline = requestedAt.add(Duration(seconds: session.expiresIn));
-    for (final stamp in [session.refreshExpiresAt, session.session.idleExpiresAt, session.session.absoluteExpiresAt]) {
+    for (final stamp in [
+      session.refreshExpiresAt,
+      session.session.idleExpiresAt,
+      session.session.absoluteExpiresAt,
+    ]) {
       final bound = DateTime.parse(stamp);
-      if (bound.isBefore(accessDeadline)) { accessDeadline = bound; }
+      if (bound.isBefore(accessDeadline)) {
+        accessDeadline = bound;
+      }
     }
-    if (!accessDeadline.isAfter(now())) { throw const ApiFailure('SESSION_INVALID'); }
+    if (!accessDeadline.isAfter(now())) {
+      throw const ApiFailure('SESSION_INVALID');
+    }
     final me = Me.fromJson(
       (await api.call('me', {}, access: session.accessToken)).body,
     );
@@ -156,13 +168,20 @@ class SessionController extends ChangeNotifier {
         !DateTime.parse(me.session.idleExpiresAt).isAfter(now())) {
       throw const ApiFailure('SESSION_INVALID');
     }
-    for (final stamp in [me.session.idleExpiresAt, me.session.absoluteExpiresAt]) {
+    for (final stamp in [
+      me.session.idleExpiresAt,
+      me.session.absoluteExpiresAt,
+    ]) {
       final bound = DateTime.parse(stamp);
-      if (bound.isBefore(accessDeadline)) { accessDeadline = bound; }
+      if (bound.isBefore(accessDeadline)) {
+        accessDeadline = bound;
+      }
     }
     await store.replace(session);
     _fence(captured);
-    if (!accessDeadline.isAfter(now())) { throw const ApiFailure('SESSION_INVALID'); }
+    if (!accessDeadline.isAfter(now())) {
+      throw const ApiFailure('SESSION_INVALID');
+    }
     storageBlocked = false;
     _credentials = session;
     identity = me;
@@ -249,7 +268,11 @@ class SessionController extends ChangeNotifier {
         challenge = Preauth.fromJson(reply.body);
         _challengeUntil = now().add(Duration(seconds: challenge!.expiresIn));
       } else {
-        await _accept(MobileSession.fromJson(reply.body), captured, requestedAt: requestedAt);
+        await _accept(
+          MobileSession.fromJson(reply.body),
+          captured,
+          requestedAt: requestedAt,
+        );
       }
     } catch (_) {
       await _erase();
@@ -276,7 +299,11 @@ class SessionController extends ChangeNotifier {
             }).toJson(),
           );
           _fence(captured);
-          await _accept(MobileSession.fromJson(result.body), captured, requestedAt: requestedAt);
+          await _accept(
+            MobileSession.fromJson(result.body),
+            captured,
+            requestedAt: requestedAt,
+          );
         } catch (_) {
           await _erase();
           rethrow;

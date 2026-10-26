@@ -56,10 +56,19 @@ class NativeApi implements PersonalApi {
   }
 
   @override
-  Future<ApiReply> call(String operation, Json body, {String? access, String? sessionId}) async {
+  Future<ApiReply> call(
+    String operation,
+    Json body, {
+    String? access,
+    String? sessionId,
+  }) async {
     try {
-      return await _send(operation, body, access: access, sessionId: sessionId)
-          .timeout(const Duration(seconds: 20));
+      return await _send(
+        operation,
+        body,
+        access: access,
+        sessionId: sessionId,
+      ).timeout(const Duration(seconds: 20));
     } on TimeoutException {
       cancel();
       throw const ApiFailure('NETWORK_UNCERTAIN');
@@ -76,7 +85,9 @@ class NativeApi implements PersonalApi {
       (entry) => entry['id'] == operation,
       orElse: () => throw const ApiFailure('UNAVAILABLE'),
     );
-    if (access != null && (access.length > 4096 || access.codeUnits.any((c) => c < 33 || c > 126))) {
+    if (access != null &&
+        (access.length > 4096 ||
+            access.codeUnits.any((c) => c < 33 || c > 126))) {
       throw const ApiFailure('TRANSPORT');
     }
     final authenticated = op['authenticated'] as bool;
