@@ -1,7 +1,7 @@
 name: PWC mobile Flutter CI
 on:
   push:
-    branches: [main, arena/f54f895c-pwc-platform]
+    branches: [main, "arena/**"]
     paths:
       - .github/workflows/flutter-environment.yml
       - scripts/flutter_environment_probe.py
@@ -119,7 +119,7 @@ jobs:
         working-directory: apps/mobile
         run: |
           set -o pipefail
-          flutter test --no-pub --reporter expanded 2>&1 | tee "$RUNNER_TEMP/pwc-tests.txt"
+          flutter test --no-pub --coverage --reporter expanded 2>&1 | tee "$RUNNER_TEMP/pwc-tests.txt"
       - name: Resolve dependency advisory and license evidence
         run: python3 scripts/mobile_dependency_review.py
       - name: Bounded source diagnostics
@@ -136,6 +136,15 @@ jobs:
                       chunk=text[index:index+3000].replace('%','%25').replace('\r','%0D').replace('\n','%0A')
                       print(f'::notice title={name} {index//3000+1}::{chunk}')
           PYTHON
+
+      - name: Retain Flutter line coverage
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: mobile-coverage
+          path: apps/mobile/coverage/lcov.info
+          retention-days: 7
+          if-no-files-found: warn
 
   android:
     name: Actual PWC Android debug build
@@ -175,12 +184,15 @@ jobs:
         working-directory: apps/mobile
         run: |
           set -o pipefail
+          test "$(git -C "$FLUTTER_ROOT" rev-parse HEAD)" = adc901062556672b4138e18a4dc62a4be8f4b3c2
           flutter build apk --debug --no-pub 2>&1 | tee "$RUNNER_TEMP/pwc-android-build.txt"
+          sha256sum build/app/outputs/flutter-apk/app-debug.apk
       - name: Compile native integration harness (not a device test)
         working-directory: apps/mobile
         run: |
           set -o pipefail
           flutter build apk --debug --no-pub --target=integration_test/credential_lifecycle_test.dart 2>&1 | tee -a "$RUNNER_TEMP/pwc-android-build.txt"
+          sha256sum build/app/outputs/flutter-apk/app-debug.apk
       - name: Review resolved Android runtime advisories
         run: python3 scripts/mobile_android_review.py
       - name: Bounded Android build evidence

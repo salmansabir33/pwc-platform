@@ -5,7 +5,7 @@ export default defineConfig({
   workers: 1,
   forbidOnly: !!process.env.CI,
   retries: 0,
-  reporter: "list",
+  reporter: [["list"], ["junit", { outputFile: "coverage/browser-junit.xml" }]],
   use: {
     browserName: "chromium",
     headless: true,

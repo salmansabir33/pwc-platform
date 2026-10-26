@@ -1,17 +1,17 @@
-import json
 import os
 from pathlib import Path
+
+from .environment import load_environment
+
+ENVIRONMENT = load_environment(os.environ)
+PWC_ENVIRONMENT = ENVIRONMENT["PWC_ENVIRONMENT"]
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 if not SECRET_KEY:
     raise RuntimeError("DJANGO_SECRET_KEY must be set")
-DEBUG = os.environ.get("DJANGO_DEBUG", "0") == "1"
-ALLOWED_HOSTS = [
-    s.strip()
-    for s in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
-    if s.strip()
-]
+DEBUG = ENVIRONMENT["DJANGO_DEBUG"]
+ALLOWED_HOSTS = ENVIRONMENT["DJANGO_ALLOWED_HOSTS"]
 INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -58,6 +58,7 @@ DATABASES = {
         "PASSWORD": os.getenv("DB_PASSWORD", ""),
         "HOST": os.getenv("DB_HOST", "localhost"),
         "PORT": os.getenv("DB_PORT", "5432"),
+        "OPTIONS": ENVIRONMENT["DB_OPTIONS"],
     }
 }
 AUTH_USER_MODEL = "accounts.User"
@@ -89,20 +90,20 @@ REST_FRAMEWORK = {
 
 # PWC-03A.2 is synthetic-only and disabled by default. Never derive delivery
 # encryption keys from database contents or silently fall back to SECRET_KEY.
-PWC_AUTH_FLOWS_ENABLED = os.getenv("PWC_AUTH_FLOWS_ENABLED", "0") == "1"
+PWC_AUTH_FLOWS_ENABLED = ENVIRONMENT["PWC_AUTH_FLOWS_ENABLED"]
 PWC_AUTH_DELIVERY_MODE = "synthetic"
 PWC_AUTH_LINK_ORIGIN = os.getenv("PWC_AUTH_LINK_ORIGIN", "https://pwc.invalid")
 PWC_AUTH_ABUSE_KEY = os.getenv("PWC_AUTH_ABUSE_KEY", "")
 PWC_AUTH_DELIVERY_ACTIVE_KEY = os.getenv("PWC_AUTH_DELIVERY_ACTIVE_KEY", "")
 # Key ring supports reading old ciphertext while new intents use active key.
 # JSON is deployment configuration, never a credential committed to source.
-PWC_AUTH_DELIVERY_KEYS = json.loads(os.getenv("PWC_AUTH_DELIVERY_KEYS", "{}"))
+PWC_AUTH_DELIVERY_KEYS = ENVIRONMENT["PWC_AUTH_DELIVERY_KEYS"]
 PWC_AUTH_GLOBAL_SENDS_PER_HOUR = 100
 
 # 03A.3: explicit synthetic activation and exact trusted direct-TLS portal map.
-PWC_AUTH_SESSIONS_ENABLED = os.getenv("PWC_AUTH_SESSIONS_ENABLED", "0") == "1"
+PWC_AUTH_SESSIONS_ENABLED = ENVIRONMENT["PWC_AUTH_SESSIONS_ENABLED"]
 PWC_AUTH_SESSION_KEY = os.getenv("PWC_AUTH_SESSION_KEY", "")
-PWC_AUTH_PORTALS = json.loads(os.getenv("PWC_AUTH_PORTALS", "{}"))
+PWC_AUTH_PORTALS = ENVIRONMENT["PWC_AUTH_PORTALS"]
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
 SESSION_COOKIE_NAME = "__Host-pwc_session"
 SESSION_COOKIE_SECURE = True
@@ -115,14 +116,20 @@ CSRF_COOKIE_SAMESITE = "Lax"
 AUTHENTICATION_BACKENDS = ["accounts.backends.VerifiedEmailBackend"]
 
 # Separate default-off synthetic MFA switch and external factor encryption ring.
-PWC_AUTH_MFA_ENABLED = os.getenv("PWC_AUTH_MFA_ENABLED", "0") == "1"
+PWC_AUTH_MFA_ENABLED = ENVIRONMENT["PWC_AUTH_MFA_ENABLED"]
 PWC_AUTH_MFA_ACTIVE_KEY = os.getenv("PWC_AUTH_MFA_ACTIVE_KEY", "")
-PWC_AUTH_MFA_KEYS = json.loads(os.getenv("PWC_AUTH_MFA_KEYS", "{}"))
+PWC_AUTH_MFA_KEYS = ENVIRONMENT["PWC_AUTH_MFA_KEYS"]
 PWC_AUTH_MFA_PROOF_KEY = os.getenv("PWC_AUTH_MFA_PROOF_KEY", "")
 
 # ADR-0002: default-off isolated synthetic kernel; no real NGO authority.
-PWC_SYNTHETIC_AUTHORIZATION_ENABLED = os.getenv("PWC_SYNTHETIC_AUTHORIZATION_ENABLED", "0") == "1"
+PWC_SYNTHETIC_AUTHORIZATION_ENABLED = ENVIRONMENT["PWC_SYNTHETIC_AUTHORIZATION_ENABLED"]
 PWC_AUTHORIZATION_ENVIRONMENT = os.getenv("PWC_AUTHORIZATION_ENVIRONMENT", "disabled")
 
 # .2 HTTP adapters remain off independently of the internal synthetic kernel.
-PWC_SYNTHETIC_CONTEXT_HTTP_ENABLED = os.getenv("PWC_SYNTHETIC_CONTEXT_HTTP_ENABLED", "0") == "1"
+PWC_SYNTHETIC_CONTEXT_HTTP_ENABLED = ENVIRONMENT["PWC_SYNTHETIC_CONTEXT_HTTP_ENABLED"]
+
+# Direct HTTPS only; trusted-proxy headers remain deliberately unconfigured.
+SECURE_SSL_REDIRECT = PWC_ENVIRONMENT in {"staging", "production"}
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_REFERRER_POLICY = "no-referrer"
+X_FRAME_OPTIONS = "DENY"

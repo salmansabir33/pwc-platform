@@ -1,0 +1,3 @@
+# Build/test-only tools; never added to the backend runtime image.
+ruff==0.17.2
+coverage==7.17.0

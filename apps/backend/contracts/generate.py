@@ -33,7 +33,8 @@ def routes(patterns=None, prefix=""):
 
 
 def source_lock():
-    paths = [ROOT / "apps/backend/config/urls.py", ROOT / "apps/backend/config/settings.py"]
+    paths = [ROOT / "apps/backend/config/urls.py", ROOT / "apps/backend/config/settings.py",
+             ROOT / "apps/backend/config/environment.py"]
     for folder in ("accounts", "access", "organizations"):
         paths.extend(p for p in (ROOT / "apps/backend" / folder).glob("*.py")
                      if not p.name.startswith("test") and p.name not in ("admin.py", "apps.py"))

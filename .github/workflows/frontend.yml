@@ -2,19 +2,43 @@ name: Web foundation checks
 on:
   push:
   pull_request:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
   foundation:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version-file: .nvmrc
           cache: npm
+      - run: npm install --global --ignore-scripts npm@10.9.8
+      - run: node --version && test "$(npm --version)" = "10.9.8"
       - run: npm ci --ignore-scripts
+      - run: npm audit --audit-level=low
       - run: npm run contracts:types:check
       - run: npm run check
       - run: npx playwright install --with-deps chromium
       - run: npm run test:browser
+      - name: Redacted browser count evidence
+        run: |
+          python3 - <<'PYTHON'
+          from xml.etree import ElementTree
+          root = ElementTree.parse('coverage/browser-junit.xml').getroot()
+          print('::notice title=Browser execution evidence::' + ', '.join(key + '=' + root.attrib.get(key, '?') for key in ('tests', 'failures', 'errors', 'skipped')))
+          PYTHON
+      - name: Retain web test results
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: web-test-results
+          path: coverage/*-junit.xml
+          retention-days: 7
+          if-no-files-found: warn
