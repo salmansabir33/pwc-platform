@@ -26,12 +26,21 @@ init.write_text(r'''gradle.projectsEvaluated {
     }
 }
 ''')
-text=subprocess.check_output(['./gradlew','-I',str(init),':app:pwcResolvedRuntime','--console=plain'],cwd=root,text=True)
+process=subprocess.run(['./gradlew','-I',str(init),':app:pwcResolvedRuntime','--console=plain'],cwd=root,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+if process.returncode:
+    text=process.stdout[-10000:]
+    for i in range(0,len(text),3000):
+        chunk=text[i:i+3000].replace('%','%25').replace('\r','%0D').replace('\n','%0A')
+        print(f'::error title=Gradle selected-component inventory {i//3000+1}::{chunk}')
+    raise SystemExit(process.returncode)
+text=process.stdout
 coordinates=set()
 for name,version in re.findall(r'^PWC_RESOLVED\|([^|]+)\|([^|\s]+)$',text,re.MULTILINE):
     if name.startswith('io.flutter:'):continue
     coordinates.add((name,version))
-assert coordinates,'No resolved Android Maven coordinates captured'
+if not coordinates:
+    print('::error title=Android inventory unavailable::No selected Maven coordinates captured; no advisory pass claimed')
+    raise SystemExit(1)
 coordinates=sorted(coordinates)
 request=urllib.request.Request('https://api.osv.dev/v1/querybatch',data=json.dumps({'queries':[{'package':{'ecosystem':'Maven','name':name},'version':version} for name,version in coordinates]}).encode(),headers={'Content-Type':'application/json'})
 try:
