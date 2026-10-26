@@ -4,6 +4,12 @@ Date: 26 October 2026.
 
 **Outcome: Arena remains unable to run Flutter. PWC-03D application implementation is stopped, incomplete and not merge-ready. No PR is opened.** This is environment recovery in the same subphase, not a reduced implementation ticket. No mobile authentication, secure storage, MFA, screen or application test has been delivered.
 
+## Correction: standard action verification follow-up
+
+The earlier custom probe constructed an **incorrect URL**, with an extra `/flutter/` segment. The maintained `subosito/flutter-action@v2` source uses `https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json`. The historical 404 below is not evidence that standard installation is impossible. The retained script and Linux recipe now use the correct base. Historical failed-run URLs/observations remain recorded, but their inference is superseded by this correction and the [standard CI verification report](PWC-03D-STANDARD-FLUTTER-CI.md).
+
+The workflow has been replaced with a conventional pinned setup action; the description of the custom workflow below describes those historical attempts, not its current contents. Local TLS restrictions remain distinct from the malformed-URL remote failure.
+
 ## 1. Repository recovery and preservation
 
 Branch: `arena/f54f895c-pwc-platform`. The checkout had regressed to `0445840ab5d0850169d20e9a90099ab8b0c13cc6` with the two prior checkpoint documents untracked. Both files matched `f1adea79ae4e2bfe5769349f836c952decd674fc` byte-for-byte. Preserved an external archive (`/home/user/03d-environment-preservation.tar.gz`) and include-untracked stash, then fast-forwarded the same branch to the existing checkpoint. No work was discarded, branch changed or history rewritten. The stash/archive remain retained; identical documents were not reapplied over their committed versions.
@@ -62,7 +68,7 @@ Runner annotation confirms Linux x86_64, `java`/`javac` on PATH, and `adb`/`sdkm
 
 Raw Actions log retrieval from Arena failed with EOF at the redirected `results-receiver.actions.githubusercontent.com` host. Job step states and explicit annotations were retrieved successfully through `api.github.com`; bounded public failure annotations were added for that reason. No signed log URL is recorded here.
 
-**Conclusion:** GitHub Actions can execute this workflow. It has **not** successfully validated Flutter in this repository. The remote HTTP 404 differs from local TLS closure; its origin/proxy/endpoint cause is unconfirmed. Do not claim GitHub Actions is inherently incapable of Flutter, or claim it is a working fallback based only on a started job. Formatting/analyze/widget/APK steps were all **skipped**, not passed. Doctor/iOS/device validation also remains unperformed.
+**Conclusion:** GitHub Actions can execute this workflow. It has **not** successfully validated Flutter in this repository. The remote HTTP 404 differs from local TLS closure; subsequent source inspection found the custom manifest URL was malformed (see correction above). Do not claim GitHub Actions is inherently incapable of Flutter, or claim it is a working fallback based only on a started job. Formatting/analyze/widget/APK steps were all **skipped**, not passed. Doctor/iOS/device validation also remains unperformed.
 
 The diagnostic intentionally fails rather than marking unavailable prerequisites as green. Its branch/path-only trigger does not establish permanent mobile application CI; that must be finalized with the actual application and a tested SDK pin after recovery.
 

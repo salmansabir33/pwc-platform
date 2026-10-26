@@ -11,8 +11,8 @@ import re
 import subprocess
 import urllib.request
 
-BASE = "https://storage.googleapis.com/flutter_infra_release/flutter/"
-MANIFEST = BASE + "releases/releases_linux.json"
+BASE = "https://storage.googleapis.com/flutter_infra_release/releases/"
+MANIFEST = BASE + "releases_linux.json"
 
 
 def select_release(manifest):

@@ -1,66 +1,94 @@
-name: Flutter environment probe
+name: Flutter standard smoke verification
 on:
   push:
     branches: [arena/f54f895c-pwc-platform]
     paths:
       - .github/workflows/flutter-environment.yml
       - scripts/flutter_environment_probe.py
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:
-  environment:
-    name: Linux Flutter environment diagnostic (not PWC application tests)
+  smoke:
+    name: Ubuntu Flutter setup and disposable smoke test (not PWC app tests)
     runs-on: ubuntu-24.04
     timeout-minutes: 25
+    env:
+      CI: "true"
+      FLUTTER_SUPPRESS_ANALYTICS: "true"
+      DART_SUPPRESS_ANALYTICS: "true"
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
-      - name: Record runner tooling without exposing environment values
+      - name: Set up pinned stable Flutter with maintained v2 action
+        id: setup
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          channel: stable
+          flutter-version: "3.35.7"
+          architecture: x64
+          cache: "false"
+          pub-cache: "false"
+      - name: Verify installed upstream revision and print versions
+        run: |
+          set -euo pipefail
+          test "$(git -C "$FLUTTER_ROOT" rev-parse HEAD)" = adc901062556672b4138e18a4dc62a4be8f4b3c2
+          flutter --version
+          dart --version
+          flutter --version --machine > "$RUNNER_TEMP/flutter-version.json"
+          python3 - <<'PYTHON'
+          import json, os
+          from pathlib import Path
+          data = json.loads((Path(os.environ['RUNNER_TEMP']) / 'flutter-version.json').read_text())
+          assert data['frameworkVersion'] == '3.35.7', data
+          assert data['channel'] == 'stable', data
+          assert data['frameworkRevision'] == 'adc901062556672b4138e18a4dc62a4be8f4b3c2', data
+          print(f"::notice title=Verified SDK::Flutter {data['frameworkVersion']}; Dart {data['dartSdkVersion']}; revision {data['frameworkRevision']}")
+          PYTHON
+      - name: Flutter doctor (report platform limitations honestly)
+        run: flutter doctor -v
+      - name: Verify pub.dev registry HTTPS and metadata
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            --retry 2 --connect-timeout 15 --max-time 60 \
+            https://pub.dev/api/packages/flutter_lints \
+            --output "$RUNNER_TEMP/pub-registry.json"
+          python3 - <<'PYTHON'
+          import json, os
+          from pathlib import Path
+          data = json.loads((Path(os.environ['RUNNER_TEMP']) / 'pub-registry.json').read_text())
+          assert data['name'] == 'flutter_lints'
+          print(f"::notice title=Registry HTTPS::pub.dev flutter_lints metadata retrieved; latest {data['latest']['version']}")
+          PYTHON
+      - name: Create disposable upstream sample without resolving dependencies
+        run: flutter create --no-pub --platforms=android --project-name=pwc_ci_smoke "$RUNNER_TEMP/pwc_ci_smoke"
+      - name: Resolve real sample dependencies from pub.dev
+        working-directory: ${{ runner.temp }}/pwc_ci_smoke
+        run: flutter pub get
+      - name: Check sample Dart formatting
+        working-directory: ${{ runner.temp }}/pwc_ci_smoke
+        run: dart format --output=none --set-exit-if-changed lib test
+      - name: Analyze sample
+        working-directory: ${{ runner.temp }}/pwc_ci_smoke
+        run: flutter analyze --no-pub
+      - name: Run upstream counter widget smoke test
+        working-directory: ${{ runner.temp }}/pwc_ci_smoke
+        run: flutter test --no-pub --reporter expanded
+      - name: Record setup outcome and limited scope
+        if: always()
+        env:
+          STEP_RESULTS: ${{ toJSON(steps) }}
         run: |
           python3 - <<'PYTHON'
-          import platform, shutil
-          tools = {name: bool(shutil.which(name)) for name in ('java', 'javac', 'adb', 'sdkmanager', 'flutter', 'dart')}
-          print(f"::notice title=Runner tool availability::{platform.system()} {platform.machine()} {tools}")
+          import json, os
+          steps = json.loads(os.environ['STEP_RESULTS'])
+          print(f"::notice title=Standard Flutter setup outcome::{steps.get('setup', {}).get('outcome', 'unknown')}; later steps must be inspected individually")
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+              summary.write('## Standard Flutter environment smoke verification\n\n')
+              summary.write('Pinned Flutter 3.35.7 stable, pinned subosito/flutter-action v2 revision. No cache/mirror/TLS bypass.\n\n')
+              summary.write('Only an upstream generated sample in RUNNER_TEMP is exercised. No PWC identity, storage, MFA, localization or security functionality is implemented/tested.\n\n')
+              summary.write('No Android build, iOS/Xcode/device acceptance or application dependency compatibility is claimed. Doctor output is diagnostic, not a native build pass.\n\n')
+              summary.write('See individual job steps for exact failures/skips; missing checks are not passes. No SDK, cache or generated project is committed/uploaded.\n')
           PYTHON
-      - name: Install official stable SDK and verify checksum/revision
-        id: sdk
-        run: python3 scripts/flutter_environment_probe.py
-      - name: Flutter ${{ steps.sdk.outputs.version }} version and doctor
-        run: |
-          flutter config --no-analytics
-          flutter --version
-          flutter doctor -v
-      - name: Create disposable upstream sample (not repository mobile code)
-        run: |
-          flutter create --platforms=android,ios --project-name=pwc_environment_probe "$RUNNER_TEMP/pwc_environment_probe"
-      - name: Resolve candidate dependencies from pub.dev
-        working-directory: ${{ runner.temp }}/pwc_environment_probe
-        run: |
-          flutter pub add flutter_riverpod go_router flutter_secure_storage dio path_provider intl
-          flutter pub get
-      - name: Sample formatting
-        working-directory: ${{ runner.temp }}/pwc_environment_probe
-        run: dart format --output=none --set-exit-if-changed lib test
-      - name: Sample static analysis
-        working-directory: ${{ runner.temp }}/pwc_environment_probe
-        run: flutter analyze
-      - name: Sample widget test
-        working-directory: ${{ runner.temp }}/pwc_environment_probe
-        run: flutter test
-      - name: Android toolchain and debug build
-        working-directory: ${{ runner.temp }}/pwc_environment_probe
-        run: |
-          test -n "$ANDROID_HOME"
-          java -version
-          flutter build apk --debug
-      - name: Record limited diagnostic scope
-        if: always()
-        run: |
-          {
-            echo '## Scope'
-            echo 'Only an upstream generated counter sample is exercised in RUNNER_TEMP.'
-            echo 'No PWC mobile identity, storage, MFA, navigation or security implementation is tested.'
-            echo 'Linux cannot establish iOS/Xcode/device acceptance.'
-            echo 'No SDK/cache/APK is committed or uploaded.'
-          } >> "$GITHUB_STEP_SUMMARY"
