@@ -22,6 +22,7 @@ class SecretField extends StatelessWidget {
       enableInteractiveSelection: !secret,
       autocorrect: false,
       enableSuggestions: false,
+        enableIMEPersonalizedLearning: false,
       autofillHints: const [],
       textInputAction: TextInputAction.next,
       decoration: InputDecoration(

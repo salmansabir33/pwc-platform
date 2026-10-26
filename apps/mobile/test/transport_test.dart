@@ -112,4 +112,14 @@ void main() {
       throwsA(isA<ContractFailure>()),
     );
   });
+  test('oversized successful response is rejected before decoding',()async{
+    final api=NativeApi('https://api.example.invalid',factory:()=>MockClient((r)async=>http.Response('x'*262145,200,headers:{'content-type':'application/json'})));
+    await expectLater(api.call('me',{},access:'synthetic-access'),throwsA(isA<ApiFailure>().having((e)=>e.code,'code','RESPONSE_LIMIT')));
+  });
+  test('server messages and field echoes are never surfaced as exceptions',()async{
+    final api=NativeApi('https://api.example.invalid',factory:()=>MockClient((r)async=>http.Response(jsonEncode({'error':{'code':'VALIDATION_ERROR','message':'synthetic-secret','field_errors':{'password':['synthetic-secret']}}}),400,headers:{'content-type':'application/json'})));
+    try{await api.call('mobileLogin',{'email':'person@example.invalid','password':'synthetic-password'});fail('must reject');}
+    on ApiFailure catch(error){expect(error.code,'VALIDATION_ERROR');expect(error.toString(),isNot(contains('synthetic-secret')));}
+  });
+
 }
