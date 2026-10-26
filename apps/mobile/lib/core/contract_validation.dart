@@ -8,17 +8,29 @@ class ContractFailure implements Exception {
   String toString() => 'Incompatible API response';
 }
 
-Map<String, Object?> checkedObject(Map<String, Object?> data,
-    Map<String, dynamic> schema, Map<String, dynamic> schemas) {
+Map<String, Object?> checkedObject(
+  Map<String, Object?> data,
+  Map<String, dynamic> schema,
+  Map<String, dynamic> schemas,
+) {
   validateContract(data, schema, schemas);
-  return UnmodifiableMapView(Map<String, Object?>.from(jsonDecode(jsonEncode(data)) as Map));
+  return UnmodifiableMapView(
+    Map<String, Object?>.from(jsonDecode(jsonEncode(data)) as Map),
+  );
 }
 
-void validateContract(Object? data, Map<String, dynamic> schema,
-    Map<String, dynamic> schemas) {
+void validateContract(
+  Object? data,
+  Map<String, dynamic> schema,
+  Map<String, dynamic> schemas,
+) {
   if (schema.containsKey(r'$ref')) {
-    validateContract(data, schemas[(schema[r'$ref'] as String).split('/').last]
-        as Map<String, dynamic>, schemas);
+    validateContract(
+      data,
+      schemas[(schema[r'$ref'] as String).split('/').last]
+          as Map<String, dynamic>,
+      schemas,
+    );
     return;
   }
   for (final union in ['oneOf', 'anyOf']) {
@@ -28,7 +40,9 @@ void validateContract(Object? data, Map<String, dynamic> schema,
         try {
           validateContract(data, item as Map<String, dynamic>, schemas);
           matches++;
-        } on ContractFailure { /* try the other explicit alternative */ }
+        } on ContractFailure {
+          /* try the other explicit alternative */
+        }
       }
       if (matches == 0 || (union == 'oneOf' && matches != 1)) {
         throw const ContractFailure();
@@ -55,23 +69,31 @@ void validateContract(Object? data, Map<String, dynamic> schema,
         data.length > (schema['maxLength'] as int? ?? 65536)) {
       throw const ContractFailure();
     }
-    if (schema['pattern'] is String && !RegExp(schema['pattern'] as String).hasMatch(data)) {
+    if (schema['pattern'] is String &&
+        !RegExp(schema['pattern'] as String).hasMatch(data)) {
       throw const ContractFailure();
     }
     if (schema['format'] == 'uuid' &&
-        !RegExp(r'^[a-fA-F0-9]{8}(-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}$').hasMatch(data)) {
+        !RegExp(
+          r'^[a-fA-F0-9]{8}(-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}$',
+        ).hasMatch(data)) {
       throw const ContractFailure();
     }
     if (schema['format'] == 'date-time' &&
-        (DateTime.tryParse(data) == null || !RegExp(r'(Z|[+-]\d\d:\d\d)$').hasMatch(data))) {
+        (DateTime.tryParse(data) == null ||
+            !RegExp(r'(Z|[+-]\d\d:\d\d)$').hasMatch(data))) {
       throw const ContractFailure();
     }
   }
-  if (data is num && schema['minimum'] is num && data < (schema['minimum'] as num)) {
+  if (data is num &&
+      schema['minimum'] is num &&
+      data < (schema['minimum'] as num)) {
     throw const ContractFailure();
   }
   if (data is List && schema['items'] is Map<String, dynamic>) {
-    for (final value in data) { validateContract(value, schema['items'] as Map<String, dynamic>, schemas); }
+    for (final value in data) {
+      validateContract(value, schema['items'] as Map<String, dynamic>, schemas);
+    }
   }
   if (data is Map<String, Object?>) {
     final properties = schema['properties'] as Map<String, dynamic>? ?? {};

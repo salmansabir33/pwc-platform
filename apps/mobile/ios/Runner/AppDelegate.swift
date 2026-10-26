@@ -12,12 +12,15 @@ import UIKit
     if let controller = window?.rootViewController as? FlutterViewController {
       FlutterMethodChannel(name: "pwc/privacy", binaryMessenger: controller.binaryMessenger)
         .setMethodCallHandler { call, result in
-          guard call.method == "installation" else { result(FlutterMethodNotImplemented); return }
+          guard call.method == "installation" || call.method == "invalidate" else { result(FlutterMethodNotImplemented); return }
           do {
             let directory = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
             var marker = directory.appendingPathComponent("pwc-installation-v1")
-            if !FileManager.default.fileExists(atPath: marker.path) {
+            if !FileManager.default.fileExists(atPath: marker.path) || call.method == "invalidate" {
               try UUID().uuidString.data(using: .utf8)!.write(to: marker, options: [.atomic, .completeFileProtection])
+              let handle = try FileHandle(forWritingTo: marker)
+              try handle.synchronize()
+              try handle.close()
             }
             var values = URLResourceValues()
             values.isExcludedFromBackup = true

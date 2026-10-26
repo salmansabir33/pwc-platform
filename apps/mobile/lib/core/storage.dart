@@ -48,5 +48,12 @@ class NativeCredentialStore implements CredentialStore {
     }
   }
   @override
-  Future<void> clear() => _storage.delete(key: _key);
+  Future<void> clear() async {
+    // flutter_secure_storage Android 9.2.4 uses SharedPreferences.apply().
+    // A durable, non-secret native generation barrier prevents a crash from
+    // resurrecting the old encrypted record even if its deletion is not flushed.
+    final barrier = await _channel.invokeMethod<String>('invalidate');
+    if (barrier == null || barrier.isEmpty) { throw StateError('Durable invalidation unavailable'); }
+    await _storage.delete(key: _key);
+  }
 }

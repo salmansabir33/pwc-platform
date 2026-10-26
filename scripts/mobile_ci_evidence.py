@@ -23,7 +23,7 @@ for base in ['android','ios']:
         files.append(path)
 files += [p for p in [mobile/'pubspec.lock',mobile/'.metadata'] if p.exists()]
 # Exact Dart formatter output, including generated contract models, is source.
-files += list((mobile/'lib').rglob('*.dart'))+list((mobile/'test').rglob('*.dart'))
+files += list((mobile/'lib').rglob('*.dart'))+list((mobile/'test').rglob('*.dart'))+list((mobile/'integration_test').rglob('*.dart'))
 cache=Path(os.environ['RUNNER_TEMP'])/'pwc-source-evidence.b64'
 if not cache.exists():
     stream=io.BytesIO()

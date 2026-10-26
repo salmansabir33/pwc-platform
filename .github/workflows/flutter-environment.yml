@@ -83,20 +83,15 @@ jobs:
           assert data['name'] == 'flutter_lints'
           print(f"::notice title=Registry HTTPS::pub.dev flutter_lints metadata retrieved; latest {data['latest']['version']}")
           PYTHON
-      - name: Bootstrap native project source (temporary acquisition checkpoint)
-        run: |
-          flutter create --no-pub --org=pk.org.pwc --platforms=android,ios --project-name=pwc_mobile "$RUNNER_TEMP/pwc_native"
-          cp -Rn "$RUNNER_TEMP/pwc_native/android" "$RUNNER_TEMP/pwc_native/ios" apps/mobile/
-          cp "$RUNNER_TEMP/pwc_native/.metadata" apps/mobile/
       - name: Resolve actual PWC dependencies
         working-directory: apps/mobile
         run: flutter pub get
       - name: Canonicalize actual project Dart source (bootstrap only)
         working-directory: apps/mobile
         run: |
-          dart format lib test
+          dart format lib test integration_test
           dart fix --apply
-          dart format lib test
+          dart format lib test integration_test
       - name: Source-only bootstrap batch 1
         env:
           EVIDENCE_GROUP: "0"
@@ -127,6 +122,8 @@ jobs:
         run: |
           set -o pipefail
           flutter test --no-pub --reporter expanded 2>&1 | tee "$RUNNER_TEMP/pwc-tests.txt"
+      - name: Resolve dependency advisory and license evidence
+        run: python3 scripts/mobile_dependency_review.py
       - name: Bounded source diagnostics
         if: always()
         run: |
@@ -140,4 +137,57 @@ jobs:
                   for index in range(0,len(text),3000):
                       chunk=text[index:index+3000].replace('%','%25').replace('\r','%0D').replace('\n','%0A')
                       print(f'::notice title={name} {index//3000+1}::{chunk}')
+          PYTHON
+
+  android:
+    name: Actual PWC Android debug build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          channel: stable
+          flutter-version: "3.35.7"
+          cache: "false"
+          pub-cache: "false"
+      - name: Provision pinned Flutter Android prerequisites
+        run: |
+          set -euo pipefail
+          java -version
+          test -n "$ANDROID_HOME"
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          test -x "$SDKMANAGER"
+          set +o pipefail
+          yes | "$SDKMANAGER" --licenses > "$RUNNER_TEMP/pwc-android-licenses.txt"
+          result=${PIPESTATUS[1]}
+          set -o pipefail
+          test "$result" -eq 0
+          "$SDKMANAGER" "platform-tools" "platforms;android-36" "build-tools;35.0.0" "ndk;27.0.12077973"
+      - name: Resolve actual PWC mobile packages
+        working-directory: apps/mobile
+        run: flutter pub get
+      - name: Build actual PWC Android debug APK
+        working-directory: apps/mobile
+        run: |
+          set -o pipefail
+          flutter build apk --debug --no-pub 2>&1 | tee "$RUNNER_TEMP/pwc-android-build.txt"
+      - name: Bounded Android build evidence
+        if: always()
+        run: |
+          python3 - <<'PYTHON'
+          import os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'pwc-android-build.txt'
+          if p.exists():
+              text=p.read_text()[-16000:]
+              for i in range(0,len(text),3500):
+                  chunk=text[i:i+3500].replace('%','%25').replace('\r','%0D').replace('\n','%0A')
+                  print(f'::notice title=PWC Android build {i//3500+1}::{chunk}')
           PYTHON
