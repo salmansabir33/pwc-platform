@@ -62,7 +62,7 @@ class RegistryParser(JSONParser):
             return result
 
         # The adapter bounds the raw body before parsing; reject duplicate JSON keys.
-        return json.loads(stream.read(), object_pairs_hook=unique)
+        return json.loads(stream.read().decode("utf-8"), object_pairs_hook=unique)
 
 
 class RegistryJSON(FixedJSON):
@@ -95,7 +95,10 @@ class RegistryView(APIView):
             exc = problem("STATE_CONFLICT", 409)
         elif isinstance(exc, DatabaseError):
             exc = problem("AUTH_UNAVAILABLE", 503)
-        elif isinstance(exc, (RequestDataTooBig, UnicodeError, ValueError, TypeError)):
+        elif isinstance(
+            exc,
+            (RequestDataTooBig, UnicodeError, ValueError, TypeError, RecursionError),
+        ):
             exc = problem("VALIDATION_ERROR", 400)
         elif isinstance(exc, APIException):
             # Never echo serializer instances, contacts or exception/DB details.

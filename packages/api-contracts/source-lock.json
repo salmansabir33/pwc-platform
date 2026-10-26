@@ -35,6 +35,6 @@
   "apps/backend/organizations/registry_contract.py": "e99a1e7ebb04ab1f4a612d7257c9041999bd76f49f1875003665745638ec7182",
   "apps/backend/organizations/registry_serializers.py": "8ddc0825659e7f6c3ee39a08dc6cfe76b800ed985adff61c03e023966ccc250f",
   "apps/backend/organizations/registry_urls.py": "5a335f18db34ff92a132a659b7ecdf1bd1df3f6d879015f919bbd80a6fb92808",
-  "apps/backend/organizations/registry_views.py": "af56bddbc9b0eb1026b4447b49c5517e9462886c2f64c053379bbbb087ebeed2",
+  "apps/backend/organizations/registry_views.py": "7ae5f2c0cdacfc5a3b854ba16eea7294aac7f65fc333857e040dc2c42b0a545d",
   "apps/backend/organizations/views.py": "373ac31b0c2b676e42204fc84f2b690c068bbf460e860ca7eb13dd131dae39b0"
 }

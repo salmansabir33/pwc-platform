@@ -619,3 +619,63 @@ class RegistryMigrationTests(TransactionTestCase):
         finally:
             executor = MigrationExecutor(connection)
             executor.migrate(leaves)
+
+
+@override_settings(**CONFIG)
+class RegistryAuthorityRaceTests(RegistryFixtures, TransactionTestCase):
+    def setUp(self):
+        self.setup_registry()
+
+    def test_committed_hold_before_user_lock_denies_create(self):
+        from threading import Event
+        from django.utils import timezone
+        from accounts.session_authentication import PersonalAuthentication
+
+        ready = Event()
+        authenticate = PersonalAuthentication.authenticate
+
+        def observe(adapter, request):
+            ready.set()
+            return authenticate(adapter, request)
+
+        def request():
+            close_old_connections()
+            try:
+                return self.call("post", "drafts/", FORM, key=uuid.uuid4()).status_code
+            finally:
+                close_old_connections()
+
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            with patch.object(PersonalAuthentication, "authenticate", observe):
+                with transaction.atomic():
+                    user = User.objects.select_for_update().get(pk=self.user.pk)
+                    future = pool.submit(request)
+                    self.assertTrue(ready.wait(timeout=10))
+                    self.assertFalse(future.done())
+                    user.recovery_hold_state = "review_required"
+                    user.hold_set_at = timezone.now()
+                    user.hold_reason = "compromise"
+                    user.save()
+                self.assertEqual(future.result(timeout=10), 403)
+        self.assertFalse(OrganizationDraft.objects.exists())
+        self.assertFalse(RegistryEvent.objects.exists())
+
+    def test_submit_against_withdraw_has_one_winning_revision(self):
+        draft = self.draft()
+        barrier = Barrier(2)
+
+        def request(command):
+            close_old_connections()
+            try:
+                barrier.wait(timeout=10)
+                return self.call(
+                    "post", f"drafts/{draft['id']}/{command}/", {"revision": 1}
+                ).status_code
+            finally:
+                close_old_connections()
+
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            codes = list(pool.map(request, ["submit", "withdraw"]))
+        self.assertEqual(sorted(codes), [200, 409])
+        self.assertEqual(OrganizationDraft.objects.get(pk=draft["id"]).revision, 2)
+        self.assertEqual(RegistryEvent.objects.count(), 2)

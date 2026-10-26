@@ -38,7 +38,13 @@ class _PwcAppState extends ConsumerState<PwcApp> with WidgetsBindingObserver {
       routes: [
         GoRoute(
           path: '/registry',
-          builder: (c, s) => _Frame(index: 2, child: Consumer(builder: (context, ref, child) => RegistryScreen(urdu: ref.watch(urduProvider)))),
+          builder: (c, s) => _Frame(
+            index: 2,
+            child: Consumer(
+              builder: (context, ref, child) =>
+                  RegistryScreen(urdu: ref.watch(urduProvider)),
+            ),
+          ),
         ),
         GoRoute(
           path: '/identity',
