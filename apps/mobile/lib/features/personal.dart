@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../app/providers.dart';
 import '../app/strings.dart';
@@ -43,6 +44,10 @@ class PersonalScreen extends ConsumerWidget {
             ),
             alert: true,
           ),
+        TextButton(
+          onPressed: () => context.push('/registry'),
+          child: Text(t('ORG-01 / ORG-02 · Registry (unavailable)')),
+        ),
         const SizedBox(height: 16),
         FilledButton(
           onPressed: session.busy
