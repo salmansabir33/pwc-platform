@@ -1,0 +1,59 @@
+name: Flutter environment probe
+on:
+  push:
+    branches: [arena/f54f895c-pwc-platform]
+    paths:
+      - .github/workflows/flutter-environment.yml
+      - scripts/flutter_environment_probe.py
+permissions:
+  contents: read
+jobs:
+  environment:
+    name: Linux Flutter environment diagnostic (not PWC application tests)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Install official stable SDK and verify checksum/revision
+        id: sdk
+        run: python3 scripts/flutter_environment_probe.py
+      - name: Flutter ${{ steps.sdk.outputs.version }} version and doctor
+        run: |
+          flutter config --no-analytics
+          flutter --version
+          flutter doctor -v
+      - name: Create disposable upstream sample (not repository mobile code)
+        run: |
+          flutter create --platforms=android,ios --project-name=pwc_environment_probe "$RUNNER_TEMP/pwc_environment_probe"
+      - name: Resolve candidate dependencies from pub.dev
+        working-directory: ${{ runner.temp }}/pwc_environment_probe
+        run: |
+          flutter pub add flutter_riverpod go_router flutter_secure_storage dio path_provider intl
+          flutter pub get
+      - name: Sample formatting
+        working-directory: ${{ runner.temp }}/pwc_environment_probe
+        run: dart format --output=none --set-exit-if-changed lib test
+      - name: Sample static analysis
+        working-directory: ${{ runner.temp }}/pwc_environment_probe
+        run: flutter analyze
+      - name: Sample widget test
+        working-directory: ${{ runner.temp }}/pwc_environment_probe
+        run: flutter test
+      - name: Android toolchain and debug build
+        working-directory: ${{ runner.temp }}/pwc_environment_probe
+        run: |
+          test -n "$ANDROID_HOME"
+          java -version
+          flutter build apk --debug
+      - name: Record limited diagnostic scope
+        if: always()
+        run: |
+          {
+            echo '## Scope'
+            echo 'Only an upstream generated counter sample is exercised in RUNNER_TEMP.'
+            echo 'No PWC mobile identity, storage, MFA, navigation or security implementation is tested.'
+            echo 'Linux cannot establish iOS/Xcode/device acceptance.'
+            echo 'No SDK/cache/APK is committed or uploaded.'
+          } >> "$GITHUB_STEP_SUMMARY"
