@@ -136,9 +136,11 @@ class SessionController extends ChangeNotifier {
     }
   }
 
-  Future<void> _accept(MobileSession session, int captured) async {
+  Future<void> _accept(MobileSession session, int captured, {required DateTime requestedAt}) async {
     _fence(captured);
     _validateLifetime(session);
+    final accessDeadline = requestedAt.add(Duration(seconds: session.expiresIn));
+    if (!accessDeadline.isAfter(now())) { throw const ApiFailure('SESSION_INVALID'); }
     final me = Me.fromJson(
       (await api.call('me', {}, access: session.accessToken)).body,
     );
@@ -156,11 +158,12 @@ class SessionController extends ChangeNotifier {
     _credentials = session;
     identity = me;
     suspended = false;
-    _accessUntil = now().add(Duration(seconds: session.expiresIn));
+    if (!accessDeadline.isAfter(now())) { throw const ApiFailure('SESSION_INVALID'); }
+    _accessUntil = accessDeadline;
     context.clear();
     _transients();
     _timer?.cancel();
-    _timer = Timer(Duration(seconds: session.expiresIn), suspend);
+    _timer = Timer(accessDeadline.difference(now()), suspend);
     _notify();
   }
 
@@ -188,6 +191,7 @@ class SessionController extends ChangeNotifier {
       throw StateError('Rotation preparation failed');
     }
     _fence(captured);
+    final requestedAt = now();
     final rotated = MobileSession.fromJson(
       (await api.call(
         'mobileRefresh',
@@ -201,7 +205,7 @@ class SessionController extends ChangeNotifier {
         rotated.accessToken == old.accessToken) {
       throw const ApiFailure('SESSION_INVALID');
     }
-    await _accept(rotated, captured);
+    await _accept(rotated, captured, requestedAt: requestedAt);
   }
 
   Future<void> restore() => _serial((captured) async {
@@ -227,6 +231,7 @@ class SessionController extends ChangeNotifier {
     await _erase();
     _fence(captured);
     try {
+      final requestedAt = now();
       final reply = await api.call(
         'mobileLogin',
         Login.fromJson({'email': email, 'password': password}).toJson(),
@@ -236,7 +241,7 @@ class SessionController extends ChangeNotifier {
         challenge = Preauth.fromJson(reply.body);
         _challengeUntil = now().add(Duration(seconds: challenge!.expiresIn));
       } else {
-        await _accept(MobileSession.fromJson(reply.body), captured);
+        await _accept(MobileSession.fromJson(reply.body), captured, requestedAt: requestedAt);
       }
     } catch (_) {
       await _erase();
@@ -252,6 +257,7 @@ class SessionController extends ChangeNotifier {
           throw const ApiFailure('CHALLENGE_INVALID');
         }
         try {
+          final requestedAt = now();
           final result = await api.call(
             'mobileMfaConfirm',
             MfaLogin.fromJson({
@@ -262,7 +268,7 @@ class SessionController extends ChangeNotifier {
             }).toJson(),
           );
           _fence(captured);
-          await _accept(MobileSession.fromJson(result.body), captured);
+          await _accept(MobileSession.fromJson(result.body), captured, requestedAt: requestedAt);
         } catch (_) {
           await _erase();
           rethrow;

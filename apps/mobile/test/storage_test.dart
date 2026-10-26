@@ -93,4 +93,13 @@ void main() {
     );
     expect(memory, isEmpty);
   });
+  test('a pre-deletion encrypted snapshot is rejected after durable invalidation',()async{
+    final store=NativeCredentialStore();await store.replace(MobileSession.fromJson(sessionData()));
+    final oldRecord=memory.values.single;final oldBinding=binding;
+    await store.clear();expect(binding,isNot(oldBinding));
+    // Simulate a native async preference deletion lost at a crash boundary.
+    memory['pwc.credentials.v1']=oldRecord;
+    expect(await store.read(),null);expect(memory,isEmpty);
+  });
+
 }

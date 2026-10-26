@@ -437,4 +437,12 @@ void main() {
     await expectLater(session.readSecurity('sessions'),throwsA(isA<ApiFailure>()));expect(store.value,null);expect(session.authenticated,false);
   });
 
+  test('slow issuance cannot extend the local access deadline',()async{
+    api.handler=(op,b,a,id)async{
+      if(op=='mobileLogin'){clock=clock.add(const Duration(seconds:301));return ApiReply(200,sessionData());}
+      return ApiReply(200,meData());
+    };
+    await expectLater(login(),throwsA(isA<ApiFailure>()));expect(store.value,null);expect(session.authenticated,false);
+  });
+
 }
