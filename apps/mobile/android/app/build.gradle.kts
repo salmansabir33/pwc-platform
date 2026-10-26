@@ -1,0 +1,56 @@
+plugins {
+    id("com.android.application")
+    id("kotlin-android")
+    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    id("dev.flutter.flutter-gradle-plugin")
+}
+
+android {
+    namespace = "pk.org.pwc.pwc_mobile"
+    compileSdk = flutter.compileSdkVersion
+    ndkVersion = flutter.ndkVersion
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_11.toString()
+    }
+
+    defaultConfig {
+        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        applicationId = "pk.org.pwc.pwc_mobile"
+        // You can update the following values to match your application needs.
+        // For more information, see: https://flutter.dev/to/review-gradle-config.
+        minSdk = flutter.minSdkVersion
+        targetSdk = flutter.targetSdkVersion
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
+    }
+
+    buildTypes {
+        release {
+            // Release signing and deployment are intentionally unconfigured.
+            signingConfig = null
+        }
+    }
+}
+
+flutter {
+    source = "../.."
+}
+
+// Security floors for transitive runtime coordinates. These constraints do not
+// add a dependency if absent; selected artifacts are audited by CI via Gradle.
+dependencies {
+    constraints {
+        implementation("com.google.guava:guava:33.4.8-android") {
+            because("Avoid GHSA-5mg8-w23w-74h3 and GHSA-7g45-4rm6-3mm3 temporary-file exposure")
+        }
+        implementation("junit:junit:4.13.2") {
+            because("Avoid GHSA-269g-pwp5-87pp temporary-folder exposure")
+        }
+    }
+}
