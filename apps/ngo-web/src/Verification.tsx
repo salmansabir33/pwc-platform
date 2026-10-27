@@ -96,7 +96,7 @@ export function Verification({
         NGO self-registration and existing-NGO claims are unavailable.
         Historical records confer no authority.
       </p>
-      <h1>
+      <h1 tabIndex={-1}>
         {review
           ? "PWC-01 · Verification review"
           : "ORG-03 · Verification preparation"}
@@ -107,14 +107,14 @@ export function Verification({
           "اہلیت اور نمائندگی الگ ہیں۔ جمع کرنا صرف فرضی تیاری ہے، تصدیق یا تنظیم کا اختیار نہیں۔",
         )}
       </p>
-      <p role="status">
+      <p role="status" className="ds-banner tone-restricted">
         {t(
           "Files unavailable: no approved evidence classes, storage, scanning or retention contract. Reviewer IAM and adjudication unavailable. Browser networking remains blocked.",
           "فائل، جائزہ اور براؤزر نیٹ ورک غیر دستیاب ہیں۔",
         )}
       </p>
       {error && (
-        <p role="alert">
+        <p role="alert" className="ds-banner tone-danger">
           {t(
             "Unavailable or conflicting. Reload current status; no automatic replay.",
             "غیر دستیاب یا متصادم؛ موجودہ حالت دوبارہ دیکھیں۔",
@@ -224,6 +224,7 @@ export function Verification({
                 {t("Submit preparation only", "صرف تیاری جمع کریں")}
               </Button>
               <Button
+                variant="destructive"
                 disabled={disabled || c.state === "withdrawn"}
                 onClick={() =>
                   void run(() =>
@@ -250,6 +251,7 @@ export function Verification({
                       {[false, true].map((withdraw) => (
                         <Button
                           key={String(withdraw)}
+                          variant={withdraw ? "destructive" : "secondary"}
                           disabled={
                             disabled ||
                             c.state !== "draft" ||

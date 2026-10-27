@@ -24,7 +24,9 @@ describe.each(["ngo", "ops"] as const)("%s independent route tree", (app) => {
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
       app === "ngo" ? "independent impact" : "responsible operations",
     );
-    const nav = screen.getByRole("navigation");
+    const nav = screen.getByRole("navigation", {
+      name: "Foundation navigation",
+    });
     expect(within(nav).getAllByRole("link")).toHaveLength(3);
     expect(
       screen.queryByRole("button", { name: /sign in|verify|approve|finance/i }),
@@ -61,7 +63,9 @@ describe.each(["ngo", "ops"] as const)("%s independent route tree", (app) => {
     portal(app);
     const user = userEvent.setup();
     await user.click(
-      within(screen.getByRole("navigation")).getByRole("link", {
+      within(
+        screen.getByRole("navigation", { name: "Foundation navigation" }),
+      ).getByRole("link", {
         name: "Language & accessibility",
       }),
     );
@@ -71,7 +75,9 @@ describe.each(["ngo", "ops"] as const)("%s independent route tree", (app) => {
     expect(screen.getByRole("heading", { level: 1 })).toHaveFocus();
     expect(document.title).toContain("Language & accessibility");
     await user.click(
-      within(screen.getByRole("navigation")).getByRole("link", {
+      within(
+        screen.getByRole("navigation", { name: "Foundation navigation" }),
+      ).getByRole("link", {
         name: "Interface states",
       }),
     );
@@ -82,18 +88,27 @@ describe.each(["ngo", "ops"] as const)("%s independent route tree", (app) => {
   it("switches English/Urdu direction and clears local specimen drafts on language changes", async () => {
     portal(app, "/foundation/accessibility");
     const user = userEvent.setup();
-    await user.type(screen.getByRole("textbox"), "synthetic text");
-    await user.selectOptions(screen.getByRole("combobox"), "ur");
+    await user.type(
+      screen.getByRole("textbox", { name: "Example display label" }),
+      "synthetic text",
+    );
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: /Display language|نمائش کی زبان/ }),
+      "ur",
+    );
     expect(document.documentElement).toHaveAttribute("lang", "ur");
     expect(document.documentElement).toHaveAttribute("dir", "rtl");
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
       "زبان اور رسائی",
     );
-    expect(screen.getByRole("textbox")).toHaveValue("");
+    expect(screen.getByRole("textbox", { name: "مثالی نام" })).toHaveValue("");
     expect(screen.getByText("PWC-W1 / example@pwc.invalid").tagName).toBe(
       "BDI",
     );
-    await user.selectOptions(screen.getByRole("combobox"), "en");
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: /Display language|نمائش کی زبان/ }),
+      "en",
+    );
     expect(document.documentElement).toHaveAttribute("dir", "ltr");
   });
   it("provides label/hint/error and local-only feedback for the specimen", async () => {

@@ -48,7 +48,9 @@ for (const [app, port] of [
       await page.goto(url + path);
       await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
       await accessibility(page);
-      await page.getByRole("combobox").selectOption("ur");
+      await page
+        .getByRole("combobox", { name: /Display language|نمائش کی زبان/ })
+        .selectOption("ur");
       await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
       await page.evaluate(() => document.fonts.ready);
       const sidebar = await page.locator(".sidebar").boundingBox();
@@ -73,18 +75,24 @@ for (const [app, port] of [
     await page.goto(url);
     const menu = page.getByRole("button", { name: "Toggle navigation" });
     await expect(menu).toHaveAttribute("aria-expanded", "false");
-    await expect(page.getByRole("navigation")).toBeHidden();
+    await expect(
+      page.getByRole("navigation", { name: "Foundation navigation" }),
+    ).toBeHidden();
     await menu.click();
     await expect(
       page.getByRole("button", { name: "Close navigation" }),
     ).toHaveAttribute("aria-expanded", "true");
     await page
-      .getByRole("navigation")
+      .getByRole("navigation", { name: "Foundation navigation" })
       .getByRole("link", { name: "Language & accessibility" })
       .click();
-    await expect(page.getByRole("navigation")).toBeHidden();
+    await expect(
+      page.getByRole("navigation", { name: "Foundation navigation" }),
+    ).toBeHidden();
     for (const locale of ["en", "ur"]) {
-      await page.getByRole("combobox").selectOption(locale);
+      await page
+        .getByRole("combobox", { name: /Display language|نمائش کی زبان/ })
+        .selectOption(locale);
       expect(
         await page.evaluate(
           () => document.documentElement.scrollWidth <= window.innerWidth,
@@ -104,7 +112,7 @@ for (const [app, port] of [
     await page.keyboard.press("Enter");
     await expect(page.getByRole("main")).toBeFocused();
     await page
-      .getByRole("navigation")
+      .getByRole("navigation", { name: "Foundation navigation" })
       .getByRole("link", { name: "Language & accessibility" })
       .click();
     await expect(page.getByRole("heading", { level: 1 })).toBeFocused();
@@ -149,7 +157,9 @@ for (const [app, port] of [
     ]) {
       await page.goto(url + path);
       for (const locale of ["en", "ur"]) {
-        await page.getByRole("combobox").selectOption(locale);
+        await page
+          .getByRole("combobox", { name: /Display language|نمائش کی زبان/ })
+          .selectOption(locale);
         await page.evaluate(() => document.fonts.ready);
         expect(
           await page.evaluate(
@@ -189,7 +199,9 @@ test("NGO and Operations keep independent origin, direction and navigation state
   const ops = await context.newPage();
   try {
     await ngo.goto("http://127.0.0.1:5173/foundation/accessibility");
-    await ngo.getByRole("combobox").selectOption("ur");
+    await ngo
+      .getByRole("combobox", { name: /Display language|نمائش کی زبان/ })
+      .selectOption("ur");
     await ops.goto("http://127.0.0.1:5174");
     await expect(ngo.locator("html")).toHaveAttribute("dir", "rtl");
     await expect(ops.locator("html")).toHaveAttribute("dir", "ltr");

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, TextField } from "@pwc/web-ui";
+import { Button, TextField, SelectField } from "@pwc/web-ui";
 import { useLocale } from "@pwc/web-i18n";
 
 type Draft = {
@@ -52,10 +52,10 @@ export function ControlledOnboarding({
   ];
   return (
     <section className="stack">
-      <h1>
+      <h1 tabIndex={-1}>
         PWC-01 · {t("Controlled NGO onboarding", "کنٹرول شدہ تنظیم کی شمولیت")}
       </h1>
-      <p role="status">
+      <p role="status" className="ds-banner tone-restricted">
         {t(
           "Unavailable: operator/reviewer provisioning, command assurance and invitation contracts require independent acceptance. No live onboarding or browser networking.",
           "غیر دستیاب: منتظم، جائزہ اور دعوت کے معاہدوں کی آزاد منظوری درکار ہے۔",
@@ -117,34 +117,31 @@ export function ControlledOnboarding({
             }
           />
         ))}
-        <label>
-          External examination date
-          <input
-            type="date"
-            required
-            disabled={!synthetic}
-            value={draft.examined}
-            onChange={(e) =>
-              setDraft((old) => ({ ...old, examined: e.target.value }))
-            }
-          />
-        </label>
-        <label>
-          Externally examined status
-          <select
-            value={draft.classification}
-            disabled={!synthetic}
-            onChange={(e) =>
-              setDraft((old) => ({
-                ...old,
-                classification: e.target.value as Draft["classification"],
-              }))
-            }
-          >
-            <option value="registered">Registered</option>
-            <option value="unregistered">Informal / unregistered</option>
-          </select>
-        </label>
+        <TextField
+          label="External examination date"
+          hint="External examination only; this does not schedule or approve a command."
+          type="date"
+          required
+          disabled={!synthetic}
+          value={draft.examined}
+          onChange={(e) =>
+            setDraft((old) => ({ ...old, examined: e.target.value }))
+          }
+        />
+        <SelectField
+          label="Externally examined status"
+          value={draft.classification}
+          disabled={!synthetic}
+          onChange={(e) =>
+            setDraft((old) => ({
+              ...old,
+              classification: e.target.value as Draft["classification"],
+            }))
+          }
+        >
+          <option value="registered">Registered</option>
+          <option value="unregistered">Informal / unregistered</option>
+        </SelectField>
         <Button type="submit" disabled={!synthetic || history.length >= 20}>
           Preview synthetic revision
         </Button>

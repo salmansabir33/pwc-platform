@@ -22,3 +22,10 @@ dev_dependencies:
   flutter_lints: 5.0.0
 flutter:
   uses-material-design: true
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/InterVariable.ttf
+    - family: Noto Sans Arabic Variable
+      fonts:
+        - asset: assets/fonts/NotoSansArabicVariable.ttf

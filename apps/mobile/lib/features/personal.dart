@@ -70,25 +70,17 @@ class UnavailableScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ur = ref.watch(urduProvider);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          translated(
-            workspace ? 'ID-04 · Workspaces' : 'ID-03 · Affiliations',
-            ur,
-          ),
-          style: Theme.of(context).textTheme.headlineSmall,
-        ),
-        Notice(
-          translated(
-            workspace
-                ? 'No real NGO workspace API is available. Personal MFA and platform roles do not grant NGO access.'
-                : 'Affiliation discovery is not available. No membership or role is inferred.',
-            ur,
-          ),
-        ),
-      ],
+    return PwcStatePanel(
+      title: translated(
+        workspace ? 'ID-04 · Workspaces' : 'ID-03 · Affiliations',
+        ur,
+      ),
+      message: translated(
+        workspace
+            ? 'No real NGO workspace API is available. Personal MFA and platform roles do not grant NGO access.'
+            : 'Affiliation discovery is not available. No membership or role is inferred.',
+        ur,
+      ),
     );
   }
 }

@@ -8,6 +8,8 @@ on:
       - scripts/mobile_*.py
       - packages/api-contracts/**
       - apps/mobile/**
+      - packages/design-tokens/**
+      - scripts/design_tokens.py
   pull_request:
     branches: [main]
     paths:
@@ -16,6 +18,8 @@ on:
       - scripts/mobile_*.py
       - packages/api-contracts/**
       - apps/mobile/**
+      - packages/design-tokens/**
+      - scripts/design_tokens.py
   workflow_dispatch:
 concurrency:
   group: pwc-mobile-${{ github.workflow }}-${{ github.ref }}
@@ -108,6 +112,8 @@ jobs:
           for i,chunk in enumerate(chunks):
               print(f'::notice title=PWC format suggestion {i+1}/{len(chunks)}::{chunk}')
           PYTHON
+      - name: Check cross-platform design token parity
+        run: python3 scripts/design_tokens.py --check
       - name: Check canonical mobile contract generation
         run: python3 scripts/mobile_contracts.py --check
       - name: Analyze actual PWC source

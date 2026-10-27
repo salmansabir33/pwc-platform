@@ -3,6 +3,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'providers.dart';
+import '../design/theme.dart';
+import '../design/tokens.g.dart';
 import 'strings.dart';
 import '../features/identity.dart';
 import '../features/personal.dart';
@@ -117,11 +119,7 @@ class _PwcAppState extends ConsumerState<PwcApp> with WidgetsBindingObserver {
       locale: Locale(ur ? 'ur' : 'en'),
       supportedLocales: const [Locale('en'), Locale('ur')],
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xff175c47)),
-        inputDecorationTheme: const InputDecorationTheme(filled: true),
-      ),
+      theme: pwcTheme(urdu: ur),
       routerConfig: _router,
       builder: (context, child) => _hidden
           ? Scaffold(
@@ -154,7 +152,7 @@ class _Frame extends ConsumerWidget {
       context.go(['/personal', '/affiliations', '/workspaces', '/security'][v]);
     }
 
-    final wide = MediaQuery.sizeOf(context).width >= 840;
+    final wide = MediaQuery.sizeOf(context).width >= PwcTokens.breakpoints[1];
     final content = SafeArea(
       child: Align(
         alignment: Alignment.topCenter,

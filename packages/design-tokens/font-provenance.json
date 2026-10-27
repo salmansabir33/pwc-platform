@@ -1,0 +1,26 @@
+{
+  "InterVariable.ttf": {
+    "github_blob": "047c92f6e2212473dc436020afed689527076d44",
+    "sha256": "29160a80ff49ddcab2c97711247e08b1fab27a484a329ce8b813d820dc559031",
+    "bytes": 876576,
+    "license": "OFL-1.1"
+  },
+  "Inter-OFL.txt": {
+    "github_blob": "21f6aff961064c2e429f570995e446bcdd555422",
+    "sha256": "5b9321a4298cfeb6b34354164a1c3afc3db114569984c502b9b35d988fd58c57",
+    "bytes": 4377,
+    "license": "OFL-1.1"
+  },
+  "NotoSansArabicVariable.ttf": {
+    "github_blob": "f1d01edce4ebaedcbe9a06fc75fec07b304ec3df",
+    "sha256": "63111b5b2e074dd48cc67692e0a2726d86ee94c1c37fe8598257b7b4e87e869e",
+    "bytes": 844676,
+    "license": "OFL-1.1"
+  },
+  "NotoSansArabic-OFL.txt": {
+    "github_blob": "14c589f6384505ede3f8e52627d397513af3662d",
+    "sha256": "07fc70bfeb985cc1a87a8587d0a0c80bab11c86c9dc3fd95b6f0cb332f983e96",
+    "bytes": 4382,
+    "license": "OFL-1.1"
+  }
+}
