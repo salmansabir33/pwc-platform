@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pwc_mobile/core/contracts.g.dart';
+import 'package:pwc_mobile/core/contract_validation.dart';
 import 'package:pwc_mobile/features/verification.dart';
 import 'registry_test.dart' show fixture;
 
@@ -23,6 +24,14 @@ class FakeVerification implements VerificationGateway {
   }
 }
 void main() {
+  test('04B requirements cannot claim enabled intake or accepted document classes', () {
+    final data=fixture('verificationRequirements');
+    data['file_intake_available']=true;
+    expect(()=>VerificationRequirements.fromJson(data),throwsA(isA<ContractFailure>()));
+    data['file_intake_available']=false;
+    data['accepted_evidence_classes']=['forged'];
+    expect(()=>VerificationRequirements.fromJson(data),throwsA(isA<ContractFailure>()));
+  });
   testWidgets('04B mounted unavailable no evidence upload', (tester) async {
     await tester.pumpWidget(const MaterialApp(home: Scaffold(body: VerificationScreen())));
     expect(tester.widget<FilledButton>(find.widgetWithText(FilledButton,'Load own cases')).onPressed,isNull);
