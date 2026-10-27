@@ -82,7 +82,9 @@ verified success.
 - CI also exposed stale browser unfinished-route expectations and native
   widget selectors matching purpose buttons as well as case status. The browser
   expectation was corrected to the actual unavailable route; native selectors
-  now target the case-specific status and scroll before off-screen actions.
+  now target case-specific status (without assuming the generated fixture track)
+  and scroll before off-screen actions. CI bounded diagnostics now retain failure
+  context rather than losing early failures in parallel progress output.
   These corrections require a fresh final-head rerun, not reuse of failed runs.
 - No known unresolved Critical/High finding in this bounded slice from the
   agent's review; independent security/privacy/database review is outstanding.
