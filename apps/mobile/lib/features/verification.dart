@@ -95,20 +95,23 @@ class _VerificationScreenState extends State<VerificationScreen> {
     });
     try {
       final value = await work();
-      if (mounted && generation == _generation)
+      if (mounted && generation == _generation) {
         setState(() {
           _cases = value;
         });
+      }
     } catch (_) {
-      if (mounted && generation == _generation)
+      if (mounted && generation == _generation) {
         setState(() {
           _error = true;
         });
+      }
     } finally {
-      if (mounted && generation == _generation)
+      if (mounted && generation == _generation) {
         setState(() {
           _busy = false;
         });
+      }
     }
   }
 
@@ -198,13 +201,14 @@ class _VerificationScreenState extends State<VerificationScreen> {
                             final preparation = await widget.gateway!
                                 .preparation(c.id);
                             final history = await widget.gateway!.history(c.id);
-                            if (mounted && generation == _generation)
+                            if (mounted && generation == _generation) {
                               setState(() {
                                 _detailId = c.id;
                                 _requirements = requirements;
                                 _preparation = preparation.results;
                                 _history = history.results;
                               });
+                            }
                             return _cases;
                           });
                         },
