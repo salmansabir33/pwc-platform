@@ -107,3 +107,59 @@ Concrete product choices include registered/informal eligibility tracks, private
 In particular: E03's documented two platform reviewers is not an NGO/signatory quorum; E05's real upper bounds do not alter synthetic 24-hour grants or existing auth proof deadlines; E15 remains disabled initially despite owner endorsement of later bounded delegation; GM01's exact command list and GM06's MFA-retention fork remain incomplete. E13's restrict-only responder direction is conditional under ADR-0002 D08, not a new support/browse/appointment permission. Independent mandate-backed appointment and live-parent delegation require an exact source/cascade contract, not a weaker authority path. Revocation retains ADR-0002's committed-transition semantics and no grace, not a promise to recall delivered bytes or acknowledge a failed write.
 
 The original workflow specification and technical recommendations remain a gated blueprint. The consolidated matrix, original E/GM rows and their alternatives/acceptance requirements jointly define the effective record. No product-owner endorsement substitutes for legal authority, NGO governance, security assurance or operational deployment approval.
+
+## 7. Initial-rollout policy revision — 27 October 2026
+
+**Product authority:** explicit PWC product-owner instruction, “PWC-04B — Revised
+Offline NGO Verification & Controlled Onboarding”, received 27 October 2026.
+This supplements the historical decisions above; it does not rewrite their
+provenance or supply independent security/legal/operations acceptance.
+
+For the initial rollout, NGO and representative evidence examination occurs
+**outside the application**. Public NGO self-registration and existing-NGO
+claims are unavailable. PWC receives documentary evidence and the official
+nomination through separately governed external arrangements. The platform
+records minimized external examination attestations, not raw documents.
+
+A specifically authorized **PWC Super Admin** records organization/nomination
+and initiates onboarding. A second independently authorized verification officer,
+a **distinct individual**, approves that exact record revision. These are narrow
+platform capabilities, not Django staff/superuser flags or universal NGO grants.
+No reviewer status, Board/alliance membership, legacy grant, account recovery or
+MFA establishes these capabilities or permits NGO-private data access.
+
+The stages remain separate:
+
+1. External examination of organizational eligibility and representative mandate.
+2. Platform recording of identity, nomination and minimized attestation references.
+3. Independent approval of the precise recorded revision, with immutable history.
+4. Recipient-bound invitation; nominee activates their own personal identity and
+   accepts the precise nonfinance authority. No operator sets their credentials.
+5. Grant activation through separately accepted PWC-04C/PWC-03B.3 commands.
+
+This **supersedes applicant-driven in-app verification/self-registration/claims
+for the initial rollout only**, including earlier E02/04A/04B applicant workflow
+expectations. Historical cases, claims, APIs, migrations and audit records remain;
+own historical reads/withdrawal do not reopen intake or supply authority.
+It does not supersede registered/informal eligibility distinctions, independent
+mandates, recipient acceptance, NGO independence or software/alliance separation.
+Finance, signatory, governance, collaboration and exceptional private-support
+powers remain separately gated and excluded from initial nonfinance onboarding.
+
+### 7.1 Still-blocking implementation and activation contracts
+
+This product decision **does not approve** the first operator/reviewer appointing
+root, issuer/command/target matrix, distinct-human assurance, appointment expiry/
+revocation/recovery, operation-bound proof/MFA contract, restricted database
+writers, minimized external reference/privacy/retention contract, private
+readers/notices or invitation delivery/recipient/expiry/acceptance semantics.
+E04, applicable E06/E10–E14/E17/E18 and GM01–GM12 retain their exact I/A/U/R
+requirements; REAL gates remain. Two different account IDs are a necessary
+structural check, not proof of distinct independently vetted humans.
+
+Until those contracts are accepted, controlled reader/command/invitation adapters
+must be **unavailable regardless of role labels/settings**. Additive preparation
+models, non-writing transition validation, generic policy requirements and OPS
+local preparation UI are permissible; no live privileged writer, invitation token
+or real authority activation is supplied. Completion of this revised engineering
+assignment is not independent approval or a live onboarding launch.

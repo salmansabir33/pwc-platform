@@ -19,3 +19,18 @@ On **27 October 2026**, the PWC product owner's explicit consolidated owner-appr
 - **Item 8 and REAL03 remain separate:** no finance/signatory/alliance/governance/collaboration/support mandate or power is approved. E15 delegation, actual data merges and private exceptional disclosure remain deferred/excluded features, not silently activated.
 
 No missing number/duration/evidence/quorum/assurance rule is invented; no independent security, NGO-governance, legal, privacy or operations sign-off is recorded. REAL01–REAL04 are only partially satisfied on product direction and remain gated. The original numbered index above and unrelated approved ADR scopes are preserved; this scoped update does not reopen or close unrelated historical items. The [workflow specification](../architecture/PWC-02E-NGO-VERIFICATION-AND-AUTHORITY-WORKFLOWS.md) remains a gated technical design. Merging approval documentation does not authorize privileged implementation, migrations or production activation.
+
+## Initial-rollout reconciliation — 27 October 2026
+
+The product owner has revised initial NGO onboarding to offline evidence
+examination and controlled operator entry with distinct independent officer
+approval; public NGO self-registration and existing-NGO claims are unavailable.
+See ADR-0004 §7 and the PWC-02E register §9. This supersedes earlier applicant
+workflow direction **only for initial rollout**; the original history is retained.
+
+Open: E04 operator/reviewer root, issuer/command matrix and distinct-human
+assurance; E06/E07 minimized external reference/privacy/retention arrangements;
+E10/GM command assurance; exact invitation/recipient binding, identity activation,
+nonfinance acceptance and subsequent 04C/03B.3 grant contracts. No independent
+security/legal/privacy/operations acceptance is recorded. Until accepted, all
+controlled private readers/commands and invitation adapters remain unavailable.
