@@ -195,12 +195,13 @@ class _VerificationScreenState extends State<VerificationScreen> {
                       ? null
                       : () {
                           final generation = _generation;
+                          final gateway = widget.gateway!;
                           run(() async {
-                            final requirements = await widget.gateway!
-                                .requirements(c.id);
-                            final preparation = await widget.gateway!
-                                .preparation(c.id);
-                            final history = await widget.gateway!.history(c.id);
+                            final requirements = await gateway.requirements(
+                              c.id,
+                            );
+                            final preparation = await gateway.preparation(c.id);
+                            final history = await gateway.history(c.id);
                             if (mounted && generation == _generation) {
                               setState(() {
                                 _detailId = c.id;

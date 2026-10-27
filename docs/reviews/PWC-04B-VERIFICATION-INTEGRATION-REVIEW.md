@@ -1,7 +1,7 @@
 # PWC-04B verification integration review
 
-Status: engineering validation in progress; no independent approval, production
-activation or complete 04B roadmap sign-off. Baseline main c8a1637 (merged PR11).
+Status: bounded preparation implementation; no independent approval, production
+activation or complete policy-dependent 04B roadmap sign-off. Baseline main c8a1637 (merged PR11).
 Assigned branch: arena/1778b1f4-pwc-platform; consolidated PR #12, no auto-merge.
 
 ## Delivered safe slice
@@ -74,7 +74,9 @@ verified success.
 - Old web route tests expected /verification to be absent: updated only that
   expectation now an explicit unavailable canonical view is mounted; other
   unfinished routes remain absent.
-- Pinned Flutter formatting must be verified by CI; local WASM dart_style
+- Pinned Flutter formatting passed at the initial c3747aa checkpoint; four
+  analyzer control-flow infos were corrected in fb28553. Final analysis/tests
+  and Android builds require exact-head CI confirmation. local WASM dart_style
   formatting matches existing pinned-formatted source but is not Flutter SDK
   execution.
 - No known unresolved Critical/High finding in this bounded slice from the
@@ -85,11 +87,38 @@ verified success.
 
 ## Executed validation
 
-Pending final exact-head evidence. Initial focused PostgreSQL run: 30 tests
-passed on PostgreSQL 16.2. Local web check (typecheck, Prettier, Vitest, two
-production bundles) passed after route expectation correction. Full
-contract-instrumented PostgreSQL suite and CI are still running. No final green
-claim is made at this checkpoint.
+Local executed evidence (not substitutes for final-head CI):
+
+- PostgreSQL 16.2 additive migration application passed; Django `check`,
+  `makemigrations --check --dry-run`, `migrate --plan` (none outstanding),
+  `migrate --check` passed.
+- Full contract-instrumented regression: **429 tests passed**, 258 distinct
+  route/method/status combinations, 345.438 seconds. This began before the final
+  four additional test cases; no backend runtime code changed afterward.
+- Final focused verification suite at c3747aa: **34 tests passed**, 53 wire
+  combinations, 43.727 seconds. Includes duplicate creation/retry/submission,
+  replacement and submit/withdraw/source-withdrawal races; holds, cross-owner/
+  case/download isolation, strict scalar/closed inputs, parser bounds, signed
+  context-bound pagination, history/receipt immutability and audit rollback.
+- `contracts.check --check`: generation/inventory/source/frozen compatibility,
+  OpenAPI 3.1/security/historical keys and request/success examples passed.
+- Local `npm run check`: typecheck, Prettier, **121 Vitest tests**, both Vite
+  production builds passed. Two new browser scenarios await CI execution.
+- Ruff repository check passed. `pip check`, hash-lock checks (12 runtime and
+  33 CI pins), six tooling tests, tracked-file security scan (0 findings), and
+  npm audits (runtime and full development tree: 0 vulnerabilities) passed.
+- Local Flutter SDK/Android tooling/browser runtime are unavailable. Temporary
+  npm WASM formatter was used only in ignored scratch storage; no dependency
+  manifests/locks were changed. Official pinned Dart format/generation,
+  Flutter analysis/tests, Android app/harness builds, browser tests, Python
+  3.11/3.12 regression and network-dependent advisory reviews are delegated to
+  the existing CI gates, **not asserted passed here before completion**.
+
+Final exact-head check URLs, SHA, counts, any corrected failures and the human
+merge verdict are recorded in the [PR #12 evidence thread](https://github.com/salmansabir33/pwc-platform/pull/12).
+Treat a pending/cancelled run or an earlier-head green run as no final-head pass.
+The review checkpoint is deliberately separated from that final evidence to
+avoid circularly claiming CI on a documentation commit it has not tested.
 
 ## Readiness and human handoff
 
