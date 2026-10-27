@@ -198,3 +198,57 @@ Final report / PR acceptance evidence:
 
 ## 10. Traceability and change control
 Each PR description should link: work package ID → product scope and screen IDs → domain models → API schema → test evidence → deployment/migration effect → pending decisions. Change product scope only through explicit product-owner approval; update planning artifacts when approved. Preserve M1/M2/M3 completeness and deferred items until reviewed. This roadmap is the **operational work breakdown**, while the strategic foundation remains the authority for business intent.
+
+
+---
+
+## 11. Execution reconciliation and approved deviations — 27 October 2026
+
+**Status:** Roadmap v2.0 remains the controlling P0–P8 / PWC-01–PWC-09 execution structure. This addendum records observed GitHub merge evidence and approved product changes; it does **not** silently declare gated features complete or retroactively rewrite the 22 October baseline. Original section 0's PWC-01/open-PR snapshot and sections 7–8's suggested next tasks are **historical as of 22 October** and are superseded for current scheduling by the dated status below. Original M1/M2/M3 first-public-MVP scope, canonical IDs, and human/security gates remain in force.
+
+### 11.1 GitHub delivery ledger (verified against PR metadata on 27 October 2026)
+
+| Roadmap item | GitHub evidence | Reconciled status / difference from original ticket |
+| --- | --- | --- |
+| P0 / PWC-01 | PR #1 merged; PR #2 added roadmap execution authority | Foundation merged, not still pending as original §0 snapshot states. |
+| P1 / PWC-02A, 02C, 02D | ADRs and dependent implementations referenced by PRs #3–#5 | Relevant architectural decisions were adopted; do not interpret technical ADR approval as live auth/NGO authority approval. |
+| P1 / PWC-02E | PR #8 merged; product owner disposition PR #10 merged | Architecture and owner-specific options recorded; several E/GM/REAL security/operations/legal decisions remain implementation or activation gates. |
+| P1 / PWC-02F | PR #9 merged | Environment/security tooling foundation delivered. |
+| P2 / PWC-03A | PR #3 merged | Backend personal identity/auth foundation, operational delivery/production still gated. |
+| P2 / PWC-03B | PR #4 merged | Synthetic, deny-default tenant authorization foundation; **PWC-03B.3 real privileged grant/authority mutations remain blocked**, not completed by synthetic tests. |
+| P2 / PWC-03C | PR #6 merged | Canonical API contracts and cross-platform contract testing foundation. **Deviation / outstanding original scope:** broad shared audit-event and protected file-access primitives from original 03C were not thereby delivered as generalized services; carry them forward as explicit prerequisites in relevant slices, not assume completion. |
+| P2 / PWC-03D | PR #7 merged | Flutter identity/shell foundation; live-networking/real-user acceptance remain gated. |
+| Cross-cutting W1 web foundations | PR #5 merged | React/TypeScript/Vite NGO and Operations shells delivered **early** under ADR-0003's permitted sequencing flexibility; W1 is not a replacement/new numbered phase and is not live integration. |
+| P3 / PWC-04A | PR #11 merged | Registry/claim/provisional engineering foundation retained; **initial-rollout applicant-driven registration/claim submissions were later closed server-side** by revised 04B policy. Historical data/read/withdrawal preserved. |
+| P3 / PWC-04B | PR #12 (initial safely gated preparation), then PR #13 (revised offline controlled-onboarding preparation), both merged | **Approved scope change:** external organization/representative verification; authorized Super Admin initiates records, separate officer approves; no in-app evidence upload or public NGO self-onboarding in initial rollout. PR #13 delivers records/audit and disabled adapters/UI, **not** live reviewer commands, authority or invitations. Original ticket §3 P3 description is superseded for initial rollout by the revised PWC-04B row already present above and ADR-0004 §7. |
+| Cross-cutting UI design standard | PR #14 (source documentation), then PR #15 (React/Flutter design foundation), merged | **Early authorized UI foundation**, not a new P0–P8 or PWC-numbered subphase. Design standard is `docs/design/PWC_DESIGN_SYSTEM_v1.0.md`; apply to all subsequent UI. Manual screen-reader, native Urdu/device, zoom, iOS and performance acceptance remain outstanding; design foundation is not feature completion. |
+| P3 / PWC-04C product governance | PR #16 merged | Initial offline appointments of Super Admin and independent Verification Officer by PWC's formally designated founding platform authority accepted **at product level only**; initial platform operator IAM/bootstrap/assurance remain blocked pending independent approved contracts. |
+| P3 / PWC-04C nominee acceptance | PR #17 **open/unmerged as of this audit** | Product-owner-approved recipient-bound, one-use, max-72-hour invitation and separate explicit nonfinance acceptance documented in the PR; do not claim it is on `main` until merged. Real invitation/acceptance/grant commands remain blocked. |
+| P3 / PWC-04C implementation, 04D | No completion PR evidenced in reviewed #1–#17 history | Not implemented as live business capabilities; keep P3/G1b incomplete. |
+| P4–P8 / PWC-05 to PWC-09 | No completion PR evidenced in reviewed #1–#17 history | Not started/accepted as complete; milestones G1/G2/G3/G4 remain unmet. |
+
+This is a **PR/history and documentation-scope audit**, not an independent line-by-line implementation certification. Merged means integrated, **not** operationally live or all acceptance gates met.
+
+### 11.2 Approved changes versus deviations requiring closure
+
+1. **PWC-04B product change — accepted:** The original self-service / document-upload approval path was replaced, for initial rollout, with offline NGO/representative evidence examination, Super Admin preparation and independent Verification Officer approval. Maintain E01 registered/informal standards, organization-versus-mandate separation, no private access implied by platform title, and no finance/signatory powers. See ADR-0004 §7, verification decision register §9 and PWC-04B runbook/review. Do not re-enable self-service by relying on §3's older PWC-04A wording.
+2. **W1 / design system early delivery — permitted sequencing variance:** ADR-0003 allowed early web shells, shared UI tokens and design components; PRs #5 and #15 provided those foundations while preserving separated web origins and disabled transport. This does not complete the M1 first functional UI path, which remains PWC-05D/05E acceptance and approved networking dependent.
+3. **PWC-03C reduction — partial delivery:** Contract/schema foundation was delivered, but generalized audit/file-access infrastructure was not included in that PR. Each future relevant subphase must identify and implement or explicitly gate necessary audited/file primitives. Do not mark original PWC-03C breadth as fully closed without a traceable contract change and tests.
+4. **PWC-03B real command sequencing — open blocker:** PWC-03B.3 and the E/GM/REAL registers continue to block real platform operator/reviewer provisioning, invitation authority, first NGO nonfinance grants and recovery. The 04B default-off engineering foundation is not sufficient evidence of P3 completion. Finalize exact separate accountable approvals before allowing corresponding implementation.
+5. **PWC-04C product decisions — accepted, technical scope pending:** Founding platform authority's offline signed appointments (PR #16) and product-level 72-hour nominee invitation/explicit acceptance (PR #17 pending merge) are recorded product changes. They do not substitute for issuer/target IAM, assurance, grant writer, privacy, notification, conflict/quorum and recovery contracts.
+6. **Design-system governance — approved:** Future React and Flutter implementations must follow `docs/design/PWC_DESIGN_SYSTEM_v1.0.md`, reuse shared components, report screen coverage and distinguish UI-only/gated/demo from integrated features. Preserve unresolved manual acceptance in P8/PWC-09D.
+
+### 11.3 Remaining roadmap and gate status
+
+- **G0a/G0b:** Foundation PR/ADR work merged in part; cross-owner, operations and production approvals remain **open**. Do not equate merger of an ADR with all G0b sensitive policy gates closing.
+- **G1a:** Synthetic authorization and identity tests exist; end-to-end real authority proof, integration/security acceptance and operational gates remain outstanding.
+- **P3/G1b:** Offline trust foundations merged; real operator/reviewer provisioning, independent approval actions, exact nominated-recipient invitation, initial nonfinance grant activation, restricted public projection, and contested recovery are not yet authorized as completed. PWC-04C/04D must account for these.
+- **P4/G1:** Member management and functional M1 frontend/integration acceptance pending; adapt the legacy G1 demo text (“user ... claims/creates verified NGO”) to the approved **externally verified, PWC-operated onboarding model**, without reducing membership scope or tenant isolation tests.
+- **P5–P7/G2/G3:** Volunteers, projects, finance, alliance governance and citizen participation pending under their original tickets.
+- **P8/G4:** Deployment, privacy/legal, real-device accessibility/Urdu and pilot sign-offs remain mandatory.
+
+### 11.4 Mandatory change-control procedure for every future slice
+
+Every Arena/Codex subphase must reconcile: **roadmap ticket → latest dated product/ADR decisions → canonical screens → implemented server/client/API/test coverage → pending gates → PR diff/CI**. Report deviations as **approved scope change**, **sequencing variance**, **partially implemented**, **deferred/open**, or **unauthorized deviation requiring correction**. Obtain explicit product-owner approval to change original P0–P8 or M1–M3 coverage; preserve original source/history; amend roadmap/status and linked decision records **in the same PR as the affected implementation**, or in a clearly linked preceding documentation PR. Never quietly redefine unfinished work as complete. One comprehensive engineering assignment per lettered subphase remains the preferred user handoff; ordinary incremental commits/internal reviews are not extra user-facing phases.
+
+**Source links:** [ADR-0004](../decisions/ADR-0004-ngo-verification-and-representative-authority.md); [PWC-02E E register](../reviews/PWC-02E-VERIFICATION-AUTHORITY-DECISION-REGISTER.md); [PWC-03B.3 register](../reviews/PWC-03B3-PRIVILEGED-GRANT-DECISION-REGISTER.md); [PWC-04C founding appointment](../reviews/PWC-04C-INITIAL-PLATFORM-APPOINTMENT-DECISION.md); [Design System](../design/PWC_DESIGN_SYSTEM_v1.0.md).
