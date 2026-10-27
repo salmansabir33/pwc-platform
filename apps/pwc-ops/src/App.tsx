@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Link, Route, Routes } from "react-router-dom";
 import {
   createFoundationRuntime,
   connectInvalidationChannel,
@@ -12,6 +12,7 @@ import {
   NotFound,
 } from "@pwc/web-ui";
 import { Verification } from "../../ngo-web/src/Verification";
+import { ControlledOnboarding } from "./ControlledOnboarding";
 import { config } from "./config";
 
 export function App() {
@@ -32,12 +33,26 @@ export function App() {
   return (
     <PortalShell portal={config.appId}>
       <Routes>
-        <Route path="/" element={<Overview portal={config.appId} />} />
+        <Route
+          path="/"
+          element={
+            <>
+              <Overview portal={config.appId} />
+              <Link to="/controlled-onboarding">
+                PWC-01 · Controlled onboarding (unavailable)
+              </Link>
+            </>
+          }
+        />
         <Route
           path="/foundation/accessibility"
           element={<AccessibilitySpecimen />}
         />
         <Route path="/foundation/states" element={<StateSpecimens />} />
+        <Route
+          path="/controlled-onboarding"
+          element={<ControlledOnboarding />}
+        />
         <Route path="/verification" element={<Verification review />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

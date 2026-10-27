@@ -135,3 +135,65 @@ pass. Not complete policy-dependent verification or production readiness.
 Independent policy/IAM/privacy/legal/security/operations gates and REAL01–04
 remain. Stop before 04C/04D, privileged grants, finance or deployment. Human PR
 review and explicit merge decision required; do not auto-merge.
+
+## Revised assignment checkpoint — offline initial rollout, 27 October 2026
+
+The later explicit product-owner instruction supersedes the applicant-driven
+initial-rollout expectation above. Base `06f5c74` includes merged PR12; assigned
+branch `arena/305ca95a-pwc-platform`. This is one comprehensive revised 04B
+assignment, not new user-facing subphases. Historical sections/evidence remain
+for provenance and are not a live rollout authorization.
+
+### Scope and implementation review
+
+ADR-0004 §7, PWC-02E §9, OPEN and the existing roadmap record the revised offline
+policy. Four additive models/migrations 0007/0008 prepare controlled records,
+immutable revisions, purpose-separated external attestations and immutable
+actor/session events. Different reviewer account/provenance constraints and an
+immutable initiator guard prevent structural self-review bypass. Unique revision
+constraints and transaction rollback are tested on actual PostgreSQL.
+
+No live privileged writer, private queue/reader, reviewer provisioning,
+invitation delivery/acceptance or grant activation exists. Missing E04/GM
+contracts make these adapters unconditionally unavailable, not optionally enabled
+by a broad flag. This uses the assignment's explicit disabled-adapter alternative.
+The non-writing preflight is not a permission service or evidence rubric.
+Two account IDs cannot establish independently vetted distinct individuals.
+
+Default server denial now shuts down applicant creation/edit/submission even
+with both old API gates enabled; existing own reads/withdrawal and audit data
+remain. Historical success-wire tests explicitly opt into an isolated test-only
+exercise; default-rollout tests explicitly turn it off. No environment, browser
+or staff/operator bypass is added. OpenAPI preserves historical success DTOs and
+adds explicit rollout-policy metadata; old success fixtures do not claim live
+availability. New schemas describe only actual requirements/unavailable routes.
+
+OPS PWC-01 has a disabled controlled-onboarding interface and synthetic-only
+local preview; no browser networking, document chooser, persistence, real role
+or approval success. Native personal operation allowlists remain unchanged;
+legacy client components show the initial-rollout policy. The existing W1 and
+native-credential boundaries are retained.
+
+### Findings, tests and remaining approvals
+
+Initial focused tests exposed test expectations for GET query/body encoding,
+PostgreSQL deferred FK checking and varchar error classification; corrected
+without loosening production constraints. Focused controlled suite: **17 tests,
+34 observed HTTP combinations passed** on actual PostgreSQL 16.2. The duplicate
+snapshot revision race allows exactly one insert; immutable history/initiator,
+self-review constraints, reference bounds, atomic rollback, auth/hold/transport/
+CSRF and all unavailable operations are covered. This is **not** execution of
+unimplemented approval/issuer-revoke/token/grant races or real authenticity.
+
+Full backend/frontend/browser/mobile/Android and final-head CI results are
+recorded in the consolidated PR evidence thread after execution. Pending,
+cancelled or older-head checks do not constitute exact-head acceptance. No
+physical-device, independent privacy/security/legal/IAM/operations review or
+production acceptance is inferred. All GM01–GM12 gates and applicable E/REAL
+residual gates remain; no new self-approved command matrix, retention schedule,
+reviewer appointment or activation path is introduced.
+
+**Readiness:** revised policy and safe domain/API/UI preparation are reviewable
+only after validation. Actual controlled onboarding remains blocked on the exact
+contracts listed in the revised runbook. Stop before 04C/04D, real grants,
+finance, production deployment or any automatic merge.

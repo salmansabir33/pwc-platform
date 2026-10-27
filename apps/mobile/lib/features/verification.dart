@@ -121,6 +121,10 @@ class _VerificationScreenState extends State<VerificationScreen> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        if (widget.gateway == null)
+          const Text(
+            'Initial rollout: external NGO and representative verification only. Public NGO self-registration and existing-NGO claims are unavailable. Historical records do not confer authority.',
+          ),
         Text(
           widget.review
               ? 'PWC-01 · Verification review'

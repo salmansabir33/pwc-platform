@@ -119,3 +119,105 @@ independent privacy/legal/security/storage/operations approval, scoped reviewer
 IAM, evidence and state rubrics, and approved retention/notice contracts, followed
 by implementation and adversarial tests of those actual paths. No production
 readiness or real-organization/device acceptance is asserted here.
+
+## Revised offline controlled onboarding — superseding initial rollout
+
+**27 October 2026, later product-owner instruction; ADR-0004 §7 / PWC-02E §9.**
+Earlier sections describe the merged PR12 preparation checkpoint, not the new
+rollout policy. For initial rollout there is **no public NGO self-registration,
+existing-NGO claim or applicant-driven evidence submission**. Personal identity
+registration/recovery is a different domain and supplies no operator powers.
+
+### Executable boundary
+
+- Old URLs/schemas/data/migrations are preserved. New draft/claim/case creation,
+  editing, preparation addition/replacement and submission return 503
+  `SELF_SERVICE_UNAVAILABLE` after current personal authentication/hold checks,
+  before parsing request data. Existing own reads/history and withdrawal remain
+  scoped. Raw evidence adapters stay unavailable. A withdrawn record never
+  grants NGO access.
+- A non-environment-configurable `PWC_LEGACY_ONBOARDING_TEST_EXERCISE` defaults
+  false. It is consulted **only when environment is exactly test** to exercise
+  frozen historical success contracts in isolated regression fixtures. It cannot
+  enable rollout in development/staging/production, never affects controlled
+  commands, and has no HTTP/header/token bypass. Do not enable in deployed code.
+- New `/api/v1/controlled-onboarding/requirements/` returns generic policy after
+  personal-session checks in the existing default-off dev/test API boundary.
+  It is **not a capabilities response**. Twelve implemented operations total,
+  ten paths: requirements plus unavailable list/create/read/edit, submit,
+  approve/reject/return/withdraw, invitation creation and recipient acceptance.
+- All controlled private readers/commands return 503
+  `CONTROLLED_ONBOARDING_UNAVAILABLE` for every actor, including Django
+  superuser/staff, Board, legacy NGO admin and synthetic grant holders. No
+  object lookup/body parse/contact/evidence persistence or enumeration occurs.
+  No setting activates them. Cookie CSRF/origin, native transport separation,
+  current auth/holds, quotas and lock/statement bounds remain enforced.
+
+### Domain preparation, not a live privileged writer
+
+Additive migrations 0007/0008 introduce ControlledOnboardingRecord (initiator,
+reviewer, state/revision, optional existing organization), immutable
+ControlledOnboardingRevision (minimized identity/nomination snapshot), separate
+OfflineVerificationAttestation eligibility/mandate lanes, and immutable
+ControlledOnboardingEvent (actor/session/revision provenance). All references
+are protected from cascade deletion. Snapshot revisions are unique; review
+states require a different reviewer account and provenance; the initiator
+cannot be replaced to bypass independence. History updates/deletes are blocked
+by PostgreSQL triggers; reversing used records is refused. DB-owner power is
+not treated as domain authority.
+
+Snapshots contain NGO display name/city/classification, optional existing
+nominee User and opaque nominee/official-nomination custody handles. Attestations
+contain a separate purpose, opaque external evidence/method handles, examination
+date and attestor. No document number, raw scan, URL, free narrative, case
+contents, evidence sufficiency or PWC-alliance requirement is added. Handle
+syntax is a technical bound, **not an approved privacy/retention/reference
+classification or a guarantee that arbitrary identifiers are harmless**. No
+real data may be entered until those contracts are accepted.
+
+Non-writing `preflight` validates the proposed draft/returned → submitted →
+approved/rejected/returned graph, withdrawal, expected revision, different
+reviewer account and presence of both attestation lanes. It performs no queries,
+permission checks or persistence. A returned correction requires a new immutable
+snapshot/revision; approval of an old revision cannot be carried forward.
+A successful preflight **never authorizes** a command or asserts distinct-human
+verification, documentary authenticity or NGO authority. Approved/rejected are
+preparation schema states only; no live transition writer is implemented.
+
+### Operator/reviewer and invitation integration contract
+
+Required capabilities are separate appointment-backed, operation-specific
+platform permissions: record/edit/submit by the nominated initiating operator;
+read/review/approve/reject/return by an independently appointed officer. These
+are architecture requirements, **not approved permission atoms or an issuer
+matrix**. Before implementing a writer, independently accept:
+
+1. Legitimate initial appointing authority; narrow provisioning writer,
+   appointment scope/expiry/revocation/recovery and distinct-human provenance.
+2. Exact issuer/command/target and conflict matrix, current-session operation-bound
+   assurance/intent, hold/factor/recovery behavior, locks/revision/idempotency and
+   restricted-role database writer/API/private-reader/notice contracts.
+3. External evidence custody/legal basis and minimized reference/privacy/retention
+   classification. No arbitrary document sufficiency or duration is invented.
+4. Exact recipient binding, identity activation, invitation token lifecycle,
+   delivery/expiry/replay/revocation and version-specific nonfinance acceptance.
+5. Separate 04C/03B.3 grant activation. No invitation, accepted record or reviewer
+   status automatically becomes an NGO grant; finance/signatory/governance,
+   collaboration and private support stay separately gated.
+
+No email/token delivery, assurance-proof reuse, grant mapping or live operator
+appointment exists. Model-level different-account checks are not proof of two
+independently vetted human individuals. Denied/unavailable commands have no
+approval audit success, invite token or synthetic-to-real provenance path.
+
+### Operations UI
+
+PWC-01 `/controlled-onboarding` presents the external-examination → operator
+record → independent approval → nominee invitation/acceptance → separate grant
+stages and exact unavailable boundaries. The form is disabled when mounted;
+synthetic component tests can preview at most 20 local immutable revisions.
+Nothing is sent, persisted in browser storage, approved or invited. State clears
+on scope/mode/locale change. References are bounded opaque handles, not uploads.
+Review/return/reject/invite/accept/activate controls always stay disabled.
+Legacy ORG screens explain the revised policy while preserving historical
+components; mounted browser/native gateways remain disconnected.
