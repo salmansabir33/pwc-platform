@@ -7,6 +7,7 @@ import 'strings.dart';
 import '../features/identity.dart';
 import '../features/personal.dart';
 import '../features/security.dart';
+import '../features/registry.dart';
 
 class PwcApp extends ConsumerStatefulWidget {
   const PwcApp({super.key});
@@ -35,6 +36,16 @@ class _PwcAppState extends ConsumerState<PwcApp> with WidgetsBindingObserver {
         return null;
       },
       routes: [
+        GoRoute(
+          path: '/registry',
+          builder: (c, s) => _Frame(
+            index: 2,
+            child: Consumer(
+              builder: (context, ref, child) =>
+                  RegistryScreen(urdu: ref.watch(urduProvider)),
+            ),
+          ),
+        ),
         GoRoute(
           path: '/identity',
           builder: (c, s) => const _Frame(child: IdentityScreen()),

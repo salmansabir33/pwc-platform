@@ -530,6 +530,13 @@ class AuthenticationJourneys(MfaFixtures, TestCase):
 
 
 class PreauthRollbackGuardTests(TransactionTestCase):
+    def tearDown(self):
+        # Historical targets must not leave later-app migrations unapplied for
+        # following tests (04A adds organizations leaves beyond the old target).
+        executor = MigrationExecutor(connection)
+        executor.migrate(executor.loader.graph.leaf_nodes())
+        super().tearDown()
+
     leaf = ("accounts", "0006_guard_used_preauth_bindings")
     older = ("accounts", "0004_flow_cooldown_and_transition_evidence")
 

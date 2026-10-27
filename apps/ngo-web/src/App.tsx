@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Link, Route, Routes } from "react-router-dom";
 import {
   createFoundationRuntime,
   connectInvalidationChannel,
@@ -11,6 +11,7 @@ import {
   StateSpecimens,
   NotFound,
 } from "@pwc/web-ui";
+import { Registry } from "./Registry";
 import { config } from "./config";
 
 export function App() {
@@ -31,12 +32,23 @@ export function App() {
   return (
     <PortalShell portal={config.appId}>
       <Routes>
-        <Route path="/" element={<Overview portal={config.appId} />} />
+        <Route
+          path="/"
+          element={
+            <>
+              <Overview portal={config.appId} />
+              <Link to="/registry">
+                ORG-01 / ORG-02 · Registry review (not connected)
+              </Link>
+            </>
+          }
+        />
         <Route
           path="/foundation/accessibility"
           element={<AccessibilitySpecimen />}
         />
         <Route path="/foundation/states" element={<StateSpecimens />} />
+        <Route path="/registry" element={<Registry />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </PortalShell>

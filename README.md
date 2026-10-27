@@ -14,6 +14,10 @@ Independent repository for the Pakistan Welfare Club digital ecosystem (Faisalab
 - `docs/decisions`: architectural decisions and outstanding sign-offs.
 - `infra`: local PostgreSQL and backend dev Docker configuration.
 
+## NGO registry and claims (PWC-04A)
+
+The [04A runbook](docs/runbooks/PWC-04A-NGO-REGISTRY-AND-CLAIMS.md) describes default-off claimant-only draft/claim APIs, private provisional permissions, public-only matching and ORG-01/02 contract-tested web/mobile components. Real intake, reviewer decisions, NGO authority and live registry clients remain disabled. See [the integration review](docs/reviews/PWC-04A-NGO-REGISTRY-INTEGRATION-REVIEW.md) for tests and remaining gates.
+
 ## Web foundation (W1)
 
 The two portals use a shared npm workspace, design primitives and network-disabled API infrastructure. See [the web foundation runbook](docs/runbooks/PWC-W1-WEB-FOUNDATION.md) for Node installation, independent dev/build commands, tests and W2/W3 security gates. No production deployment or live login is enabled.

@@ -10,6 +10,7 @@ import re
 from urllib.parse import urlsplit
 
 FLAGS = (
+    "PWC_REGISTRY_ENABLED",
     "DJANGO_DEBUG",
     "PWC_AUTH_FLOWS_ENABLED",
     "PWC_AUTH_SESSIONS_ENABLED",

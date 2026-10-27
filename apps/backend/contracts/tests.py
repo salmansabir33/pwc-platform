@@ -63,14 +63,14 @@ class ContractTests(SimpleTestCase):
                 validate_schema({'$ref':'#/components/schemas/'+name},body)
 
     @override_settings(PWC_AUTH_FLOWS_ENABLED=False, PWC_AUTH_SESSIONS_ENABLED=False,
-                       PWC_AUTH_MFA_ENABLED=False, PWC_SYNTHETIC_CONTEXT_HTTP_ENABLED=False,
+                       PWC_AUTH_MFA_ENABLED=False, PWC_SYNTHETIC_CONTEXT_HTTP_ENABLED=False, PWC_REGISTRY_ENABLED=False,
                        ALLOWED_HOSTS=['testserver'])
     def test_disabled_endpoints_do_not_masquerade_as_available(self):
         for path, methods in build()['paths'].items():
             method = next(iter(methods))
             op = methods[method]
             if not op['x-pwc']['gates']:continue
-            actual = path.replace('{session_id}','00000000-0000-4000-8000-000000000001').replace('{organization_uuid}','00000000-0000-4000-8000-000000000001')
+            actual = __import__('re').sub(r'\{[^}]+\}', '00000000-0000-4000-8000-000000000001', path)
             examples = json.loads((PACKAGE/'examples-v1.json').read_text())['cases']
             body = next((x['body'] for x in examples if x['operationId']==op['operationId'] and x['kind']=='request'), {})
             response = getattr(self.client,method)(actual, data=json.dumps(body) if method!='get' else {},content_type='application/json',secure=True)

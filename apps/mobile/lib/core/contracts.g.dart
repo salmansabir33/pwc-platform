@@ -4,15 +4,20 @@ import 'contract_validation.dart';
 
 typedef Json = Map<String, Object?>;
 const contractSha256 =
-    '48d002a3f195f539d81edfffb3e84cf1b8dfa1028bc575aeadfc03fb4fb78fc3';
+    '39ec507ebc6ea7cdd7c2a62cfb4c90e9de5284ce2a9f0f341af343876470440e';
 final Map<String, dynamic> canonicalSchemas =
     jsonDecode(
-          r'''{"Activation":{"additionalProperties":false,"properties":{"recovery_codes":{"items":{"minLength":1,"type":"string","x-sensitive":true},"type":"array"},"status":{"enum":["active"],"type":"string"}},"required":["status","recovery_codes"],"type":"object"},"Assurance":{"additionalProperties":false,"properties":{"assurance_proof":{"minLength":1,"type":"string","x-sensitive":true},"expires_at":{"format":"date-time","type":"string"}},"required":["assurance_proof","expires_at"],"type":"object"},"ClearHold":{"additionalProperties":false,"properties":{"intent_id":{"format":"uuid","type":"string"},"password":{"minLength":1,"type":"string","x-sensitive":true},"totp_code":{"type":"string"}},"required":["intent_id","password","totp_code"],"type":"object"},"Empty":{"additionalProperties":false,"properties":{},"required":[],"type":"object"},"Enrollment":{"additionalProperties":false,"properties":{"enrollment_id":{"format":"uuid","type":"string"},"expires_at":{"format":"date-time","type":"string"},"otpauth_uri":{"minLength":1,"type":"string","x-sensitive":true},"secret":{"minLength":1,"type":"string","x-sensitive":true}},"required":["enrollment_id","secret","otpauth_uri","expires_at"],"type":"object"},"EnrollmentConfirm":{"additionalProperties":false,"properties":{"code":{"type":"string"},"enrollment_id":{"format":"uuid","type":"string"}},"required":["enrollment_id","code"],"type":"object"},"FlowAccepted":{"additionalProperties":false,"properties":{"expires_in":{"minimum":0,"type":"integer"},"flow_control":{"minLength":1,"type":"string","x-sensitive":true},"flow_id":{"format":"uuid","type":"string"},"status":{"enum":["accepted"],"type":"string"}},"required":["status","flow_id","flow_control","expires_in"],"type":"object"},"FlowRequest":{"additionalProperties":false,"properties":{"email":{"type":"string"}},"required":["email"],"type":"object"},"FlowResend":{"additionalProperties":false,"properties":{"flow_control":{"minLength":1,"type":"string","x-sensitive":true},"flow_id":{"format":"uuid","type":"string"}},"required":["flow_id","flow_control"],"type":"object"},"Intent":{"additionalProperties":false,"properties":{"expires_at":{"format":"date-time","type":"string"},"intent_id":{"format":"uuid","type":"string"},"required_methods":{"items":{"enum":["password","totp"],"type":"string"},"type":"array"}},"required":["intent_id","expires_at","required_methods"],"type":"object"},"IntentRequest":{"oneOf":[{"additionalProperties":false,"properties":{"command":{"additionalProperties":false,"properties":{},"required":[],"type":"object"},"context":{"additionalProperties":false,"properties":{"id":{"format":"uuid","type":"string"},"kind":{"enum":["personal"],"type":"string"}},"required":["kind","id"],"type":"object"},"operation":{"enum":["mfa.enroll","mfa.remove","mfa.recovery_codes.rotate","sessions.logout_all","recovery_hold.clear"],"type":"string"}},"required":["operation","context","command"],"type":"object"},{"additionalProperties":false,"properties":{"command":{"additionalProperties":false,"properties":{"session_id":{"format":"uuid","type":"string"}},"required":["session_id"],"type":"object"},"context":{"additionalProperties":false,"properties":{"id":{"format":"uuid","type":"string"},"kind":{"enum":["personal"],"type":"string"}},"required":["kind","id"],"type":"object"},"object_id":{"format":"uuid","type":"string"},"operation":{"enum":["sessions.revoke"],"type":"string"}},"required":["operation","context","command"],"type":"object"}]},"Login":{"additionalProperties":false,"properties":{"device_label":{"maxLength":100,"type":"string"},"email":{"type":"string"},"password":{"minLength":1,"type":"string","x-sensitive":true}},"required":["email","password"],"type":"object"},"Me":{"additionalProperties":false,"properties":{"email_verified":{"type":"boolean"},"recovery_hold_state":{"enum":["clear","restricted","review_required"],"type":"string"},"session":{"additionalProperties":false,"properties":{"absolute_expires_at":{"format":"date-time","type":"string"},"assurance":{"additionalProperties":false,"properties":{"last_mfa_at":{"anyOf":[{"format":"date-time","type":"string"},{"type":"null"}]},"method":{"type":"string"}},"required":["method","last_mfa_at"],"type":"object"},"id":{"format":"uuid","type":"string"},"idle_expires_at":{"format":"date-time","type":"string"}},"required":["id","absolute_expires_at","idle_expires_at","assurance"],"type":"object"},"user":{"additionalProperties":false,"properties":{"id":{"format":"uuid","type":"string"},"preferred_language":{"type":"string"}},"required":["id","preferred_language"],"type":"object"}},"required":["user","session","recovery_hold_state","email_verified"],"type":"object"},"MfaLogin":{"additionalProperties":false,"properties":{"challenge_id":{"format":"uuid","type":"string"},"code":{"minLength":1,"type":"string","x-sensitive":true},"method":{"enum":["totp","recovery_code"],"type":"string"},"preauth_control":{"minLength":1,"type":"string","x-sensitive":true}},"required":["challenge_id","preauth_control","method","code"],"type":"object"},"MfaStatus":{"additionalProperties":false,"properties":{"enabled":{"type":"boolean"},"pending":{"type":"boolean"},"recovery_hold_state":{"enum":["clear","restricted","review_required"],"type":"string"}},"required":["enabled","pending","recovery_hold_state"],"type":"object"},"MobileSession":{"additionalProperties":false,"properties":{"access_token":{"minLength":1,"type":"string","x-sensitive":true},"expires_in":{"minimum":0,"type":"integer"},"recovery_hold_state":{"enum":["clear","restricted","review_required"],"type":"string"},"refresh_expires_at":{"format":"date-time","type":"string"},"refresh_token":{"minLength":1,"type":"string","x-sensitive":true},"session":{"additionalProperties":false,"properties":{"absolute_expires_at":{"format":"date-time","type":"string"},"assurance":{"additionalProperties":false,"properties":{"last_mfa_at":{"anyOf":[{"format":"date-time","type":"string"},{"type":"null"}]},"method":{"type":"string"}},"required":["method","last_mfa_at"],"type":"object"},"id":{"format":"uuid","type":"string"},"idle_expires_at":{"format":"date-time","type":"string"}},"required":["id","absolute_expires_at","idle_expires_at","assurance"],"type":"object"},"token_type":{"enum":["Bearer"],"type":"string"},"user":{"additionalProperties":false,"properties":{"id":{"format":"uuid","type":"string"},"preferred_language":{"type":"string"}},"required":["id","preferred_language"],"type":"object"}},"required":["user","session","recovery_hold_state","access_token","token_type","expires_in","refresh_token","refresh_expires_at"],"type":"object"},"Preauth":{"additionalProperties":false,"properties":{"challenge_id":{"format":"uuid","type":"string"},"expires_in":{"minimum":0,"type":"integer"},"preauth_control":{"minLength":1,"type":"string","x-sensitive":true},"status":{"enum":["mfa_required"],"type":"string"}},"required":["status","challenge_id","preauth_control","expires_in"],"type":"object"},"ProofCommand":{"additionalProperties":false,"properties":{"assurance_proof":{"minLength":1,"type":"string","x-sensitive":true}},"required":["assurance_proof"],"type":"object"},"RecoveryCodes":{"additionalProperties":false,"properties":{"recovery_codes":{"items":{"minLength":1,"type":"string","x-sensitive":true},"type":"array"}},"required":["recovery_codes"],"type":"object"},"Refresh":{"additionalProperties":false,"properties":{"refresh_token":{"minLength":1,"type":"string","x-sensitive":true}},"required":["refresh_token"],"type":"object"},"RegistrationConfirm":{"additionalProperties":false,"properties":{"flow_id":{"format":"uuid","type":"string"},"password":{"minLength":1,"type":"string","x-sensitive":true},"proof":{"minLength":1,"type":"string","x-sensitive":true}},"required":["flow_id","proof","password"],"type":"object"},"ResendAccepted":{"additionalProperties":false,"properties":{"status":{"enum":["accepted"],"type":"string"}},"required":["status"],"type":"object"},"ResetConfirm":{"additionalProperties":false,"properties":{"flow_id":{"format":"uuid","type":"string"},"new_password":{"minLength":1,"type":"string","x-sensitive":true},"proof":{"minLength":1,"type":"string","x-sensitive":true}},"required":["flow_id","proof","new_password"],"type":"object"},"Sessions":{"additionalProperties":false,"properties":{"results":{"items":{"additionalProperties":false,"properties":{"created_at":{"format":"date-time","type":"string"},"device_label":{"type":"string"},"id":{"format":"uuid","type":"string"},"is_current":{"type":"boolean"},"last_interactive_at":{"format":"date-time","type":"string"},"transport":{"enum":["web","mobile"],"type":"string"}},"required":["id","device_label","transport","created_at","last_interactive_at","is_current"],"type":"object"},"type":"array"}},"required":["results"],"type":"object"},"StepUp":{"additionalProperties":false,"properties":{"intent_id":{"format":"uuid","type":"string"},"password":{"minLength":1,"type":"string","x-sensitive":true},"totp_code":{"type":"string"}},"required":["intent_id","password"],"type":"object"},"Verified":{"additionalProperties":false,"properties":{"status":{"enum":["verified"],"type":"string"}},"required":["status"],"type":"object"}}''',
+          r'''{"Activation":{"additionalProperties":false,"properties":{"recovery_codes":{"items":{"minLength":1,"type":"string","x-sensitive":true},"type":"array"},"status":{"enum":["active"],"type":"string"}},"required":["status","recovery_codes"],"type":"object"},"Assurance":{"additionalProperties":false,"properties":{"assurance_proof":{"minLength":1,"type":"string","x-sensitive":true},"expires_at":{"format":"date-time","type":"string"}},"required":["assurance_proof","expires_at"],"type":"object"},"ClearHold":{"additionalProperties":false,"properties":{"intent_id":{"format":"uuid","type":"string"},"password":{"minLength":1,"type":"string","x-sensitive":true},"totp_code":{"type":"string"}},"required":["intent_id","password","totp_code"],"type":"object"},"Empty":{"additionalProperties":false,"properties":{},"required":[],"type":"object"},"Enrollment":{"additionalProperties":false,"properties":{"enrollment_id":{"format":"uuid","type":"string"},"expires_at":{"format":"date-time","type":"string"},"otpauth_uri":{"minLength":1,"type":"string","x-sensitive":true},"secret":{"minLength":1,"type":"string","x-sensitive":true}},"required":["enrollment_id","secret","otpauth_uri","expires_at"],"type":"object"},"EnrollmentConfirm":{"additionalProperties":false,"properties":{"code":{"type":"string"},"enrollment_id":{"format":"uuid","type":"string"}},"required":["enrollment_id","code"],"type":"object"},"FlowAccepted":{"additionalProperties":false,"properties":{"expires_in":{"minimum":0,"type":"integer"},"flow_control":{"minLength":1,"type":"string","x-sensitive":true},"flow_id":{"format":"uuid","type":"string"},"status":{"enum":["accepted"],"type":"string"}},"required":["status","flow_id","flow_control","expires_in"],"type":"object"},"FlowRequest":{"additionalProperties":false,"properties":{"email":{"type":"string"}},"required":["email"],"type":"object"},"FlowResend":{"additionalProperties":false,"properties":{"flow_control":{"minLength":1,"type":"string","x-sensitive":true},"flow_id":{"format":"uuid","type":"string"}},"required":["flow_id","flow_control"],"type":"object"},"Intent":{"additionalProperties":false,"properties":{"expires_at":{"format":"date-time","type":"string"},"intent_id":{"format":"uuid","type":"string"},"required_methods":{"items":{"enum":["password","totp"],"type":"string"},"type":"array"}},"required":["intent_id","expires_at","required_methods"],"type":"object"},"IntentRequest":{"oneOf":[{"additionalProperties":false,"properties":{"command":{"additionalProperties":false,"properties":{},"required":[],"type":"object"},"context":{"additionalProperties":false,"properties":{"id":{"format":"uuid","type":"string"},"kind":{"enum":["personal"],"type":"string"}},"required":["kind","id"],"type":"object"},"operation":{"enum":["mfa.enroll","mfa.remove","mfa.recovery_codes.rotate","sessions.logout_all","recovery_hold.clear"],"type":"string"}},"required":["operation","context","command"],"type":"object"},{"additionalProperties":false,"properties":{"command":{"additionalProperties":false,"properties":{"session_id":{"format":"uuid","type":"string"}},"required":["session_id"],"type":"object"},"context":{"additionalProperties":false,"properties":{"id":{"format":"uuid","type":"string"},"kind":{"enum":["personal"],"type":"string"}},"required":["kind","id"],"type":"object"},"object_id":{"format":"uuid","type":"string"},"operation":{"enum":["sessions.revoke"],"type":"string"}},"required":["operation","context","command"],"type":"object"}]},"Login":{"additionalProperties":false,"properties":{"device_label":{"maxLength":100,"type":"string"},"email":{"type":"string"},"password":{"minLength":1,"type":"string","x-sensitive":true}},"required":["email","password"],"type":"object"},"Me":{"additionalProperties":false,"properties":{"email_verified":{"type":"boolean"},"recovery_hold_state":{"enum":["clear","restricted","review_required"],"type":"string"},"session":{"additionalProperties":false,"properties":{"absolute_expires_at":{"format":"date-time","type":"string"},"assurance":{"additionalProperties":false,"properties":{"last_mfa_at":{"anyOf":[{"format":"date-time","type":"string"},{"type":"null"}]},"method":{"type":"string"}},"required":["method","last_mfa_at"],"type":"object"},"id":{"format":"uuid","type":"string"},"idle_expires_at":{"format":"date-time","type":"string"}},"required":["id","absolute_expires_at","idle_expires_at","assurance"],"type":"object"},"user":{"additionalProperties":false,"properties":{"id":{"format":"uuid","type":"string"},"preferred_language":{"type":"string"}},"required":["id","preferred_language"],"type":"object"}},"required":["user","session","recovery_hold_state","email_verified"],"type":"object"},"MfaLogin":{"additionalProperties":false,"properties":{"challenge_id":{"format":"uuid","type":"string"},"code":{"minLength":1,"type":"string","x-sensitive":true},"method":{"enum":["totp","recovery_code"],"type":"string"},"preauth_control":{"minLength":1,"type":"string","x-sensitive":true}},"required":["challenge_id","preauth_control","method","code"],"type":"object"},"MfaStatus":{"additionalProperties":false,"properties":{"enabled":{"type":"boolean"},"pending":{"type":"boolean"},"recovery_hold_state":{"enum":["clear","restricted","review_required"],"type":"string"}},"required":["enabled","pending","recovery_hold_state"],"type":"object"},"MobileSession":{"additionalProperties":false,"properties":{"access_token":{"minLength":1,"type":"string","x-sensitive":true},"expires_in":{"minimum":0,"type":"integer"},"recovery_hold_state":{"enum":["clear","restricted","review_required"],"type":"string"},"refresh_expires_at":{"format":"date-time","type":"string"},"refresh_token":{"minLength":1,"type":"string","x-sensitive":true},"session":{"additionalProperties":false,"properties":{"absolute_expires_at":{"format":"date-time","type":"string"},"assurance":{"additionalProperties":false,"properties":{"last_mfa_at":{"anyOf":[{"format":"date-time","type":"string"},{"type":"null"}]},"method":{"type":"string"}},"required":["method","last_mfa_at"],"type":"object"},"id":{"format":"uuid","type":"string"},"idle_expires_at":{"format":"date-time","type":"string"}},"required":["id","absolute_expires_at","idle_expires_at","assurance"],"type":"object"},"token_type":{"enum":["Bearer"],"type":"string"},"user":{"additionalProperties":false,"properties":{"id":{"format":"uuid","type":"string"},"preferred_language":{"type":"string"}},"required":["id","preferred_language"],"type":"object"}},"required":["user","session","recovery_hold_state","access_token","token_type","expires_in","refresh_token","refresh_expires_at"],"type":"object"},"Preauth":{"additionalProperties":false,"properties":{"challenge_id":{"format":"uuid","type":"string"},"expires_in":{"minimum":0,"type":"integer"},"preauth_control":{"minLength":1,"type":"string","x-sensitive":true},"status":{"enum":["mfa_required"],"type":"string"}},"required":["status","challenge_id","preauth_control","expires_in"],"type":"object"},"ProofCommand":{"additionalProperties":false,"properties":{"assurance_proof":{"minLength":1,"type":"string","x-sensitive":true}},"required":["assurance_proof"],"type":"object"},"PublicOrganization":{"additionalProperties":false,"properties":{"city":{"maxLength":100,"type":"string"},"classification":{"enum":["registered","unregistered"],"type":"string"},"id":{"format":"uuid","type":"string"},"name":{"maxLength":250,"type":"string"}},"required":["id","name","city","classification"],"type":"object"},"RecoveryCodes":{"additionalProperties":false,"properties":{"recovery_codes":{"items":{"minLength":1,"type":"string","x-sensitive":true},"type":"array"}},"required":["recovery_codes"],"type":"object"},"Refresh":{"additionalProperties":false,"properties":{"refresh_token":{"minLength":1,"type":"string","x-sensitive":true}},"required":["refresh_token"],"type":"object"},"RegistrationConfirm":{"additionalProperties":false,"properties":{"flow_id":{"format":"uuid","type":"string"},"password":{"minLength":1,"type":"string","x-sensitive":true},"proof":{"minLength":1,"type":"string","x-sensitive":true}},"required":["flow_id","proof","password"],"type":"object"},"RegistryClaim":{"additionalProperties":false,"properties":{"created_at":{"format":"date-time","type":"string"},"id":{"format":"uuid","type":"string"},"organization_id":{"format":"uuid","type":"string"},"revision":{"maximum":9223372036854775807,"minimum":1,"type":"integer"},"state":{"enum":["pending","needs_information","rejected","withdrawn"],"type":"string"},"updated_at":{"format":"date-time","type":"string"}},"required":["id","organization_id","revision","created_at","updated_at","state"],"type":"object"},"RegistryClaimInput":{"additionalProperties":false,"properties":{"organization_id":{"format":"uuid","type":"string"}},"required":["organization_id"],"type":"object"},"RegistryClaimPage":{"additionalProperties":false,"properties":{"next_cursor":{"anyOf":[{"type":"string"},{"type":"null"}]},"results":{"items":{"$ref":"#/components/schemas/RegistryClaim"},"maxItems":20,"type":"array"}},"required":["results","next_cursor"],"type":"object"},"RegistryDraft":{"additionalProperties":false,"properties":{"aliases":{"items":{"maxLength":250,"minLength":1,"type":"string"},"maxItems":5,"type":"array"},"city":{"maxLength":100,"type":"string"},"classification":{"enum":["registered","unregistered"],"type":"string"},"contact_email":{"maxLength":254,"type":"string"},"contact_phone":{"maxLength":40,"type":"string"},"created_at":{"format":"date-time","type":"string"},"id":{"format":"uuid","type":"string"},"jurisdiction":{"maxLength":100,"type":"string"},"legal_name":{"maxLength":250,"type":"string"},"name":{"maxLength":250,"minLength":1,"type":"string"},"organization_id":{"format":"uuid","type":"string"},"revision":{"maximum":9223372036854775807,"minimum":1,"type":"integer"},"state":{"enum":["draft","submitted","withdrawn"],"type":"string"},"updated_at":{"format":"date-time","type":"string"}},"required":["name","legal_name","aliases","city","jurisdiction","classification","contact_email","contact_phone","id","organization_id","revision","created_at","updated_at","state"],"type":"object"},"RegistryDraftEdit":{"additionalProperties":false,"properties":{"aliases":{"items":{"maxLength":250,"minLength":1,"type":"string"},"maxItems":5,"type":"array"},"city":{"maxLength":100,"type":"string"},"classification":{"enum":["registered","unregistered"],"type":"string"},"contact_email":{"maxLength":254,"type":"string"},"contact_phone":{"maxLength":40,"type":"string"},"jurisdiction":{"maxLength":100,"type":"string"},"legal_name":{"maxLength":250,"type":"string"},"name":{"maxLength":250,"minLength":1,"type":"string"},"revision":{"maximum":9223372036854775807,"minimum":1,"type":"integer"}},"required":["name","classification","revision"],"type":"object"},"RegistryDraftInput":{"additionalProperties":false,"properties":{"aliases":{"items":{"maxLength":250,"minLength":1,"type":"string"},"maxItems":5,"type":"array"},"city":{"maxLength":100,"type":"string"},"classification":{"enum":["registered","unregistered"],"type":"string"},"contact_email":{"maxLength":254,"type":"string"},"contact_phone":{"maxLength":40,"type":"string"},"jurisdiction":{"maxLength":100,"type":"string"},"legal_name":{"maxLength":250,"type":"string"},"name":{"maxLength":250,"minLength":1,"type":"string"}},"required":["name","classification"],"type":"object"},"RegistryDraftPage":{"additionalProperties":false,"properties":{"next_cursor":{"anyOf":[{"type":"string"},{"type":"null"}]},"results":{"items":{"$ref":"#/components/schemas/RegistryDraft"},"maxItems":20,"type":"array"}},"required":["results","next_cursor"],"type":"object"},"RegistryEvent":{"additionalProperties":false,"properties":{"action":{"enum":["created","edit","submit","withdraw"],"type":"string"},"created_at":{"format":"date-time","type":"string"},"id":{"format":"uuid","type":"string"},"revision":{"maximum":9223372036854775807,"minimum":1,"type":"integer"}},"required":["id","action","revision","created_at"],"type":"object"},"RegistryEventPage":{"additionalProperties":false,"properties":{"next_cursor":{"anyOf":[{"type":"string"},{"type":"null"}]},"results":{"items":{"$ref":"#/components/schemas/RegistryEvent"},"maxItems":20,"type":"array"}},"required":["results","next_cursor"],"type":"object"},"RegistryRevision":{"additionalProperties":false,"properties":{"revision":{"maximum":9223372036854775807,"minimum":1,"type":"integer"}},"required":["revision"],"type":"object"},"RegistrySearchPage":{"additionalProperties":false,"properties":{"next_cursor":{"anyOf":[{"type":"string"},{"type":"null"}]},"results":{"items":{"$ref":"#/components/schemas/PublicOrganization"},"maxItems":20,"type":"array"}},"required":["results","next_cursor"],"type":"object"},"ResendAccepted":{"additionalProperties":false,"properties":{"status":{"enum":["accepted"],"type":"string"}},"required":["status"],"type":"object"},"ResetConfirm":{"additionalProperties":false,"properties":{"flow_id":{"format":"uuid","type":"string"},"new_password":{"minLength":1,"type":"string","x-sensitive":true},"proof":{"minLength":1,"type":"string","x-sensitive":true}},"required":["flow_id","proof","new_password"],"type":"object"},"Sessions":{"additionalProperties":false,"properties":{"results":{"items":{"additionalProperties":false,"properties":{"created_at":{"format":"date-time","type":"string"},"device_label":{"type":"string"},"id":{"format":"uuid","type":"string"},"is_current":{"type":"boolean"},"last_interactive_at":{"format":"date-time","type":"string"},"transport":{"enum":["web","mobile"],"type":"string"}},"required":["id","device_label","transport","created_at","last_interactive_at","is_current"],"type":"object"},"type":"array"}},"required":["results"],"type":"object"},"StepUp":{"additionalProperties":false,"properties":{"intent_id":{"format":"uuid","type":"string"},"password":{"minLength":1,"type":"string","x-sensitive":true},"totp_code":{"type":"string"}},"required":["intent_id","password"],"type":"object"},"Verified":{"additionalProperties":false,"properties":{"status":{"enum":["verified"],"type":"string"}},"required":["status"],"type":"object"}}''',
         )
         as Map<String, dynamic>;
 final List<dynamic> personalOperations =
     jsonDecode(
           r'''[{"id":"createIntent","path":"/api/v1/auth/assurance/intents/","method":"POST","request":"IntentRequest","responses":{"201":"Intent"},"authenticated":true},{"id":"logoutAll","path":"/api/v1/auth/logout-all/","method":"POST","request":"ProofCommand","responses":{"204":""},"authenticated":true},{"id":"logout","path":"/api/v1/auth/logout/","method":"POST","request":"Empty","responses":{"204":""},"authenticated":true},{"id":"me","path":"/api/v1/auth/me/","method":"GET","request":"","responses":{"200":"Me"},"authenticated":true},{"id":"confirmMfa","path":"/api/v1/auth/mfa/enrollment/confirm/","method":"POST","request":"EnrollmentConfirm","responses":{"200":"Activation"},"authenticated":true},{"id":"enrollMfa","path":"/api/v1/auth/mfa/enrollment/request/","method":"POST","request":"ProofCommand","responses":{"201":"Enrollment"},"authenticated":true},{"id":"rotateRecovery","path":"/api/v1/auth/mfa/recovery-codes/rotate/","method":"POST","request":"ProofCommand","responses":{"200":"RecoveryCodes"},"authenticated":true},{"id":"removeMfa","path":"/api/v1/auth/mfa/remove/","method":"POST","request":"ProofCommand","responses":{"204":""},"authenticated":true},{"id":"mfaStatus","path":"/api/v1/auth/mfa/status/","method":"GET","request":"","responses":{"200":"MfaStatus"},"authenticated":true},{"id":"mobileLogin","path":"/api/v1/auth/mobile/login/","method":"POST","request":"Login","responses":{"200":"MobileSession","202":"Preauth"},"authenticated":false},{"id":"mobileMfaConfirm","path":"/api/v1/auth/mobile/mfa/confirm/","method":"POST","request":"MfaLogin","responses":{"200":"MobileSession"},"authenticated":false},{"id":"mobileRefresh","path":"/api/v1/auth/mobile/refresh/","method":"POST","request":"Refresh","responses":{"200":"MobileSession"},"authenticated":false},{"id":"resetConfirm","path":"/api/v1/auth/password-reset/confirm/","method":"POST","request":"ResetConfirm","responses":{"204":""},"authenticated":false},{"id":"resetRequest","path":"/api/v1/auth/password-reset/request/","method":"POST","request":"FlowRequest","responses":{"202":"FlowAccepted"},"authenticated":false},{"id":"resetResend","path":"/api/v1/auth/password-reset/resend/","method":"POST","request":"FlowResend","responses":{"202":"ResendAccepted"},"authenticated":false},{"id":"clearHold","path":"/api/v1/auth/recovery-hold/clear/","method":"POST","request":"ClearHold","responses":{"204":""},"authenticated":true},{"id":"registrationConfirm","path":"/api/v1/auth/registration/confirm/","method":"POST","request":"RegistrationConfirm","responses":{"201":"Verified"},"authenticated":false},{"id":"registrationRequest","path":"/api/v1/auth/registration/request/","method":"POST","request":"FlowRequest","responses":{"202":"FlowAccepted"},"authenticated":false},{"id":"registrationResend","path":"/api/v1/auth/registration/resend/","method":"POST","request":"FlowResend","responses":{"202":"ResendAccepted"},"authenticated":false},{"id":"sessions","path":"/api/v1/auth/sessions/","method":"GET","request":"","responses":{"200":"Sessions"},"authenticated":true},{"id":"revokeSession","path":"/api/v1/auth/sessions/{session_id}/","method":"DELETE","request":"ProofCommand","responses":{"204":""},"authenticated":true},{"id":"stepUp","path":"/api/v1/auth/step-up/","method":"POST","request":"StepUp","responses":{"200":"Assurance"},"authenticated":true}]''',
+        )
+        as List<dynamic>;
+final List<dynamic> registryOperations =
+    jsonDecode(
+          r'''[{"id":"registryListClaims","path":"/api/v1/registry/claims/","method":"GET","request":"","responses":{"200":"RegistryClaimPage"},"authenticated":true},{"id":"registryCreateClaim","path":"/api/v1/registry/claims/","method":"POST","request":"RegistryClaimInput","responses":{"201":"RegistryClaim"},"authenticated":true},{"id":"registryGetClaim","path":"/api/v1/registry/claims/{pk}/","method":"GET","request":"","responses":{"200":"RegistryClaim"},"authenticated":true},{"id":"registryHistoryClaim","path":"/api/v1/registry/claims/{pk}/history/","method":"GET","request":"","responses":{"200":"RegistryEventPage"},"authenticated":true},{"id":"registryWithdrawClaim","path":"/api/v1/registry/claims/{pk}/withdraw/","method":"POST","request":"RegistryRevision","responses":{"200":"RegistryClaim"},"authenticated":true},{"id":"registryListDrafts","path":"/api/v1/registry/drafts/","method":"GET","request":"","responses":{"200":"RegistryDraftPage"},"authenticated":true},{"id":"registryCreateDraft","path":"/api/v1/registry/drafts/","method":"POST","request":"RegistryDraftInput","responses":{"201":"RegistryDraft"},"authenticated":true},{"id":"registryGetDraft","path":"/api/v1/registry/drafts/{pk}/","method":"GET","request":"","responses":{"200":"RegistryDraft"},"authenticated":true},{"id":"registryEditDraft","path":"/api/v1/registry/drafts/{pk}/","method":"PATCH","request":"RegistryDraftEdit","responses":{"200":"RegistryDraft"},"authenticated":true},{"id":"registryHistoryDraft","path":"/api/v1/registry/drafts/{pk}/history/","method":"GET","request":"","responses":{"200":"RegistryEventPage"},"authenticated":true},{"id":"registrySubmitDraft","path":"/api/v1/registry/drafts/{pk}/submit/","method":"POST","request":"RegistryRevision","responses":{"200":"RegistryDraft"},"authenticated":true},{"id":"registryWithdrawDraft","path":"/api/v1/registry/drafts/{pk}/withdraw/","method":"POST","request":"RegistryRevision","responses":{"200":"RegistryDraft"},"authenticated":true},{"id":"registrySearch","path":"/api/v1/registry/search/","method":"GET","request":"","responses":{"200":"RegistrySearchPage"},"authenticated":true}]''',
         )
         as List<dynamic>;
 
@@ -349,6 +354,26 @@ final Map<String, dynamic> schemaProofCommand =
         )
         as Map<String, dynamic>;
 
+class PublicOrganization {
+  final Json _data;
+  PublicOrganization.fromJson(Json data)
+    : _data = checkedObject(data, schemaPublicOrganization, canonicalSchemas);
+  Json toJson() =>
+      Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
+  @override
+  String toString() => 'PublicOrganization(<redacted>)';
+  String get city => _data['city'] as String;
+  String get classification => _data['classification'] as String;
+  String get id => _data['id'] as String;
+  String get name => _data['name'] as String;
+}
+
+final Map<String, dynamic> schemaPublicOrganization =
+    jsonDecode(
+          r'''{"additionalProperties":false,"properties":{"city":{"maxLength":100,"type":"string"},"classification":{"enum":["registered","unregistered"],"type":"string"},"id":{"format":"uuid","type":"string"},"name":{"maxLength":250,"type":"string"}},"required":["id","name","city","classification"],"type":"object"}''',
+        )
+        as Map<String, dynamic>;
+
 class RecoveryCodes {
   final Json _data;
   RecoveryCodes.fromJson(Json data)
@@ -401,6 +426,265 @@ class RegistrationConfirm {
 final Map<String, dynamic> schemaRegistrationConfirm =
     jsonDecode(
           r'''{"additionalProperties":false,"properties":{"flow_id":{"format":"uuid","type":"string"},"password":{"minLength":1,"type":"string","x-sensitive":true},"proof":{"minLength":1,"type":"string","x-sensitive":true}},"required":["flow_id","proof","password"],"type":"object"}''',
+        )
+        as Map<String, dynamic>;
+
+class RegistryClaim {
+  final Json _data;
+  RegistryClaim.fromJson(Json data)
+    : _data = checkedObject(data, schemaRegistryClaim, canonicalSchemas);
+  Json toJson() =>
+      Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
+  @override
+  String toString() => 'RegistryClaim(<redacted>)';
+  String get createdAt => _data['created_at'] as String;
+  String get id => _data['id'] as String;
+  String get organizationId => _data['organization_id'] as String;
+  int get revision => _data['revision'] as int;
+  String get state => _data['state'] as String;
+  String get updatedAt => _data['updated_at'] as String;
+}
+
+final Map<String, dynamic> schemaRegistryClaim =
+    jsonDecode(
+          r'''{"additionalProperties":false,"properties":{"created_at":{"format":"date-time","type":"string"},"id":{"format":"uuid","type":"string"},"organization_id":{"format":"uuid","type":"string"},"revision":{"maximum":9223372036854775807,"minimum":1,"type":"integer"},"state":{"enum":["pending","needs_information","rejected","withdrawn"],"type":"string"},"updated_at":{"format":"date-time","type":"string"}},"required":["id","organization_id","revision","created_at","updated_at","state"],"type":"object"}''',
+        )
+        as Map<String, dynamic>;
+
+class RegistryClaimInput {
+  final Json _data;
+  RegistryClaimInput.fromJson(Json data)
+    : _data = checkedObject(data, schemaRegistryClaimInput, canonicalSchemas);
+  Json toJson() =>
+      Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
+  @override
+  String toString() => 'RegistryClaimInput(<redacted>)';
+  String get organizationId => _data['organization_id'] as String;
+}
+
+final Map<String, dynamic> schemaRegistryClaimInput =
+    jsonDecode(
+          r'''{"additionalProperties":false,"properties":{"organization_id":{"format":"uuid","type":"string"}},"required":["organization_id"],"type":"object"}''',
+        )
+        as Map<String, dynamic>;
+
+class RegistryClaimPage {
+  final Json _data;
+  RegistryClaimPage.fromJson(Json data)
+    : _data = checkedObject(data, schemaRegistryClaimPage, canonicalSchemas);
+  Json toJson() =>
+      Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
+  @override
+  String toString() => 'RegistryClaimPage(<redacted>)';
+  String? get nextCursor =>
+      _data['next_cursor'] == null ? null : _data['next_cursor'] as String;
+  List<RegistryClaim> get results => (_data['results'] as List)
+      .map((v) => RegistryClaim.fromJson(Map<String, Object?>.from(v as Map)))
+      .toList(growable: false);
+}
+
+final Map<String, dynamic> schemaRegistryClaimPage =
+    jsonDecode(
+          r'''{"additionalProperties":false,"properties":{"next_cursor":{"anyOf":[{"type":"string"},{"type":"null"}]},"results":{"items":{"$ref":"#/components/schemas/RegistryClaim"},"maxItems":20,"type":"array"}},"required":["results","next_cursor"],"type":"object"}''',
+        )
+        as Map<String, dynamic>;
+
+class RegistryDraft {
+  final Json _data;
+  RegistryDraft.fromJson(Json data)
+    : _data = checkedObject(data, schemaRegistryDraft, canonicalSchemas);
+  Json toJson() =>
+      Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
+  @override
+  String toString() => 'RegistryDraft(<redacted>)';
+  List<String> get aliases => (_data['aliases'] as List)
+      .map((v) => v as String)
+      .toList(growable: false);
+  String get city => _data['city'] as String;
+  String get classification => _data['classification'] as String;
+  String get contactEmail => _data['contact_email'] as String;
+  String get contactPhone => _data['contact_phone'] as String;
+  String get createdAt => _data['created_at'] as String;
+  String get id => _data['id'] as String;
+  String get jurisdiction => _data['jurisdiction'] as String;
+  String get legalName => _data['legal_name'] as String;
+  String get name => _data['name'] as String;
+  String get organizationId => _data['organization_id'] as String;
+  int get revision => _data['revision'] as int;
+  String get state => _data['state'] as String;
+  String get updatedAt => _data['updated_at'] as String;
+}
+
+final Map<String, dynamic> schemaRegistryDraft =
+    jsonDecode(
+          r'''{"additionalProperties":false,"properties":{"aliases":{"items":{"maxLength":250,"minLength":1,"type":"string"},"maxItems":5,"type":"array"},"city":{"maxLength":100,"type":"string"},"classification":{"enum":["registered","unregistered"],"type":"string"},"contact_email":{"maxLength":254,"type":"string"},"contact_phone":{"maxLength":40,"type":"string"},"created_at":{"format":"date-time","type":"string"},"id":{"format":"uuid","type":"string"},"jurisdiction":{"maxLength":100,"type":"string"},"legal_name":{"maxLength":250,"type":"string"},"name":{"maxLength":250,"minLength":1,"type":"string"},"organization_id":{"format":"uuid","type":"string"},"revision":{"maximum":9223372036854775807,"minimum":1,"type":"integer"},"state":{"enum":["draft","submitted","withdrawn"],"type":"string"},"updated_at":{"format":"date-time","type":"string"}},"required":["name","legal_name","aliases","city","jurisdiction","classification","contact_email","contact_phone","id","organization_id","revision","created_at","updated_at","state"],"type":"object"}''',
+        )
+        as Map<String, dynamic>;
+
+class RegistryDraftEdit {
+  final Json _data;
+  RegistryDraftEdit.fromJson(Json data)
+    : _data = checkedObject(data, schemaRegistryDraftEdit, canonicalSchemas);
+  Json toJson() =>
+      Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
+  @override
+  String toString() => 'RegistryDraftEdit(<redacted>)';
+  List<String>? get aliases => _data['aliases'] == null
+      ? null
+      : (_data['aliases'] as List)
+            .map((v) => v as String)
+            .toList(growable: false);
+  String? get city => _data['city'] == null ? null : _data['city'] as String;
+  String get classification => _data['classification'] as String;
+  String? get contactEmail =>
+      _data['contact_email'] == null ? null : _data['contact_email'] as String;
+  String? get contactPhone =>
+      _data['contact_phone'] == null ? null : _data['contact_phone'] as String;
+  String? get jurisdiction =>
+      _data['jurisdiction'] == null ? null : _data['jurisdiction'] as String;
+  String? get legalName =>
+      _data['legal_name'] == null ? null : _data['legal_name'] as String;
+  String get name => _data['name'] as String;
+  int get revision => _data['revision'] as int;
+}
+
+final Map<String, dynamic> schemaRegistryDraftEdit =
+    jsonDecode(
+          r'''{"additionalProperties":false,"properties":{"aliases":{"items":{"maxLength":250,"minLength":1,"type":"string"},"maxItems":5,"type":"array"},"city":{"maxLength":100,"type":"string"},"classification":{"enum":["registered","unregistered"],"type":"string"},"contact_email":{"maxLength":254,"type":"string"},"contact_phone":{"maxLength":40,"type":"string"},"jurisdiction":{"maxLength":100,"type":"string"},"legal_name":{"maxLength":250,"type":"string"},"name":{"maxLength":250,"minLength":1,"type":"string"},"revision":{"maximum":9223372036854775807,"minimum":1,"type":"integer"}},"required":["name","classification","revision"],"type":"object"}''',
+        )
+        as Map<String, dynamic>;
+
+class RegistryDraftInput {
+  final Json _data;
+  RegistryDraftInput.fromJson(Json data)
+    : _data = checkedObject(data, schemaRegistryDraftInput, canonicalSchemas);
+  Json toJson() =>
+      Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
+  @override
+  String toString() => 'RegistryDraftInput(<redacted>)';
+  List<String>? get aliases => _data['aliases'] == null
+      ? null
+      : (_data['aliases'] as List)
+            .map((v) => v as String)
+            .toList(growable: false);
+  String? get city => _data['city'] == null ? null : _data['city'] as String;
+  String get classification => _data['classification'] as String;
+  String? get contactEmail =>
+      _data['contact_email'] == null ? null : _data['contact_email'] as String;
+  String? get contactPhone =>
+      _data['contact_phone'] == null ? null : _data['contact_phone'] as String;
+  String? get jurisdiction =>
+      _data['jurisdiction'] == null ? null : _data['jurisdiction'] as String;
+  String? get legalName =>
+      _data['legal_name'] == null ? null : _data['legal_name'] as String;
+  String get name => _data['name'] as String;
+}
+
+final Map<String, dynamic> schemaRegistryDraftInput =
+    jsonDecode(
+          r'''{"additionalProperties":false,"properties":{"aliases":{"items":{"maxLength":250,"minLength":1,"type":"string"},"maxItems":5,"type":"array"},"city":{"maxLength":100,"type":"string"},"classification":{"enum":["registered","unregistered"],"type":"string"},"contact_email":{"maxLength":254,"type":"string"},"contact_phone":{"maxLength":40,"type":"string"},"jurisdiction":{"maxLength":100,"type":"string"},"legal_name":{"maxLength":250,"type":"string"},"name":{"maxLength":250,"minLength":1,"type":"string"}},"required":["name","classification"],"type":"object"}''',
+        )
+        as Map<String, dynamic>;
+
+class RegistryDraftPage {
+  final Json _data;
+  RegistryDraftPage.fromJson(Json data)
+    : _data = checkedObject(data, schemaRegistryDraftPage, canonicalSchemas);
+  Json toJson() =>
+      Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
+  @override
+  String toString() => 'RegistryDraftPage(<redacted>)';
+  String? get nextCursor =>
+      _data['next_cursor'] == null ? null : _data['next_cursor'] as String;
+  List<RegistryDraft> get results => (_data['results'] as List)
+      .map((v) => RegistryDraft.fromJson(Map<String, Object?>.from(v as Map)))
+      .toList(growable: false);
+}
+
+final Map<String, dynamic> schemaRegistryDraftPage =
+    jsonDecode(
+          r'''{"additionalProperties":false,"properties":{"next_cursor":{"anyOf":[{"type":"string"},{"type":"null"}]},"results":{"items":{"$ref":"#/components/schemas/RegistryDraft"},"maxItems":20,"type":"array"}},"required":["results","next_cursor"],"type":"object"}''',
+        )
+        as Map<String, dynamic>;
+
+class RegistryEvent {
+  final Json _data;
+  RegistryEvent.fromJson(Json data)
+    : _data = checkedObject(data, schemaRegistryEvent, canonicalSchemas);
+  Json toJson() =>
+      Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
+  @override
+  String toString() => 'RegistryEvent(<redacted>)';
+  String get action => _data['action'] as String;
+  String get createdAt => _data['created_at'] as String;
+  String get id => _data['id'] as String;
+  int get revision => _data['revision'] as int;
+}
+
+final Map<String, dynamic> schemaRegistryEvent =
+    jsonDecode(
+          r'''{"additionalProperties":false,"properties":{"action":{"enum":["created","edit","submit","withdraw"],"type":"string"},"created_at":{"format":"date-time","type":"string"},"id":{"format":"uuid","type":"string"},"revision":{"maximum":9223372036854775807,"minimum":1,"type":"integer"}},"required":["id","action","revision","created_at"],"type":"object"}''',
+        )
+        as Map<String, dynamic>;
+
+class RegistryEventPage {
+  final Json _data;
+  RegistryEventPage.fromJson(Json data)
+    : _data = checkedObject(data, schemaRegistryEventPage, canonicalSchemas);
+  Json toJson() =>
+      Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
+  @override
+  String toString() => 'RegistryEventPage(<redacted>)';
+  String? get nextCursor =>
+      _data['next_cursor'] == null ? null : _data['next_cursor'] as String;
+  List<RegistryEvent> get results => (_data['results'] as List)
+      .map((v) => RegistryEvent.fromJson(Map<String, Object?>.from(v as Map)))
+      .toList(growable: false);
+}
+
+final Map<String, dynamic> schemaRegistryEventPage =
+    jsonDecode(
+          r'''{"additionalProperties":false,"properties":{"next_cursor":{"anyOf":[{"type":"string"},{"type":"null"}]},"results":{"items":{"$ref":"#/components/schemas/RegistryEvent"},"maxItems":20,"type":"array"}},"required":["results","next_cursor"],"type":"object"}''',
+        )
+        as Map<String, dynamic>;
+
+class RegistryRevision {
+  final Json _data;
+  RegistryRevision.fromJson(Json data)
+    : _data = checkedObject(data, schemaRegistryRevision, canonicalSchemas);
+  Json toJson() =>
+      Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
+  @override
+  String toString() => 'RegistryRevision(<redacted>)';
+  int get revision => _data['revision'] as int;
+}
+
+final Map<String, dynamic> schemaRegistryRevision =
+    jsonDecode(
+          r'''{"additionalProperties":false,"properties":{"revision":{"maximum":9223372036854775807,"minimum":1,"type":"integer"}},"required":["revision"],"type":"object"}''',
+        )
+        as Map<String, dynamic>;
+
+class RegistrySearchPage {
+  final Json _data;
+  RegistrySearchPage.fromJson(Json data)
+    : _data = checkedObject(data, schemaRegistrySearchPage, canonicalSchemas);
+  Json toJson() =>
+      Map<String, Object?>.from(jsonDecode(jsonEncode(_data)) as Map);
+  @override
+  String toString() => 'RegistrySearchPage(<redacted>)';
+  String? get nextCursor =>
+      _data['next_cursor'] == null ? null : _data['next_cursor'] as String;
+  List<PublicOrganization> get results => (_data['results'] as List)
+      .map(
+        (v) => PublicOrganization.fromJson(Map<String, Object?>.from(v as Map)),
+      )
+      .toList(growable: false);
+}
+
+final Map<String, dynamic> schemaRegistrySearchPage =
+    jsonDecode(
+          r'''{"additionalProperties":false,"properties":{"next_cursor":{"anyOf":[{"type":"string"},{"type":"null"}]},"results":{"items":{"$ref":"#/components/schemas/PublicOrganization"},"maxItems":20,"type":"array"}},"required":["results","next_cursor"],"type":"object"}''',
         )
         as Map<String, dynamic>;
 

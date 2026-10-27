@@ -743,6 +743,240 @@
       "kind": "response",
       "operationId": "discoverSyntheticContexts",
       "status": 503
+    },
+    {
+      "operationId": "registryListClaims",
+      "kind": "response",
+      "status": 200,
+      "body": {
+        "results": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operationId": "registryCreateClaim",
+      "kind": "request",
+      "body": {
+        "organization_id": "00000000-0000-4000-8000-000000000001"
+      }
+    },
+    {
+      "operationId": "registryCreateClaim",
+      "kind": "response",
+      "status": 201,
+      "body": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "organization_id": "00000000-0000-4000-8000-000000000001",
+        "revision": 1,
+        "created_at": "2026-10-27T00:00:00Z",
+        "updated_at": "2026-10-27T00:00:00Z",
+        "state": "pending"
+      }
+    },
+    {
+      "operationId": "registryGetClaim",
+      "kind": "response",
+      "status": 200,
+      "body": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "organization_id": "00000000-0000-4000-8000-000000000001",
+        "revision": 1,
+        "created_at": "2026-10-27T00:00:00Z",
+        "updated_at": "2026-10-27T00:00:00Z",
+        "state": "pending"
+      }
+    },
+    {
+      "operationId": "registryHistoryClaim",
+      "kind": "response",
+      "status": 200,
+      "body": {
+        "results": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operationId": "registryWithdrawClaim",
+      "kind": "request",
+      "body": {
+        "revision": 1
+      }
+    },
+    {
+      "operationId": "registryWithdrawClaim",
+      "kind": "response",
+      "status": 200,
+      "body": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "organization_id": "00000000-0000-4000-8000-000000000001",
+        "revision": 2,
+        "created_at": "2026-10-27T00:00:00Z",
+        "updated_at": "2026-10-27T00:00:00Z",
+        "state": "withdrawn"
+      }
+    },
+    {
+      "operationId": "registryListDrafts",
+      "kind": "response",
+      "status": 200,
+      "body": {
+        "results": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operationId": "registryCreateDraft",
+      "kind": "request",
+      "body": {
+        "name": "Synthetic Welfare",
+        "classification": "unregistered"
+      }
+    },
+    {
+      "operationId": "registryCreateDraft",
+      "kind": "response",
+      "status": 201,
+      "body": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "organization_id": "00000000-0000-4000-8000-000000000001",
+        "name": "Synthetic Welfare",
+        "legal_name": "",
+        "aliases": [],
+        "city": "Faisalabad",
+        "jurisdiction": "",
+        "classification": "unregistered",
+        "contact_email": "",
+        "contact_phone": "",
+        "state": "draft",
+        "revision": 1,
+        "created_at": "2026-10-27T00:00:00Z",
+        "updated_at": "2026-10-27T00:00:00Z"
+      }
+    },
+    {
+      "operationId": "registryGetDraft",
+      "kind": "response",
+      "status": 200,
+      "body": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "organization_id": "00000000-0000-4000-8000-000000000001",
+        "name": "Synthetic Welfare",
+        "legal_name": "",
+        "aliases": [],
+        "city": "Faisalabad",
+        "jurisdiction": "",
+        "classification": "unregistered",
+        "contact_email": "",
+        "contact_phone": "",
+        "state": "draft",
+        "revision": 1,
+        "created_at": "2026-10-27T00:00:00Z",
+        "updated_at": "2026-10-27T00:00:00Z"
+      }
+    },
+    {
+      "operationId": "registryEditDraft",
+      "kind": "request",
+      "body": {
+        "name": "Synthetic Welfare",
+        "classification": "unregistered",
+        "revision": 1
+      }
+    },
+    {
+      "operationId": "registryEditDraft",
+      "kind": "response",
+      "status": 200,
+      "body": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "organization_id": "00000000-0000-4000-8000-000000000001",
+        "name": "Synthetic Welfare",
+        "legal_name": "",
+        "aliases": [],
+        "city": "Faisalabad",
+        "jurisdiction": "",
+        "classification": "unregistered",
+        "contact_email": "",
+        "contact_phone": "",
+        "state": "draft",
+        "revision": 1,
+        "created_at": "2026-10-27T00:00:00Z",
+        "updated_at": "2026-10-27T00:00:00Z"
+      }
+    },
+    {
+      "operationId": "registryHistoryDraft",
+      "kind": "response",
+      "status": 200,
+      "body": {
+        "results": [],
+        "next_cursor": null
+      }
+    },
+    {
+      "operationId": "registrySubmitDraft",
+      "kind": "request",
+      "body": {
+        "revision": 1
+      }
+    },
+    {
+      "operationId": "registrySubmitDraft",
+      "kind": "response",
+      "status": 200,
+      "body": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "organization_id": "00000000-0000-4000-8000-000000000001",
+        "name": "Synthetic Welfare",
+        "legal_name": "",
+        "aliases": [],
+        "city": "Faisalabad",
+        "jurisdiction": "",
+        "classification": "unregistered",
+        "contact_email": "",
+        "contact_phone": "",
+        "state": "submitted",
+        "revision": 2,
+        "created_at": "2026-10-27T00:00:00Z",
+        "updated_at": "2026-10-27T00:00:00Z"
+      }
+    },
+    {
+      "operationId": "registryWithdrawDraft",
+      "kind": "request",
+      "body": {
+        "revision": 1
+      }
+    },
+    {
+      "operationId": "registryWithdrawDraft",
+      "kind": "response",
+      "status": 200,
+      "body": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "organization_id": "00000000-0000-4000-8000-000000000001",
+        "name": "Synthetic Welfare",
+        "legal_name": "",
+        "aliases": [],
+        "city": "Faisalabad",
+        "jurisdiction": "",
+        "classification": "unregistered",
+        "contact_email": "",
+        "contact_phone": "",
+        "state": "withdrawn",
+        "revision": 2,
+        "created_at": "2026-10-27T00:00:00Z",
+        "updated_at": "2026-10-27T00:00:00Z"
+      }
+    },
+    {
+      "operationId": "registrySearch",
+      "kind": "response",
+      "status": 200,
+      "body": {
+        "results": [],
+        "next_cursor": null
+      }
     }
   ],
   "contract_version": "1.0.0",
