@@ -1,4 +1,5 @@
 import { Button } from "./button";
+import { FieldLabel } from "./field-label";
 import { Component, useEffect, useId, useRef, useState } from "react";
 import type { InputHTMLAttributes, ReactNode } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
@@ -36,7 +37,7 @@ export function TextField({
   const id = providedId ?? generatedId;
   return (
     <div className="field">
-      <label htmlFor={id}>{label}</label>
+      <FieldLabel id={id} label={label} required={props.required} />
       <input
         {...props}
         id={id}
@@ -72,7 +73,13 @@ export function StatePanel({
   return (
     <section className={`state-panel state-${kind}`}>
       <span className="state-mark" aria-hidden="true">
-        {kind === "error" ? "!" : kind === "empty" ? "—" : "…"}
+        {kind === "error"
+          ? "!"
+          : kind === "empty"
+            ? "—"
+            : kind === "loading"
+              ? "…"
+              : "⊘"}
       </span>
       <div>
         <h2>{title}</h2>

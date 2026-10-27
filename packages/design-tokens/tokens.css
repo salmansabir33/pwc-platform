@@ -53,7 +53,8 @@
   --radius-lg: 1rem;
 }
 [dir="rtl"] {
-  font-family: "Noto Sans Arabic Variable", Tahoma, system-ui, sans-serif;
+  font-family:
+    "Noto Sans Arabic Variable", Inter, Tahoma, system-ui, sans-serif;
 }
 .portal-ops {
   --color-accent-hover: var(--ds-ops-hover);
@@ -63,7 +64,8 @@
 }
 
 :lang(ur) {
-  font-family: "Noto Sans Arabic Variable", Tahoma, system-ui, sans-serif;
+  font-family:
+    "Noto Sans Arabic Variable", Inter, Tahoma, system-ui, sans-serif;
 }
 
 :root {

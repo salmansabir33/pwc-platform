@@ -224,6 +224,7 @@ export function Verification({
                 {t("Submit preparation only", "صرف تیاری جمع کریں")}
               </Button>
               <Button
+                variant="destructive"
                 disabled={disabled || c.state === "withdrawn"}
                 onClick={() =>
                   void run(() =>
@@ -250,6 +251,7 @@ export function Verification({
                       {[false, true].map((withdraw) => (
                         <Button
                           key={String(withdraw)}
+                          variant={withdraw ? "destructive" : "secondary"}
                           disabled={
                             disabled ||
                             c.state !== "draft" ||

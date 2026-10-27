@@ -438,6 +438,7 @@ export function Registry({
             )}
             {draft.state !== "withdrawn" && (
               <Button
+                variant="destructive"
                 disabled={unavailable}
                 onClick={() => {
                   void run(() =>
@@ -477,6 +478,7 @@ export function Registry({
             </bdi>
             {["pending", "needs_information"].includes(claim.state) && (
               <Button
+                variant="destructive"
                 disabled={unavailable}
                 onClick={() => {
                   void run(() =>

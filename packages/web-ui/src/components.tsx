@@ -7,6 +7,7 @@ import type {
   InputHTMLAttributes,
 } from "react";
 import { Button } from "./button";
+import { FieldLabel } from "./field-label";
 
 export function PageHeader({
   title,
@@ -82,7 +83,7 @@ export function SelectField({
   const id = provided ?? generated;
   return (
     <div className="field">
-      <label htmlFor={id}>{label}</label>
+      <FieldLabel id={id} label={label} required={props.required} />
       <select
         {...props}
         id={id}
@@ -120,7 +121,7 @@ export function TextArea({
   const id = provided ?? generated;
   return (
     <div className="field">
-      <label htmlFor={id}>{label}</label>
+      <FieldLabel id={id} label={label} required={props.required} />
       <textarea
         {...props}
         id={id}

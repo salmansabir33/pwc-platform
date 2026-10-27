@@ -147,3 +147,68 @@ for (const [portal, url] of [
     expect(external).toEqual([]);
   });
 }
+
+for (const [name, url, id] of [
+  ["ngo-registry", "http://127.0.0.1:5173/registry", "ORG-01"],
+  ["ngo-verification", "http://127.0.0.1:5173/verification", "ORG-03"],
+  ["ops-controlled", "http://127.0.0.1:5174/controlled-onboarding", "PWC-01"],
+  ["ops-review", "http://127.0.0.1:5174/verification", "PWC-01"],
+] as const) {
+  test(`${name}: gated screen AA, reflow, title and visual evidence`, async ({
+    page,
+  }) => {
+    const calls: string[] = [];
+    page.on("request", (r) => {
+      if (new URL(r.url()).pathname.startsWith("/api/")) calls.push(r.url());
+    });
+    mkdirSync(evidence, { recursive: true });
+    for (const locale of ["en", "ur"])
+      for (const width of [1440, 320]) {
+        await page.setViewportSize({ width, height: 1000 });
+        await page.goto(url);
+        await page
+          .getByRole("combobox", { name: "Display language" })
+          .selectOption(locale);
+        await page.evaluate(() => document.fonts.ready);
+        await expect(page.getByRole("heading", { level: 1 })).toContainText(id);
+        await expect(page).not.toHaveTitle(/route is not available/i);
+        expect(
+          await page.evaluate(
+            () => document.documentElement.scrollWidth <= innerWidth,
+          ),
+        ).toBe(true);
+        await page.addScriptTag({ content: axe.source });
+        expect(
+          await page.evaluate(
+            async () =>
+              (
+                await (window as unknown as { axe: typeof axe }).axe.run(
+                  document,
+                  {
+                    runOnly: {
+                      type: "tag",
+                      values: ["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"],
+                    },
+                  },
+                )
+              ).violations,
+          ),
+        ).toEqual([]);
+        // Disabled operational controls stay disabled across language/layout changes.
+        const commands = page.locator("main button");
+        if (name === "ops-review") expect(await commands.count()).toBe(0);
+        else expect(await commands.count()).toBeGreaterThan(0);
+        for (const button of await commands.all())
+          await expect(button).toBeDisabled();
+        if (
+          (locale === "en" && width === 1440) ||
+          (locale === "ur" && width === 320)
+        )
+          await page.screenshot({
+            path: `${evidence}/${name}-${locale}-${width}.png`,
+            fullPage: true,
+          });
+      }
+    expect(calls).toEqual([]);
+  });
+}
