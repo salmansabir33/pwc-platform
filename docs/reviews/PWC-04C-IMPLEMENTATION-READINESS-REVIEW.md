@@ -53,7 +53,7 @@ intentional mitigation, not a defect to remove during this review.
 | B4  | Personal assurance supports recent TOTP and personal contexts only; GM06 continuity fork unresolved. Reusing it verbatim could allow stale/new-factor substitution.                                                               | Independently accept fresh per-intent password **and newly supplied eligible TOTP**, factor continuity, failure/abuse and account-recovery rules (§5). No existing personal behavior changed here. |
 | B5  | C3 account inequality/append-only snapshots do not establish legitimate actors or authorize state/event insertion. No real source, invite, acceptance, officer grant, command proof/receipt schema or restrictive writer profile. | Approve additive tenant/provenance constraints, state transition guards, least-privilege writer and complete lock graph (§6). Never relax C2 synthetic provenance/cap.                             |
 | B6  | No exact immutable-recipient resolution, token delivery, acceptance, idempotent grant activation or unknown-outcome contract.                                                                                                     | Accept §4–6 command schemas, recipient/account collision rules, bounded token lifecycle, notice/outbox and receipt reconciliation.                                                                 |
-| B7  | Twelve-month/90-day/72-hour/24-hour bounds have different clocks; source invalidation, approval validity and activation authorization are not fully related.                                                                      | Sign field-level clock origins/deadlines/calendar arithmetic and source cascades; distinguish invitation validity from short activation authorization (§4.3).                                      |
+| B7  | Twelve-month/90-day/72-hour/24-hour bounds have different clocks; source invalidation, approval validity and activation authorization are not fully related.                                                                      | Sign field-level clock origins/deadlines/calendar arithmetic and source cascades; distinguish invitation validity from short activation authorization (§4.4).                                      |
 | B8  | External-reference taxonomy/privacy, independent-review evidence, authorized audit readers/notice obligations and publication coupling are incomplete.                                                                            | Accept minimal evidence/reference and command audit/notice contracts before schema/reader writes. Keep raw files unavailable; separate real publication from grant activation (E06/08/17).         |
 
 **I versus A/U/R:** I blocks the affected command/schema/assurance implementation,
@@ -331,6 +331,8 @@ Proposed additive invariants, signed off before migration:
   the same tenant, nominee, policy and immutable approved revision, using explicit
   composite constraints or narrow guarded functions/triggers. Cross-row temporal
   policy cannot be claimed enforced by a simple SQL CHECK on another table.
+  Bind event actor to authenticated session owner and authorization source; the
+  current separate actor/session foreign keys alone do not enforce that identity.
 - Independent actor/beneficiary/proposer restrictions, exact source kind, nonfinance
   bundle/version, valid interval, unambiguous authorized target and monotonic tenant/
   grant revisions. User inequality is necessary but not distinct-human proof.
@@ -362,6 +364,12 @@ No late User lock, unbounded multi-tenant command, external mail/network I/O or
 serializer/lazy query after the protected transaction. Recheck DB wall clock after
 wait and immediately before final decision/commit. Existing 2s lock/5s statement
 bounds are reviewed foundation values, not a claimed real-workload SLA.
+
+Specify the validity linearization point explicitly. Recommend the existing ADR
+final locked decision/check before commit, not response arrival. A wall-clock check
+does not guarantee physical commit completes before that instant's future deadline;
+if a policy requires a stricter commit-time cutoff, it needs a separately reviewed
+DB enforcement design and latency/fault tests, not a claim based on `atomic()`.
 
 Atomic unit: authorize current sources + expected revisions + exact proof → consume
 proof/token if applicable → transition/revisions → audit/outbox → idempotent receipt.
