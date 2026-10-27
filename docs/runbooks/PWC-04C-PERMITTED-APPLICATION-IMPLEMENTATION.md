@@ -118,3 +118,17 @@ Initial local fixture tests exposed invalid test hold metadata/OneToOne reuse an
 | Credentialed browser and native domain/history networking and real release                            | Existing W2/W3/native integration gates plus AUTH-09/A/U/R; exact origins/CSRF, provider/device/manual accessibility, operations/security/privacy |
 
 Merging this implementation is not signing any pending AUTH/E/GM/REAL contract. Do not label all04C complete or infer actual privileged-command tests from public/owner-history tests. Next work stays within04C: obtain acceptance of a precise excluded command/reader contract before implementing that affected slice; meanwhile retain existing default-deny behavior. Do not begin04D/P5–P8.
+
+## 8. Android advisory remediation found during acceptance
+
+The first complete hosted Android job at `0543d91` **compiled both debug variants**
+but correctly failed the resolved-runtime audit: existing Guava33.4.8-android
+matched newly published [GHSA-xxph-c9ww-hj94](https://github.com/advisories/GHSA-xxph-c9ww-hj94)
+(native Java deserialization memory exhaustion). Upstream identifies33.7.2 as
+fixed and [explicitly publishes33.7.2-android](https://github.com/google/guava/releases/tag/v33.7.2).
+The existing application runtime constraint is minimally raised to33.7.2-android,
+with the advisory documented in Gradle. This changes no Flutter dependency,
+network permission, signing or API authority. No suppression, allowlist or audit
+weakening is introduced. Final Android compilation and actual selected-coordinate
+OSV evidence must pass on the patched immutable PR head. Local Android SDK remains
+absent; no local native build is claimed.
