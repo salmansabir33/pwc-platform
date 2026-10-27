@@ -139,7 +139,6 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('unapproved · preparation_record_only'), findsOneWidget);
       await tester.ensureVisible(find.text('Add non-file preparation marker'));
-      await tester.ensureVisible(find.text('Add non-file preparation marker'));
       await tester.tap(find.text('Add non-file preparation marker'));
       await tester.pumpAndSettle();
       expect(

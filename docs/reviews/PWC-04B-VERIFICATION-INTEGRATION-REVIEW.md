@@ -76,9 +76,14 @@ verified success.
   unfinished routes remain absent.
 - Pinned Flutter formatting passed at the initial c3747aa checkpoint; four
   analyzer control-flow infos were corrected in fb28553. Final analysis/tests
-  and Android builds require exact-head CI confirmation. local WASM dart_style
+  and Android builds require exact-head CI confirmation. Local WASM dart_style
   formatting matches existing pinned-formatted source but is not Flutter SDK
   execution.
+- CI also exposed stale browser unfinished-route expectations and native
+  widget selectors matching purpose buttons as well as case status. The browser
+  expectation was corrected to the actual unavailable route; native selectors
+  now target the case-specific status and scroll before off-screen actions.
+  These corrections require a fresh final-head rerun, not reuse of failed runs.
 - No known unresolved Critical/High finding in this bounded slice from the
   agent's review; independent security/privacy/database review is outstanding.
 - No physical device/emulator test, real document/NGO authenticity check,
@@ -92,9 +97,10 @@ Local executed evidence (not substitutes for final-head CI):
 - PostgreSQL 16.2 additive migration application passed; Django `check`,
   `makemigrations --check --dry-run`, `migrate --plan` (none outstanding),
   `migrate --check` passed.
-- Full contract-instrumented regression: **429 tests passed**, 258 distinct
-  route/method/status combinations, 345.438 seconds. This began before the final
-  four additional test cases; no backend runtime code changed afterward.
+- Full contract-instrumented regression re-executed at 0894175: **433 tests
+  passed**, **266 distinct route/method/status combinations**, 350.854 seconds.
+  Earlier run: 429 tests / 258 combinations. Subsequent corrections affected
+  client test expectations, not backend runtime/tests.
 - Final focused verification suite at c3747aa: **34 tests passed**, 53 wire
   combinations, 43.727 seconds. Includes duplicate creation/retry/submission,
   replacement and submit/withdraw/source-withdrawal races; holds, cross-owner/
