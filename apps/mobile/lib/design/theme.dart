@@ -68,6 +68,19 @@ ThemeData pwcTheme({bool operations = false, bool urdu = false}) {
     primary: primary,
     onPrimary: PwcTokens.surface,
     secondary: primary,
+    secondaryContainer: operations
+        ? PwcTokens.infoBackground
+        : PwcTokens.successBackground,
+    onSecondaryContainer: primary,
+    tertiary: PwcTokens.info,
+    onTertiary: PwcTokens.surface,
+    tertiaryContainer: PwcTokens.infoBackground,
+    onTertiaryContainer: PwcTokens.info,
+    errorContainer: PwcTokens.dangerBackground,
+    onErrorContainer: PwcTokens.danger,
+    surfaceTint: PwcTokens.surface,
+    surfaceContainerLow: PwcTokens.surface,
+    surfaceContainerHigh: PwcTokens.canvas,
     onSecondary: PwcTokens.surface,
     surface: PwcTokens.surface,
     onSurface: PwcTokens.textPrimary,
@@ -81,6 +94,11 @@ ThemeData pwcTheme({bool operations = false, bool urdu = false}) {
         : PwcTokens.successBackground,
     onPrimaryContainer: primary,
     surfaceContainerHighest: PwcTokens.canvas,
+  );
+  final focusSide = WidgetStateProperty.resolveWith<BorderSide?>(
+    (states) => states.contains(WidgetState.focused)
+        ? const BorderSide(color: PwcTokens.focus, width: 3)
+        : BorderSide.none,
   );
   final filled = ButtonStyle(
     minimumSize: const WidgetStatePropertyAll(Size(48, 48)),
@@ -143,10 +161,14 @@ ThemeData pwcTheme({bool operations = false, bool urdu = false}) {
       style: ButtonStyle(
         minimumSize: const WidgetStatePropertyAll(Size(48, 48)),
         shape: WidgetStatePropertyAll(shape),
+        side: focusSide,
       ),
     ),
-    iconButtonTheme: const IconButtonThemeData(
-      style: ButtonStyle(minimumSize: WidgetStatePropertyAll(Size(48, 48))),
+    iconButtonTheme: IconButtonThemeData(
+      style: ButtonStyle(
+        minimumSize: const WidgetStatePropertyAll(Size(48, 48)),
+        side: focusSide,
+      ),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,

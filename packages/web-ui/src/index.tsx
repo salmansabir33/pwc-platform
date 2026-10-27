@@ -1,9 +1,6 @@
+import { Button } from "./button";
 import { Component, useEffect, useId, useRef, useState } from "react";
-import type {
-  ButtonHTMLAttributes,
-  InputHTMLAttributes,
-  ReactNode,
-} from "react";
+import type { InputHTMLAttributes, ReactNode } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { useLocale } from "@pwc/web-i18n";
 import { DesignSystemSpecimen } from "./components";
@@ -22,31 +19,8 @@ export {
   ConfirmDialog,
 } from "./components";
 
-export function Button({
-  type = "button",
-  variant = "primary",
-  busy = false,
-  disabled,
-  className = "",
-  children,
-  ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: "primary" | "secondary" | "tertiary" | "destructive";
-  busy?: boolean;
-}) {
-  return (
-    <button
-      {...props}
-      type={type}
-      disabled={disabled || busy}
-      aria-busy={busy || undefined}
-      className={`button button-${variant} ${className}`}
-    >
-      {busy && <span aria-hidden="true">… </span>}
-      {children}
-    </button>
-  );
-}
+export { Button } from "./button";
+
 export function TextField({
   label,
   hint,
@@ -143,14 +117,31 @@ export function PortalShell({
   const location = useLocation();
   const previousPath = useRef(location.pathname);
   const title = t(portal === "ngo" ? "ngoTitle" : "opsTitle");
+  const destination = t(
+    location.pathname === "/"
+      ? "overview"
+      : location.pathname === "/foundation/accessibility"
+        ? "accessibility"
+        : location.pathname === "/foundation/states"
+          ? "states"
+          : location.pathname === "/registry"
+            ? "registryReadiness"
+            : location.pathname === "/verification"
+              ? portal === "ops"
+                ? "reviewReadiness"
+                : "verificationReadiness"
+              : location.pathname === "/controlled-onboarding"
+                ? "controlledReadiness"
+                : "notFound",
+  );
   useEffect(() => {
-    document.title = `${title} · ${t(location.pathname === "/" ? "overview" : location.pathname === "/foundation/accessibility" ? "accessibility" : location.pathname === "/foundation/states" ? "states" : "notFound")}`;
+    document.title = `${title} · ${destination}`;
     if (previousPath.current !== location.pathname) {
       document.querySelector<HTMLElement>("main h1")?.focus();
       previousPath.current = location.pathname;
     }
     setMenu(false);
-  }, [location.pathname, title, t]);
+  }, [location.pathname, title, destination, t]);
   return (
     <div className={`portal portal-${portal}`} dir={direction}>
       <a className="skip-link" href="#main">
@@ -208,13 +199,13 @@ export function PortalShell({
             {t("environment")}
           </span>
           <div className="workspace-context">
-            <span id="workspace-context-label">{t("contextTitle")}</span>
+            <span id="workspace-context-label">{t("workspaceLabel")}</span>
             <Button
               id="workspace-context"
               disabled
               aria-describedby="workspace-context-label"
             >
-              {t("disconnected")}
+              {t("workspaceUnavailable")}
             </Button>
           </div>
           <div className="language">
@@ -234,13 +225,10 @@ export function PortalShell({
           </div>
         </header>
         <main id="main" tabIndex={-1}>
-          <nav
-            className="breadcrumbs"
-            aria-label={direction === "rtl" ? "مقام" : "Breadcrumb"}
-          >
+          <nav className="breadcrumbs" aria-label={t("breadcrumb")}>
             <Link to="/">{title}</Link>
             <span aria-hidden="true"> / </span>
-            <span>{t("foundation")}</span>
+            <span aria-current="page">{destination}</span>
           </nav>
           {children}
         </main>

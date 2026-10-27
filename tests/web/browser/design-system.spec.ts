@@ -11,8 +11,10 @@ for (const [portal, url] of [
   }) => {
     mkdirSync(evidence, { recursive: true });
     const calls: string[] = [];
+    const external: string[] = [];
     page.on("request", (r) => {
       if (new URL(r.url()).pathname.startsWith("/api/")) calls.push(r.url());
+      if (new URL(r.url()).origin !== url) external.push(r.url());
     });
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto(url);
@@ -142,5 +144,6 @@ for (const [portal, url] of [
       ),
     ).toBe(true);
     expect(calls).toEqual([]);
+    expect(external).toEqual([]);
   });
 }

@@ -6,7 +6,7 @@ import type {
   TextareaHTMLAttributes,
   InputHTMLAttributes,
 } from "react";
-import { Button } from "./index";
+import { Button } from "./button";
 
 export function PageHeader({
   title,

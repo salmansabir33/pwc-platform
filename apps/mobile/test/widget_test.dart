@@ -57,31 +57,37 @@ void main() {
     );
     await tester.pumpWidget(const SizedBox.shrink());
   });
-  for (final size in [const Size(320, 640), const Size(1200, 900)]) {
-    testWidgets('identity is responsive and supports scaled text at $size', (
-      tester,
-    ) async {
-      tester.platformDispatcher.textScaleFactorTestValue = 2.0;
-      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
-      tester.view.physicalSize = size;
-      tester.view.devicePixelRatio = 1;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
-      final session = SessionController(
-        FakeApi(),
-        MemoryStore(),
-        clock: () => DateTime.utc(2026, 10, 26),
+  for (final ur in [false, true]) {
+    for (final size in [const Size(320, 640), const Size(1200, 900)]) {
+      testWidgets(
+        'identity is responsive and supports scaled text at $size urdu=$ur',
+        (tester) async {
+          tester.platformDispatcher.textScaleFactorTestValue = 2.0;
+          addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+          tester.view.physicalSize = size;
+          tester.view.devicePixelRatio = 1;
+          addTearDown(tester.view.resetPhysicalSize);
+          addTearDown(tester.view.resetDevicePixelRatio);
+          final session = SessionController(
+            FakeApi(),
+            MemoryStore(),
+            clock: () => DateTime.utc(2026, 10, 26),
+          );
+          await tester.pumpWidget(
+            ProviderScope(
+              overrides: [
+                sessionProvider.overrideWith((ref) => session),
+                urduProvider.overrideWith((ref) => ur),
+              ],
+              child: const PwcApp(),
+            ),
+          );
+          await tester.pumpAndSettle();
+          expect(tester.takeException(), null);
+          await tester.pumpWidget(const SizedBox.shrink());
+        },
       );
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [sessionProvider.overrideWith((ref) => session)],
-          child: const PwcApp(),
-        ),
-      );
-      await tester.pumpAndSettle();
-      expect(tester.takeException(), null);
-      await tester.pumpWidget(const SizedBox.shrink());
-    });
+    }
   }
   test('all English UI strings in translation catalog are translated', () {
     expect(

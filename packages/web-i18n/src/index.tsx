@@ -2,6 +2,13 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 
 export const english = {
+  workspaceLabel: "Workspace context",
+  workspaceUnavailable: "No workspace available",
+  breadcrumb: "Breadcrumb",
+  registryReadiness: "ORG-01 / ORG-02 · Registry (unavailable)",
+  verificationReadiness: "ORG-03 · Verification preparation (unavailable)",
+  reviewReadiness: "PWC-01 · Verification review (unavailable)",
+  controlledReadiness: "PWC-01 · Controlled onboarding (unavailable)",
   ngoTitle: "NGO Web Portal",
   opsTitle: "PWC Operations",
   skip: "Skip to main content",
@@ -88,6 +95,13 @@ export const english = {
 } as const;
 type Key = keyof typeof english;
 export const urdu: Record<Key, string> = {
+  workspaceLabel: "کام کی جگہ",
+  workspaceUnavailable: "کوئی کام کی جگہ دستیاب نہیں",
+  breadcrumb: "مقام",
+  registryReadiness: "ORG-01 / ORG-02 · رجسٹری غیر دستیاب",
+  verificationReadiness: "ORG-03 · تصدیق کی تیاری غیر دستیاب",
+  reviewReadiness: "PWC-01 · جائزہ غیر دستیاب",
+  controlledReadiness: "PWC-01 · کنٹرول شدہ شمولیت غیر دستیاب",
   ngoTitle: "این جی او ویب پورٹل",
   opsTitle: "پی ڈبلیو سی آپریشنز",
   skip: "مرکزی مواد پر جائیں",

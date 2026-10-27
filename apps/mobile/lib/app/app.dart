@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'providers.dart';
 import '../design/theme.dart';
+import '../design/tokens.g.dart';
 import 'strings.dart';
 import '../features/identity.dart';
 import '../features/personal.dart';
@@ -151,7 +152,7 @@ class _Frame extends ConsumerWidget {
       context.go(['/personal', '/affiliations', '/workspaces', '/security'][v]);
     }
 
-    final wide = MediaQuery.sizeOf(context).width >= 840;
+    final wide = MediaQuery.sizeOf(context).width >= PwcTokens.breakpoints[1];
     final content = SafeArea(
       child: Align(
         alignment: Alignment.topCenter,
