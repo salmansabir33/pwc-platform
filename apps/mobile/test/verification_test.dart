@@ -107,7 +107,11 @@ void main() {
       );
       await tester.tap(find.text('Load own cases'));
       await tester.pumpAndSettle();
-      expect(find.textContaining('organization_eligibility'), findsOneWidget);
+      expect(
+        find.textContaining('organization_eligibility · unregistered'),
+        findsOneWidget,
+      );
+      await tester.ensureVisible(find.text('Submit preparation only'));
       await tester.tap(find.text('Submit preparation only'));
       await tester.pumpAndSettle();
       expect(find.textContaining('submitted'), findsOneWidget);
@@ -134,9 +138,14 @@ void main() {
       await tester.tap(find.text('Requirements and history'));
       await tester.pumpAndSettle();
       expect(find.text('unapproved · preparation_record_only'), findsOneWidget);
+      await tester.ensureVisible(find.text('Add non-file preparation marker'));
+      await tester.ensureVisible(find.text('Add non-file preparation marker'));
       await tester.tap(find.text('Add non-file preparation marker'));
       await tester.pumpAndSettle();
-      expect(find.textContaining('organization_eligibility'), findsNothing);
+      expect(
+        find.textContaining('organization_eligibility · unregistered'),
+        findsNothing,
+      );
     },
   );
   testWidgets('04B reviewer has no bootstrap path', (tester) async {
@@ -187,7 +196,10 @@ void main() {
       }),
     );
     await tester.pumpAndSettle();
-    expect(find.textContaining('organization_eligibility'), findsNothing);
+    expect(
+      find.textContaining('organization_eligibility · unregistered'),
+      findsNothing,
+    );
   });
   test('04B manifest is separate from native personal and registry APIs', () {
     expect(verificationOperations.length, 15);

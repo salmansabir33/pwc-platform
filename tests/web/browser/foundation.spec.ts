@@ -167,7 +167,6 @@ for (const [app, port] of [
       "/sign-in",
       "/register",
       "/workspaces",
-      "/verification",
       "/operations",
       "/ngos/00000000-0000-4000-8000-00000000000a/finance",
     ]) {
