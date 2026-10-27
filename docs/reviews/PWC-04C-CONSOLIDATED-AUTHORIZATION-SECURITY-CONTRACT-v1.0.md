@@ -92,3 +92,16 @@ One comprehensive Codex prompt per PWC-04C subphase may include contract impleme
 - [Founding authority](PWC-04C-INITIAL-PLATFORM-APPOINTMENT-DECISION.md); [manual officer provisioning](PWC-04C-MANUAL-PLATFORM-OFFICER-PROVISIONING-DECISION.md); [identity/grant separation](PWC-04C-PLATFORM-OFFICER-IDENTITY-AND-PRIVILEGE-SEPARATION-DECISION.md).
 - [Representative invitation](PWC-04C-REPRESENTATIVE-INVITATION-AND-ACTIVATION-DECISION.md); [NGO admin matrix](PWC-04C-NGO-ADMINISTRATOR-PERMISSION-MATRIX.md); [password/TOTP decision](PWC-04C-OPERATION-BOUND-PASSWORD-AND-TOTP-DECISION.md).
 - [E decision register](PWC-02E-VERIFICATION-AUTHORITY-DECISION-REGISTER.md); [GM/REAL register](PWC-03B3-PRIVILEGED-GRANT-DECISION-REGISTER.md).
+
+## 11. Technical implementation-readiness assessment — 27 October 2026
+
+See the [consolidated technical readiness review](PWC-04C-IMPLEMENTATION-READINESS-REVIEW.md)
+for code-backed E/GM/REAL mapping, lifecycle/issuer and schema proposals,
+GM06/recipient-binding/deadline alternatives, restricted-writer and lock design,
+API failure/idempotency and backend/client acceptance tests. It supplements this
+proposed contract without approving its action names, lifetime interpretations,
+cryptographic protocol or issuer matrix. Product choices remain adopted within
+their recorded scope; independently accountable implementation sign-offs remain
+unevidenced. Complete privileged-command implementation and real activation stay
+blocked; existing unavailable adapters and synthetic/real provenance separation
+must remain intact. Roadmap §11.5 preserves later merge evidence and prior history.

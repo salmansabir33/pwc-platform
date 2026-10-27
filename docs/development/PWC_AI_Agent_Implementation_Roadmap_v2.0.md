@@ -252,3 +252,35 @@ This is a **PR/history and documentation-scope audit**, not an independent line-
 Every Arena/Codex subphase must reconcile: **roadmap ticket → latest dated product/ADR decisions → canonical screens → implemented server/client/API/test coverage → pending gates → PR diff/CI**. Report deviations as **approved scope change**, **sequencing variance**, **partially implemented**, **deferred/open**, or **unauthorized deviation requiring correction**. Obtain explicit product-owner approval to change original P0–P8 or M1–M3 coverage; preserve original source/history; amend roadmap/status and linked decision records **in the same PR as the affected implementation**, or in a clearly linked preceding documentation PR. Never quietly redefine unfinished work as complete. One comprehensive engineering assignment per lettered subphase remains the preferred user handoff; ordinary incremental commits/internal reviews are not extra user-facing phases.
 
 **Source links:** [ADR-0004](../decisions/ADR-0004-ngo-verification-and-representative-authority.md); [PWC-02E E register](../reviews/PWC-02E-VERIFICATION-AUTHORITY-DECISION-REGISTER.md); [PWC-03B.3 register](../reviews/PWC-03B3-PRIVILEGED-GRANT-DECISION-REGISTER.md); [PWC-04C founding appointment](../reviews/PWC-04C-INITIAL-PLATFORM-APPOINTMENT-DECISION.md); [Design System](../design/PWC_DESIGN_SYSTEM_v1.0.md).
+
+### 11.5 PWC-04C consolidated technical readiness assessment — 27 October 2026
+
+This is a later evidence checkpoint, not a rewrite of §11.1's PR #1–#17 audit.
+PR #17 is now merged (`ca46a208300bbc355e64f703f448e8c9f00a6423`); PRs #19–#22
+merged the initial NGO admin matrix, existing-personal-identity officer model,
+manual restricted provisioning direction and operation-bound password-plus-TOTP
+product preference. PR #23 merged the **proposed**, independently unsigned
+consolidated security contract at `015d74ee3d67e0a955da54931993851b6d4a5191`.
+Merged product records are not independent security/operations/governance/privacy
+acceptance, grant implementation or activation.
+
+The [consolidated implementation-readiness review](../reviews/PWC-04C-IMPLEMENTATION-READINESS-REVIEW.md)
+reconciles all E01–E18, GM01–GM12 and REAL01–REAL04 against code, DB constraints,
+authentication, API and React/Flutter readiness. **Complete privileged 04C
+implementation remains blocked** on the exact charter/issuer/capability matrix,
+founding/provisioning trust anchor, GM06 and domain assurance, real provenance/
+restricted writer/lock graph, recipient/token/clock/idempotency contracts and
+minimal evidence/audit/notice policy. Named independent sign-offs are not evidenced.
+Do not reinterpret production-only gates as blocking unrelated documentation,
+or relabel implementation blockers as mere release toggles.
+
+Remaining work stays within **P3 / PWC-04C with PWC-03B.3 dependencies**, using one
+comprehensive eventual assignment and ordinary internal implementation checkpoints
+after affected I gates close. Keep original 03C audit/file primitive shortfall
+visible; implement required command audit/readers under approved 04C contracts,
+while raw evidence files remain excluded initially. ORG-06 planned-succession
+safety must not grant compromised-last-admin immunity. The legacy G1 demo follows
+externally verified controlled onboarding, not reopened applicant intake. PWC-04D,
+P4–P8, M1–M3 scope, REAL03 domain exclusions and independent real-activation/
+release acceptance remain unchanged. This documentation review does not start
+any privileged implementation, networking, authority activation or next subphase.
