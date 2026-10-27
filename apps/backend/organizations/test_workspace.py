@@ -1,6 +1,7 @@
 """Actual HTTP/PG owner-history integration; no privileged capability invented."""
 
 import uuid
+from datetime import timedelta
 from unittest.mock import patch
 from django.test import TestCase, Client, override_settings
 from django.db import DatabaseError
@@ -179,7 +180,9 @@ class WorkspaceTests(VerificationFixtures, TestCase):
             self.assertEqual(self.workspace().status_code, 503)
         with self.settings(PWC_ENVIRONMENT="production"):
             self.assertEqual(self.workspace().status_code, 503)
-        AuthSession.objects.filter(user=self.user).update(revoked_at=timezone.now(), revocation_reason="logout")
+        AuthSession.objects.filter(user=self.user).update(
+            revoked_at=timezone.now(), revocation_reason="logout"
+        )
         self.assertEqual(self.workspace().status_code, 401)
 
     def test_database_failure_is_redacted_and_no_partial_projection(self):
@@ -195,3 +198,24 @@ class WorkspaceTests(VerificationFixtures, TestCase):
                 result = self.workspace()
         self.assertEqual(result.status_code, 503)
         self.assertNotIn(b"private database detail", result.content)
+
+    def test_expired_native_access_denied_without_projecting_history(self):
+        with patch(
+            "accounts.sessions.timezone.now",
+            return_value=timezone.now() + timedelta(minutes=6),
+        ):
+            response = self.workspace()
+        self.assertEqual(response.status_code, 401)
+        self.assertNotIn("results", response.json())
+
+    def test_staff_and_legacy_admin_do_not_read_other_person_history(self):
+        self.other.is_staff = True
+        self.other.is_superuser = True
+        self.other.save()
+        OrganizationAccess.objects.create(
+            organization=self.hidden, user=self.other, role="admin"
+        )
+        response = self.call("get", "workspace/", token=self.other_token)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["results"], [])
+        self.assertNotIn(self.source["id"].encode(), response.content)

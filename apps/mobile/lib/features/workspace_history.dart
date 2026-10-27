@@ -28,6 +28,16 @@ class _WorkspaceHistoryScreenState extends State<WorkspaceHistoryScreen> {
   bool _error = false;
   int _generation = 0;
   String t(String en, String ur) => widget.urdu ? ur : en;
+  String stateName(String value) =>
+      {
+        'draft': t('Draft', 'مسودہ'),
+        'submitted': t('Submitted', 'جمع شدہ'),
+        'pending': t('Pending', 'زیر التوا'),
+        'needs_information': t('Information required', 'مزید معلومات درکار'),
+        'rejected': t('Rejected', 'مسترد'),
+        'withdrawn': t('Withdrawn', 'واپس لی گئی'),
+      }[value] ??
+      t('Unavailable', 'غیر دستیاب');
   @override
   void didUpdateWidget(covariant WorkspaceHistoryScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -145,6 +155,10 @@ class _WorkspaceHistoryScreenState extends State<WorkspaceHistoryScreen> {
             'کوئی مماثل سابقہ درخواست نہیں۔',
           ),
         ),
+      if (_page != null && !_page!.verificationAvailable)
+        Notice(
+          t('Verification history unavailable.', 'تصدیق کی تاریخ دستیاب نہیں۔'),
+        ),
       for (final item in _page?.results ?? <WorkspaceApplication>[])
         Card(
           child: Padding(
@@ -160,13 +174,13 @@ class _WorkspaceHistoryScreenState extends State<WorkspaceHistoryScreen> {
                       ),
                 ),
                 PwcBadge(
-                  item.state,
+                  stateName(item.state),
                   warning: ['rejected', 'withdrawn'].contains(item.state),
                 ),
                 Text('${t('Revision', 'نظر ثانی')}: ${item.revision}'),
                 for (final c in item.verification)
                   Text(
-                    '${c.purpose} · ${c.state}${c.stale ? t(' · Stale source', ' · پرانا ماخذ') : ''}',
+                    '${c.purpose == 'organization_eligibility' ? t('NGO eligibility', 'تنظیم کی اہلیت') : t('Representative mandate', 'نمائندے کا اختیار')} · ${stateName(c.state)}${c.stale ? t(' · Stale source', ' · پرانا ماخذ') : ''}',
                   ),
               ],
             ),

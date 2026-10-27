@@ -116,7 +116,7 @@ describe("permission-aware public and personal history screens", () => {
     expect(await screen.findByText("Synthetic Welfare")).toBeVisible();
     await u.click(screen.getByRole("button", { name: "Withdraw application" }));
     expect(
-      await screen.findByText("withdrawn", { selector: "span" }),
+      await screen.findByText("Withdrawn", { selector: "span" }),
     ).toBeVisible();
     expect(withdraw).toHaveBeenCalledWith(current.results[0]);
     expect(list).toHaveBeenCalledTimes(2);

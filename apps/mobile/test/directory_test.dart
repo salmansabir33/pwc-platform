@@ -83,6 +83,7 @@ void main() {
     () async {
       for (final origin in [
         'http://api.example.invalid',
+        'https://[',
         'https://user:pass@api.example.invalid',
         'https://api.example.invalid/path',
         'https://api.example.invalid?q=x',

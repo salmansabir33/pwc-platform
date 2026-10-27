@@ -20,7 +20,7 @@ class NativeDirectoryGateway implements DirectoryGateway {
   final http.Client Function() _factory;
   http.Client? _client;
   NativeDirectoryGateway(String base, {http.Client Function()? factory})
-    : origin = Uri.parse(base),
+    : origin = Uri.tryParse(base) ?? (throw const ApiFailure('CONFIGURATION')),
       _factory = factory ?? http.Client.new {
     if (origin.scheme != 'https' ||
         origin.host.isEmpty ||

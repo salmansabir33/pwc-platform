@@ -1,4 +1,4 @@
-"""Deterministic bounded Dart models and personal operation manifest from PWC-03C.
+"""Deterministic bounded Dart models and personal/public operation manifests.
 
 No endpoint or schema edits; --check detects drift. The source digest is a
 provenance binding, not authorization. Never generate NGO synthetic operations.

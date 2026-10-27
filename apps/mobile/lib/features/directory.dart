@@ -140,7 +140,11 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
               children: [
                 Text(row.name),
                 Text(row.city),
-                PwcBadge(row.classification),
+                PwcBadge(
+                  row.classification == 'registered'
+                      ? t('Registered', 'رجسٹرڈ')
+                      : t('Unregistered', 'غیر رجسٹرڈ'),
+                ),
               ],
             ),
           ),

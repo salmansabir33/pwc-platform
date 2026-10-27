@@ -55,7 +55,7 @@ void main() {
       await tester.tap(find.text('Refresh history'));
       await tester.pumpAndSettle();
       expect(find.text('Synthetic historical draft'), findsOneWidget);
-      expect(find.text('withdrawn'), findsOneWidget);
+      expect(find.text('Withdrawn'), findsOneWidget);
       expect(find.textContaining('No membership'), findsOneWidget);
       expect(find.text('Approve'), findsNothing);
     },

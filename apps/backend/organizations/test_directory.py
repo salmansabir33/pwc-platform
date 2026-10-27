@@ -108,3 +108,16 @@ class DirectoryTests(TestCase):
         response = self.client.get(ROOT)
         self.assertEqual(response.status_code, 429)
         self.assertNotIn("results", response.json())
+
+    def test_dependency_failure_redacts_and_returns_unavailable(self):
+        from unittest.mock import patch
+        from django.db import DatabaseError
+
+        with patch(
+            "organizations.registry.matches",
+            side_effect=DatabaseError("private database name"),
+        ):
+            response = self.client.get(ROOT)
+        self.assertEqual(response.status_code, 503)
+        self.assertNotIn(b"private database name", response.content)
+        self.assertNotIn("results", response.json())

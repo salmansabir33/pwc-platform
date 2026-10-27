@@ -31,7 +31,12 @@ final urduProvider = StateProvider<bool>((ref) => false);
 const directoryOrigin = String.fromEnvironment('PWC_PUBLIC_DIRECTORY_ORIGIN');
 final directoryProvider = Provider<DirectoryGateway?>((ref) {
   if (directoryOrigin.isEmpty) return null;
-  final gateway = NativeDirectoryGateway(directoryOrigin);
-  ref.onDispose(gateway.dispose);
-  return gateway;
+  try {
+    final gateway = NativeDirectoryGateway(directoryOrigin);
+    ref.onDispose(gateway.dispose);
+    return gateway;
+  } on ApiFailure {
+    // Fail closed as unavailable; never expose or log configured origins.
+    return null;
+  }
 });

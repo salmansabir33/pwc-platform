@@ -11,6 +11,19 @@ import type {
 export function WorkspaceHistory({ gateway }: { gateway?: WorkspaceGateway }) {
   const { locale } = useLocale();
   const t = (en: string, ur: string) => (locale === "ur" ? ur : en);
+  const stateName = (value: string) =>
+    ({
+      draft: t("Draft", "مسودہ"),
+      submitted: t("Submitted", "جمع شدہ"),
+      pending: t("Pending", "زیر التوا"),
+      needs_information: t("Information required", "مزید معلومات درکار"),
+      rejected: t("Rejected", "مسترد"),
+      withdrawn: t("Withdrawn", "واپس لی گئی"),
+    })[value] ?? t("Unavailable", "غیر دستیاب");
+  const purposeName = (value: string) =>
+    value === "organization_eligibility"
+      ? t("NGO eligibility", "تنظیم کی اہلیت")
+      : t("Representative mandate", "نمائندے کا اختیار");
   const [kind, setKind] = useState<"draft" | "claim">("draft");
   const [filter, setFilter] = useState("");
   const [page, setPage] = useState<WorkspacePage | null>(null);
@@ -128,7 +141,7 @@ export function WorkspaceHistory({ gateway }: { gateway?: WorkspaceGateway }) {
           "withdrawn",
         ].map((value) => (
           <option key={value} value={value}>
-            {value}
+            {stateName(value)}
           </option>
         ))}
       </SelectField>
@@ -186,14 +199,14 @@ export function WorkspaceHistory({ gateway }: { gateway?: WorkspaceGateway }) {
                 : "info"
             }
           >
-            {item.state}
+            {stateName(item.state)}
           </Badge>
           <p>
             {t("Revision", "نظر ثانی")}: {item.revision}
           </p>
           {item.verification.map((c) => (
             <p key={c.id}>
-              {c.purpose} · {c.state} ·{" "}
+              {purposeName(c.purpose)} · {stateName(c.state)} ·{" "}
               {t("Source revision", "ماخذ کی نظر ثانی")}: {c.source_revision}{" "}
               {c.stale &&
                 t(
