@@ -25,7 +25,12 @@ from .models import (
     RegistryReceipt,
 )
 
-CONFIG = dict(SESSION_CONFIG, PWC_REGISTRY_ENABLED=True, PWC_ENVIRONMENT="test")
+CONFIG = dict(
+    SESSION_CONFIG,
+    PWC_REGISTRY_ENABLED=True,
+    PWC_ENVIRONMENT="test",
+    PWC_LEGACY_ONBOARDING_TEST_EXERCISE=True,
+)
 ROOT = "/api/v1/registry/"
 FORM = {
     "name": "Synthetic Welfare",

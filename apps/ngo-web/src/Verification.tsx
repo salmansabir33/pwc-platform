@@ -91,6 +91,11 @@ export function Verification({
   const disabled = !gateway || busy || review;
   return (
     <section className="stack" aria-busy={busy}>
+      <p>
+        Initial rollout: NGO and representative verification is external. Public
+        NGO self-registration and existing-NGO claims are unavailable.
+        Historical records confer no authority.
+      </p>
       <h1>
         {review
           ? "PWC-01 · Verification review"

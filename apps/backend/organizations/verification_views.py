@@ -10,6 +10,7 @@ from accounts.registration import spend
 from accounts.session_authentication import PersonalAuthentication
 from .registry_views import RegistryView, problem
 from .registry_serializers import RevisionInput
+from .onboarding_policy import historical_test_exercise
 from . import registry, verification
 from .models import VerificationCase, EvidencePreparation, VerificationEvent
 from .verification_serializers import (
@@ -52,6 +53,12 @@ class VerificationView(RegistryView):
             user, session = identity
             if user.recovery_hold_state != "clear":
                 raise FlowProblem("RECOVERY_RESTRICTED", 403)
+            if (
+                request.method != "GET"
+                and self.command not in ("withdraw", "preparation-withdraw", "upload")
+                and not historical_test_exercise()
+            ):
+                raise FlowProblem("SELF_SERVICE_UNAVAILABLE", 503)
             paged = request.method == "GET" and (
                 pk is None
                 or self.command == "history"

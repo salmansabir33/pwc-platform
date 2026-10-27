@@ -1392,6 +1392,170 @@
       "kind": "response",
       "operationId": "verificationQueueUnavailable",
       "status": 503
+    },
+    {
+      "body": {
+        "error": {
+          "code": "CONTROLLED_ONBOARDING_UNAVAILABLE",
+          "field_errors": {},
+          "message": "Unavailable",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "controlledAcceptUnavailable",
+      "status": 503
+    },
+    {
+      "body": {
+        "error": {
+          "code": "CONTROLLED_ONBOARDING_UNAVAILABLE",
+          "field_errors": {},
+          "message": "Unavailable",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "controlledListUnavailable",
+      "status": 503
+    },
+    {
+      "body": {
+        "error": {
+          "code": "CONTROLLED_ONBOARDING_UNAVAILABLE",
+          "field_errors": {},
+          "message": "Unavailable",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "controlledCreateUnavailable",
+      "status": 503
+    },
+    {
+      "body": {
+        "error": {
+          "code": "CONTROLLED_ONBOARDING_UNAVAILABLE",
+          "field_errors": {},
+          "message": "Unavailable",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "controlledReadUnavailable",
+      "status": 503
+    },
+    {
+      "body": {
+        "error": {
+          "code": "CONTROLLED_ONBOARDING_UNAVAILABLE",
+          "field_errors": {},
+          "message": "Unavailable",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "controlledEditUnavailable",
+      "status": 503
+    },
+    {
+      "body": {
+        "error": {
+          "code": "CONTROLLED_ONBOARDING_UNAVAILABLE",
+          "field_errors": {},
+          "message": "Unavailable",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "controlledApproveUnavailable",
+      "status": 503
+    },
+    {
+      "body": {
+        "error": {
+          "code": "CONTROLLED_ONBOARDING_UNAVAILABLE",
+          "field_errors": {},
+          "message": "Unavailable",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "controlledInvitationUnavailable",
+      "status": 503
+    },
+    {
+      "body": {
+        "error": {
+          "code": "CONTROLLED_ONBOARDING_UNAVAILABLE",
+          "field_errors": {},
+          "message": "Unavailable",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "controlledRejectUnavailable",
+      "status": 503
+    },
+    {
+      "body": {
+        "error": {
+          "code": "CONTROLLED_ONBOARDING_UNAVAILABLE",
+          "field_errors": {},
+          "message": "Unavailable",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "controlledReturnUnavailable",
+      "status": 503
+    },
+    {
+      "body": {
+        "error": {
+          "code": "CONTROLLED_ONBOARDING_UNAVAILABLE",
+          "field_errors": {},
+          "message": "Unavailable",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "controlledSubmitUnavailable",
+      "status": 503
+    },
+    {
+      "body": {
+        "error": {
+          "code": "CONTROLLED_ONBOARDING_UNAVAILABLE",
+          "field_errors": {},
+          "message": "Unavailable",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "controlledWithdrawUnavailable",
+      "status": 503
+    },
+    {
+      "body": {
+        "blockers": [
+          "reviewer_provisioning_root",
+          "issuer_command_matrix",
+          "command_assurance",
+          "privacy_reference_contract",
+          "recipient_bound_invitation_contract"
+        ],
+        "grant_activation_available": false,
+        "invitation_available": false,
+        "operator_commands_available": false,
+        "policy_version": "offline_initial_2026_10_27",
+        "raw_documents_accepted": false,
+        "required_separation": "independently_authorized_distinct_individuals",
+        "self_service_available": false
+      },
+      "kind": "response",
+      "operationId": "controlledRequirements",
+      "status": 200
     }
   ],
   "contract_version": "1.0.0",

@@ -22,6 +22,7 @@ from accounts.registration import spend
 from accounts.session_authentication import PersonalAuthentication
 from access.views import FixedJSON
 from . import registry
+from .onboarding_policy import historical_test_exercise
 from .models import OrganizationDraft, OrganizationClaim, RegistryEvent
 from .registry_serializers import (
     DraftInput,
@@ -142,6 +143,12 @@ class RegistryView(APIView):
             user, session = identity
             if user.recovery_hold_state != "clear":
                 raise FlowProblem("RECOVERY_RESTRICTED", 403)
+            if (
+                request.method != "GET"
+                and self.command != "withdraw"
+                and not historical_test_exercise()
+            ):
+                raise FlowProblem("SELF_SERVICE_UNAVAILABLE", 503)
             allowed_query = (
                 {"q", "city", "cursor"}
                 if self.resource == "search"

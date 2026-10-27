@@ -114,6 +114,11 @@ export function Registry({
   const unavailable = !gateway || busy;
   return (
     <section className="stack" aria-busy={busy}>
+      <p>
+        Initial rollout: NGO and representative verification is external. Public
+        NGO self-registration and existing-NGO claims are unavailable.
+        Historical records confer no authority.
+      </p>
       <h1 tabIndex={-1}>
         {t("ORG-01 · Find or claim an NGO", "ORG-01 · تنظیم تلاش کریں")}
       </h1>

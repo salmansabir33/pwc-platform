@@ -132,6 +132,10 @@ class _RegistryScreenState extends State<RegistryScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (widget.gateway == null)
+          const Text(
+            'Initial rollout: external NGO and representative verification only. Public NGO self-registration and existing-NGO claims are unavailable. Historical records do not confer authority.',
+          ),
         Text(
           t('ORG-01 · Find or claim an NGO', 'ORG-01 · تنظیم تلاش کریں'),
           style: Theme.of(context).textTheme.headlineSmall,

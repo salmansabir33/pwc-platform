@@ -504,6 +504,214 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/controlled-onboarding/invitations/{pk}/accept/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * controlledAcceptUnavailable
+         * @description Revised 04B offline initial rollout. Self-service unavailable. External examination, platform attestation, independent approval, recipient acceptance and later grant activation are separate. All controlled readers/commands and invitations unconditionally unavailable pending E04/GM contracts; no object lookup/body parsing or real authority. Requirements are generic policy, NOT caller capabilities.
+         */
+        post: operations["controlledAcceptUnavailable"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/controlled-onboarding/records/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * controlledListUnavailable
+         * @description Revised 04B offline initial rollout. Self-service unavailable. External examination, platform attestation, independent approval, recipient acceptance and later grant activation are separate. All controlled readers/commands and invitations unconditionally unavailable pending E04/GM contracts; no object lookup/body parsing or real authority. Requirements are generic policy, NOT caller capabilities.
+         */
+        get: operations["controlledListUnavailable"];
+        put?: never;
+        /**
+         * controlledCreateUnavailable
+         * @description Revised 04B offline initial rollout. Self-service unavailable. External examination, platform attestation, independent approval, recipient acceptance and later grant activation are separate. All controlled readers/commands and invitations unconditionally unavailable pending E04/GM contracts; no object lookup/body parsing or real authority. Requirements are generic policy, NOT caller capabilities.
+         */
+        post: operations["controlledCreateUnavailable"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/controlled-onboarding/records/{pk}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * controlledReadUnavailable
+         * @description Revised 04B offline initial rollout. Self-service unavailable. External examination, platform attestation, independent approval, recipient acceptance and later grant activation are separate. All controlled readers/commands and invitations unconditionally unavailable pending E04/GM contracts; no object lookup/body parsing or real authority. Requirements are generic policy, NOT caller capabilities.
+         */
+        get: operations["controlledReadUnavailable"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * controlledEditUnavailable
+         * @description Revised 04B offline initial rollout. Self-service unavailable. External examination, platform attestation, independent approval, recipient acceptance and later grant activation are separate. All controlled readers/commands and invitations unconditionally unavailable pending E04/GM contracts; no object lookup/body parsing or real authority. Requirements are generic policy, NOT caller capabilities.
+         */
+        patch: operations["controlledEditUnavailable"];
+        trace?: never;
+    };
+    "/api/v1/controlled-onboarding/records/{pk}/approve/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * controlledApproveUnavailable
+         * @description Revised 04B offline initial rollout. Self-service unavailable. External examination, platform attestation, independent approval, recipient acceptance and later grant activation are separate. All controlled readers/commands and invitations unconditionally unavailable pending E04/GM contracts; no object lookup/body parsing or real authority. Requirements are generic policy, NOT caller capabilities.
+         */
+        post: operations["controlledApproveUnavailable"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/controlled-onboarding/records/{pk}/invitation/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * controlledInvitationUnavailable
+         * @description Revised 04B offline initial rollout. Self-service unavailable. External examination, platform attestation, independent approval, recipient acceptance and later grant activation are separate. All controlled readers/commands and invitations unconditionally unavailable pending E04/GM contracts; no object lookup/body parsing or real authority. Requirements are generic policy, NOT caller capabilities.
+         */
+        post: operations["controlledInvitationUnavailable"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/controlled-onboarding/records/{pk}/reject/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * controlledRejectUnavailable
+         * @description Revised 04B offline initial rollout. Self-service unavailable. External examination, platform attestation, independent approval, recipient acceptance and later grant activation are separate. All controlled readers/commands and invitations unconditionally unavailable pending E04/GM contracts; no object lookup/body parsing or real authority. Requirements are generic policy, NOT caller capabilities.
+         */
+        post: operations["controlledRejectUnavailable"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/controlled-onboarding/records/{pk}/return/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * controlledReturnUnavailable
+         * @description Revised 04B offline initial rollout. Self-service unavailable. External examination, platform attestation, independent approval, recipient acceptance and later grant activation are separate. All controlled readers/commands and invitations unconditionally unavailable pending E04/GM contracts; no object lookup/body parsing or real authority. Requirements are generic policy, NOT caller capabilities.
+         */
+        post: operations["controlledReturnUnavailable"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/controlled-onboarding/records/{pk}/submit/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * controlledSubmitUnavailable
+         * @description Revised 04B offline initial rollout. Self-service unavailable. External examination, platform attestation, independent approval, recipient acceptance and later grant activation are separate. All controlled readers/commands and invitations unconditionally unavailable pending E04/GM contracts; no object lookup/body parsing or real authority. Requirements are generic policy, NOT caller capabilities.
+         */
+        post: operations["controlledSubmitUnavailable"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/controlled-onboarding/records/{pk}/withdraw/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * controlledWithdrawUnavailable
+         * @description Revised 04B offline initial rollout. Self-service unavailable. External examination, platform attestation, independent approval, recipient acceptance and later grant activation are separate. All controlled readers/commands and invitations unconditionally unavailable pending E04/GM contracts; no object lookup/body parsing or real authority. Requirements are generic policy, NOT caller capabilities.
+         */
+        post: operations["controlledWithdrawUnavailable"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/controlled-onboarding/requirements/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * controlledRequirements
+         * @description Revised 04B offline initial rollout. Self-service unavailable. External examination, platform attestation, independent approval, recipient acceptance and later grant activation are separate. All controlled readers/commands and invitations unconditionally unavailable pending E04/GM contracts; no object lookup/body parsing or real authority. Requirements are generic policy, NOT caller capabilities.
+         */
+        get: operations["controlledRequirements"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/health/": {
         parameters: {
             query?: never;
@@ -1220,6 +1428,30 @@ export interface components {
                 /** Format: uuid */
                 correlation_id: string;
             };
+        };
+        ControlledOnboardingRequirements: {
+            /** @constant */
+            blockers: [
+                "reviewer_provisioning_root",
+                "issuer_command_matrix",
+                "command_assurance",
+                "privacy_reference_contract",
+                "recipient_bound_invitation_contract"
+            ];
+            /** @constant */
+            grant_activation_available: false;
+            /** @constant */
+            invitation_available: false;
+            /** @constant */
+            operator_commands_available: false;
+            /** @enum {string} */
+            policy_version: "offline_initial_2026_10_27";
+            /** @constant */
+            raw_documents_accepted: false;
+            /** @enum {string} */
+            required_separation: "independently_authorized_distinct_individuals";
+            /** @constant */
+            self_service_available: false;
         };
         Csrf: {
             csrf_token: string;
@@ -4683,6 +4915,1454 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SessionEnvelope"];
+                };
+            };
+            /** @description Implemented response */
+            400: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            401: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            403: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            404: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            405: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            409: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            429: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    /** @description Optional retry hint, never automatic command replay */
+                    "Retry-After"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            503: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Framework/proxy failures can be non-JSON; clients must fail closed without rendering raw bodies */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+        };
+    };
+    controlledAcceptUnavailable: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Implemented response */
+            400: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            401: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            403: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            404: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            405: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            409: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            415: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            429: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    /** @description Optional retry hint, never automatic command replay */
+                    "Retry-After"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            503: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Framework/proxy failures can be non-JSON; clients must fail closed without rendering raw bodies */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+        };
+    };
+    controlledListUnavailable: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Implemented response */
+            400: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            401: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            403: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            404: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            405: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            409: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            429: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    /** @description Optional retry hint, never automatic command replay */
+                    "Retry-After"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            503: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Framework/proxy failures can be non-JSON; clients must fail closed without rendering raw bodies */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+        };
+    };
+    controlledCreateUnavailable: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Implemented response */
+            400: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            401: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            403: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            404: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            405: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            409: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            415: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            429: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    /** @description Optional retry hint, never automatic command replay */
+                    "Retry-After"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            503: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Framework/proxy failures can be non-JSON; clients must fail closed without rendering raw bodies */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+        };
+    };
+    controlledReadUnavailable: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Implemented response */
+            400: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            401: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            403: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            404: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            405: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            409: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            429: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    /** @description Optional retry hint, never automatic command replay */
+                    "Retry-After"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            503: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Framework/proxy failures can be non-JSON; clients must fail closed without rendering raw bodies */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+        };
+    };
+    controlledEditUnavailable: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Implemented response */
+            400: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            401: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            403: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            404: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            405: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            409: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            415: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            429: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    /** @description Optional retry hint, never automatic command replay */
+                    "Retry-After"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            503: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Framework/proxy failures can be non-JSON; clients must fail closed without rendering raw bodies */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+        };
+    };
+    controlledApproveUnavailable: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Implemented response */
+            400: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            401: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            403: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            404: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            405: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            409: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            415: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            429: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    /** @description Optional retry hint, never automatic command replay */
+                    "Retry-After"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            503: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Framework/proxy failures can be non-JSON; clients must fail closed without rendering raw bodies */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+        };
+    };
+    controlledInvitationUnavailable: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Implemented response */
+            400: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            401: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            403: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            404: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            405: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            409: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            415: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            429: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    /** @description Optional retry hint, never automatic command replay */
+                    "Retry-After"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            503: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Framework/proxy failures can be non-JSON; clients must fail closed without rendering raw bodies */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+        };
+    };
+    controlledRejectUnavailable: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Implemented response */
+            400: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            401: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            403: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            404: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            405: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            409: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            415: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            429: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    /** @description Optional retry hint, never automatic command replay */
+                    "Retry-After"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            503: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Framework/proxy failures can be non-JSON; clients must fail closed without rendering raw bodies */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+        };
+    };
+    controlledReturnUnavailable: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Implemented response */
+            400: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            401: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            403: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            404: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            405: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            409: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            415: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            429: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    /** @description Optional retry hint, never automatic command replay */
+                    "Retry-After"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            503: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Framework/proxy failures can be non-JSON; clients must fail closed without rendering raw bodies */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+        };
+    };
+    controlledSubmitUnavailable: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Implemented response */
+            400: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            401: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            403: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            404: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            405: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            409: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            415: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            429: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    /** @description Optional retry hint, never automatic command replay */
+                    "Retry-After"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            503: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Framework/proxy failures can be non-JSON; clients must fail closed without rendering raw bodies */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+        };
+    };
+    controlledWithdrawUnavailable: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                pk: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Implemented response */
+            400: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            401: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            403: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            404: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            405: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            409: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            415: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            429: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    /** @description Optional retry hint, never automatic command replay */
+                    "Retry-After"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            503: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Framework/proxy failures can be non-JSON; clients must fail closed without rendering raw bodies */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+        };
+    };
+    controlledRequirements: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Implemented response */
+            200: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ControlledOnboardingRequirements"];
                 };
             };
             /** @description Implemented response */

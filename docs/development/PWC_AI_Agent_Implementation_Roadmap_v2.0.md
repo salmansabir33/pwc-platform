@@ -79,7 +79,7 @@ This document **refines** the PWC Development Execution Plan v1.0, the M1 Engine
 
 ### P3 — NGO trust, onboarding and administration (M1)
 - `PWC-04A`: Organization register/search/dedup/draft/claim state machine and limited provisional workspace; `ORG-01`,`ORG-02`; stop existing tenant takeover.
-- `PWC-04B`: Tiered evidence intake, organization legitimacy **separate** from representative authority; verification queue, audit trail and safe private attachments; `ORG-03`, `PWC-01`.
+- `PWC-04B`: Revised initial rollout (product owner, 27 October 2026; ADR-0004 §7 / PWC-02E §9): offline evidence examination, controlled NGO/nomination recording by a specifically authorized platform operator, independent distinct-officer approval, recipient-bound nonfinance invitation/acceptance preparation and audit. No public NGO self-registration/claims or raw uploads. Organization legitimacy remains **separate** from representative authority; `ORG-03`, `PWC-01`. Exact reviewer-root/command/IAM/privacy/invitation contracts still gate affected implementation; grant activation remains 04C/03B.3. Earlier in-app tiered intake/queue/private-attachment direction is superseded for initial rollout, not erased from historical decisions.
 - `PWC-04C`: Scoped roles, grants, team invitations and revocation; primary-admin transfer/recovery via approved evidence/policy; `ORG-06`, `ORG-25` relevant subset. No implied finance grants.
 - `PWC-04D`: Published-only NGO profile/editor and NGO overview; approved leadership visibility only; `ORG-04`, `ORG-05`, `PUB-04`.
 - **G1b:** disputed claim cannot seize existing workspace; provisional user cannot import/finance; public profile contains no private roster; technical/platform versus alliance permissions remain separate.

@@ -135,3 +135,93 @@ pass. Not complete policy-dependent verification or production readiness.
 Independent policy/IAM/privacy/legal/security/operations gates and REAL01–04
 remain. Stop before 04C/04D, privileged grants, finance or deployment. Human PR
 review and explicit merge decision required; do not auto-merge.
+
+## Revised assignment checkpoint — offline initial rollout, 27 October 2026
+
+The later explicit product-owner instruction supersedes the applicant-driven
+initial-rollout expectation above. Base `06f5c74` includes merged PR12; assigned
+branch `arena/305ca95a-pwc-platform`. This is one comprehensive revised 04B
+assignment, not new user-facing subphases. Historical sections/evidence remain
+for provenance and are not a live rollout authorization.
+
+### Scope and implementation review
+
+ADR-0004 §7, PWC-02E §9, OPEN and the existing roadmap record the revised offline
+policy. Four additive models/migrations 0007/0008 prepare controlled records,
+immutable revisions, purpose-separated external attestations and immutable
+actor/session events. Different reviewer account/provenance constraints and an
+immutable initiator guard prevent structural self-review bypass. Unique revision
+constraints and transaction rollback are tested on actual PostgreSQL.
+
+No live privileged writer, private queue/reader, reviewer provisioning,
+invitation delivery/acceptance or grant activation exists. Missing E04/GM
+contracts make these adapters unconditionally unavailable, not optionally enabled
+by a broad flag. This uses the assignment's explicit disabled-adapter alternative.
+The non-writing preflight is not a permission service or evidence rubric.
+Two account IDs cannot establish independently vetted distinct individuals.
+
+Default server denial now shuts down applicant creation/edit/submission even
+with both old API gates enabled; existing own reads/withdrawal and audit data
+remain. Historical success-wire tests explicitly opt into an isolated test-only
+exercise; default-rollout tests explicitly turn it off. No environment, browser
+or staff/operator bypass is added. OpenAPI preserves historical success DTOs and
+adds explicit rollout-policy metadata; old success fixtures do not claim live
+availability. New schemas describe only actual requirements/unavailable routes.
+
+OPS PWC-01 has a disabled controlled-onboarding interface and synthetic-only
+local preview; no browser networking, document chooser, persistence, real role
+or approval success. Native personal operation allowlists remain unchanged;
+legacy client components show the initial-rollout policy. The existing W1 and
+native-credential boundaries are retained.
+
+### Findings, tests and remaining approvals
+
+Initial focused tests exposed test expectations for GET query/body encoding,
+PostgreSQL deferred FK checking and varchar error classification; corrected
+without loosening production constraints. Focused controlled suite: **17 tests,
+34 observed HTTP combinations passed** on actual PostgreSQL 16.2. The duplicate
+snapshot revision race allows exactly one insert; immutable history/initiator,
+self-review constraints, reference bounds, atomic rollback, auth/hold/transport/
+CSRF and all unavailable operations are covered. This is **not** execution of
+unimplemented approval/issuer-revoke/token/grant races or real authenticity.
+
+Full backend/frontend/browser/mobile/Android and final-head CI results are
+recorded in the consolidated PR evidence thread after execution. Pending,
+cancelled or older-head checks do not constitute exact-head acceptance. No
+physical-device, independent privacy/security/legal/IAM/operations review or
+production acceptance is inferred. All GM01–GM12 gates and applicable E/REAL
+residual gates remain; no new self-approved command matrix, retention schedule,
+reviewer appointment or activation path is introduced.
+
+**Readiness:** revised policy and safe domain/API/UI preparation are reviewable
+only after validation. Actual controlled onboarding remains blocked on the exact
+contracts listed in the revised runbook. Stop before 04C/04D, real grants,
+finance, production deployment or any automatic merge.
+
+### Revised validation checkpoint and internal review
+
+Local full contract-instrumented PostgreSQL 16.2 regression: **450 tests passed**,
+**288 observed route/method/status combinations**, 463.879 seconds. This began
+before the final non-writing draft/returned edit-preflight assertion and preview
+bound correction; final exact-head CI must revalidate those changes. Local
+focused suite was re-run afterward: **17 tests passed / 34 wire combinations**.
+Local web check passed **125 unit tests**, typecheck, Prettier and both production
+bundles. Django system checks, additive migrations/application/drift, canonical
+contract/source/inventory/frozen compatibility, hash locks (12 runtime / 33 CI
+pins), pip consistency, six tooling tests, Ruff, tracked-file security scan (0
+findings) and npm advisory audit (0 vulnerabilities) passed.
+
+The HTML Unicode-sets pattern initially failed to enforce the intended opaque
+handle bounds because a hyphen needed escaping; fixed and covered by invalid
+URL/numeric-only-string tests. This is a syntax bound, not document-number or
+PII detection. Local preview history now bounds inside the state updater as
+well as the button guard. Independent approve/reject/return adapters remain
+unavailable even if the generic availability hook is accidentally made true
+or the historical test-exercise setting is injected.
+
+Agent internal review found no known unresolved Critical/High issue in this
+bounded revised slice. It is not an independent security/database/privacy/legal
+or reviewer-IAM review. Final exact-head GitHub evidence, immutable head SHA,
+check URLs/counts and the human-review verdict are recorded in the consolidated
+PR #13 thread. Merging policy/preparation never activates real onboarding,
+reviewer appointments, invitations, NGO grants or production services.

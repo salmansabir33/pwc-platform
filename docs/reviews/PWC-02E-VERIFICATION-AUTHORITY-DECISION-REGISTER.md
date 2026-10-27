@@ -198,3 +198,24 @@ No new roadmap subphase or implementation assignment is created. The owner appro
 Reviewed all 18 E and 12 GM source entries in full against ADR-0002/0004, the OPEN index and the recorded owner instruction. Preserved NGO software/alliance independence, no Board/staff inheritance, administration/finance/signatory separation, independent representative evidence, least privilege/current source checks, audited grants and fail-closed revocation/dispute/recovery. No circular first-admin prerequisite or synthetic-to-real provenance path is introduced. The existing workflow specification remains a gated technical blueprint; historical approval claims in other task runbooks describe their original checkpoints, not a new authorization.
 
 Documentation validation checks exactly 30 unique disposition rows (14 P/16 C), original decision-row and alternative/provenance preservation, referenced IDs/local links, explicit residual gates, scoped ADR status and five-file-only diff. Runtime code/configuration, migration history, contracts, workflows and activation flags must remain byte-identical to the inspected main. These checks are documentation consistency evidence, **not execution or approval of future authority/negative/concurrency tests**. Backend/web CI, if triggered, is regression evidence for unchanged foundations; mobile/device/deployment tests are not claimed rerun. Final validation/commit/PR results are reported in the handoff. No automatic merge or privileged implementation follows.
+
+## 9. Revised offline initial-rollout disposition — 27 October 2026
+
+Product-owner source: explicit “PWC-04B — Revised Offline NGO Verification &
+Controlled Onboarding” instruction, 27 October 2026. See ADR-0004 §7 for the
+operative scope and separation of stages. Original E01–E18 and the §8 thirty-row
+matrix remain historical source text; no original approval or residual gate is
+deleted, silently relabeled, or declared independently accepted.
+
+| Affected area | Revised initial-rollout product direction | Preserved gates |
+| --- | --- | --- |
+| E01/E02; 04A applicant intake | External examination; controlled operator NGO entry. No public NGO self-registration/existing-NGO claims or applicant in-app evidence workflow. | Exact namespaces/rubric/privacy contracts; preserve history and deny intake server-side. No automatic merge/takeover. |
+| E03/E04 | Specifically authorized PWC Super Admin initiates; distinct independently authorized officer approves that exact revision. Official nomination remains required. | Legitimate operator/reviewer provisioning root, independent appointment, distinct-human/conflict verification, issuer/operation/target matrix, expiry/revoke/recovery. No staff/Board bootstrap. |
+| E06/E07 | No raw document uploads in initial rollout; record minimized references to externally examined evidence. | External custody/legal arrangements and reference taxonomy/privacy/retention/security remain unapproved. Opaque references are not permission to store document numbers, scans, URLs or case narratives. |
+| E09/E10/E11/E14; GM01–12 | Record approval, secure nominee invitation/identity activation/precise nonfinance acceptance, and later grant activation are separate. | Exact command assurance, immutable source/writer, locks/proof/idempotency, private readers/notice and recipient-bound invitation contracts. No real writer/invitation/grant enabled by this product decision. |
+| E08/E15/E16 and remaining E/REAL | NGO software independent of alliance membership; no implied NGO-private access from platform roles. | Publication consent, finance/signatory/governance/collaboration/support and real activation/deployment remain separately gated. No whole mixed-owner decision closed. |
+
+The initial-rollout product change is adopted, not merely proposed. Missing
+cross-owner contracts remain blockers to affected implementation, not just
+production toggles. Do not infer operator appointments or human approvals from
+this register. No additional user-facing subphase is created.
