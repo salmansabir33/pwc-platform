@@ -353,3 +353,198 @@ class VerificationReceipt(models.Model):
                 fields=["claimant", "key"], name="verification_retry_key"
             )
         ]
+
+
+class ControlledOnboardingRecord(models.Model):
+    """Structural preparation only. No HTTP writer/provisioning/authority activation."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    organization = models.ForeignKey(Organization, null=True, on_delete=models.PROTECT)
+    initiator = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name="initiated_onboarding_records",
+    )
+    reviewer = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="reviewed_onboarding_records",
+    )
+    state = models.CharField(
+        max_length=16,
+        default="draft",
+        choices=[
+            (v, v)
+            for v in (
+                "draft",
+                "submitted",
+                "returned",
+                "approved",
+                "rejected",
+                "withdrawn",
+            )
+        ],
+    )
+    revision = models.PositiveBigIntegerField(default=1)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(
+                    state__in=[
+                        "draft",
+                        "submitted",
+                        "returned",
+                        "approved",
+                        "rejected",
+                        "withdrawn",
+                    ]
+                ),
+                name="controlled_state_valid",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(revision__gte=1), name="controlled_revision_positive"
+            ),
+            models.CheckConstraint(
+                condition=models.Q(reviewer__isnull=True)
+                | ~models.Q(reviewer=models.F("initiator")),
+                name="controlled_no_self_review",
+            ),
+            models.CheckConstraint(
+                condition=(
+                    models.Q(
+                        state__in=["returned", "approved", "rejected"],
+                        reviewer__isnull=False,
+                    )
+                    | models.Q(
+                        state__in=["draft", "submitted", "withdrawn"],
+                        reviewer__isnull=True,
+                    )
+                ),
+                name="controlled_review_provenance",
+            ),
+        ]
+
+
+class ControlledOnboardingRevision(models.Model):
+    """Immutable minimized snapshot, not an authoritative evidence finding."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    record = models.ForeignKey(ControlledOnboardingRecord, on_delete=models.PROTECT)
+    revision = models.PositiveBigIntegerField()
+    organization_name = models.CharField(max_length=250)
+    city = models.CharField(max_length=100)
+    classification = models.CharField(
+        max_length=16, choices=Organization.Classification.choices
+    )
+    nominee = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, on_delete=models.PROTECT
+    )
+    # Opaque external custody handles, NOT document/person numbers, URLs or notes.
+    nomination_reference = models.CharField(max_length=64)
+    nominee_reference = models.CharField(max_length=64)
+    recorded_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name="onboarding_snapshots",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["record", "revision"], name="controlled_snapshot_revision"
+            ),
+            models.CheckConstraint(
+                condition=models.Q(revision__gte=1), name="controlled_snapshot_positive"
+            ),
+            models.CheckConstraint(
+                condition=models.Q(classification__in=["registered", "unregistered"]),
+                name="controlled_classification_valid",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    nomination_reference__regex=r"^[A-Z][A-Z0-9_-]{0,63}$",
+                    nominee_reference__regex=r"^[A-Z][A-Z0-9_-]{0,63}$",
+                ),
+                name="controlled_nomination_handles",
+            ),
+        ]
+
+
+class OfflineVerificationAttestation(models.Model):
+    """External examination recorded separately for eligibility and mandate."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    snapshot = models.ForeignKey(ControlledOnboardingRevision, on_delete=models.PROTECT)
+    purpose = models.CharField(max_length=32, choices=VerificationCase.Purpose.choices)
+    evidence_reference = models.CharField(max_length=64)
+    method_reference = models.CharField(max_length=64)
+    examined_at = models.DateTimeField()
+    attestor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["snapshot", "purpose"], name="offline_attestation_lane"
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    purpose__in=["organization_eligibility", "representative_mandate"]
+                ),
+                name="offline_attestation_purpose",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    evidence_reference__regex=r"^[A-Z][A-Z0-9_-]{0,63}$",
+                    method_reference__regex=r"^[A-Z][A-Z0-9_-]{0,63}$",
+                ),
+                name="offline_attestation_handles",
+            ),
+        ]
+
+
+class ControlledOnboardingEvent(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    snapshot = models.ForeignKey(ControlledOnboardingRevision, on_delete=models.PROTECT)
+    actor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    session = models.ForeignKey("accounts.AuthSession", on_delete=models.PROTECT)
+    action = models.CharField(
+        max_length=24,
+        choices=[
+            (v, v)
+            for v in (
+                "recorded",
+                "submitted",
+                "returned",
+                "approved",
+                "rejected",
+                "withdrawn",
+            )
+        ],
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["snapshot", "action"], name="controlled_event_once"
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    action__in=[
+                        "recorded",
+                        "submitted",
+                        "returned",
+                        "approved",
+                        "rejected",
+                        "withdrawn",
+                    ]
+                ),
+                name="controlled_event_action",
+            ),
+        ]

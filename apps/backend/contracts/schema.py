@@ -254,10 +254,14 @@ def build():
     from organizations.verification_contract import paths as verification_paths, definitions as verification_definitions
     paths.update(verification_paths())
     definitions.update(verification_definitions())
+    from organizations.controlled_contract import paths as controlled_paths, definitions as controlled_definitions
+    paths.update(controlled_paths())
+    definitions.update(controlled_definitions())
     paths.update(registry_paths())
     definitions.update(registry_definitions())
     return {"openapi": "3.1.0", "info": {"title": "PWC implemented API contracts", "version": VERSION,
         "description": "Versioned offline contract of existing Django APIs. No planned routes included. /api/v1 is the API major; info.version is the contract release. No runtime version-header negotiation exists."},
+        "x-pwc-onboarding-policy": {"version": "offline_initial_2026_10_27", "self_service": "unavailable; historical 04A/04B success DTOs retained for history and explicit isolated test-only exercise", "live_operator_commands": "unavailable pending exact E04/GM contracts", "historical_reads_withdrawal": "owner scoped, no authority"},
         "servers": [{"url": "/"}], "paths": paths,
         "components": {"securitySchemes": {
             "csrfHeader": {"type": "apiKey", "in": "header", "name": "X-CSRFToken", "description": "Masked CSRF token from bootstrap. Browser unsafe requests only; never a substitute for session or permission."},
