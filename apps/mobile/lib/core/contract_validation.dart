@@ -64,10 +64,14 @@ void validateContract(
   if (schema.containsKey('const') && data != schema['const']) {
     throw const ContractFailure();
   }
-  if (data is num && schema['maximum'] is num && data > (schema['maximum'] as num)) {
+  if (data is num &&
+      schema['maximum'] is num &&
+      data > (schema['maximum'] as num)) {
     throw const ContractFailure();
   }
-  if (data is List && (data.length > (schema['maxItems'] as int? ?? 65536) || data.length < (schema['minItems'] as int? ?? 0))) {
+  if (data is List &&
+      (data.length > (schema['maxItems'] as int? ?? 65536) ||
+          data.length < (schema['minItems'] as int? ?? 0))) {
     throw const ContractFailure();
   }
   if (schema['enum'] is List && !(schema['enum'] as List).contains(data)) {

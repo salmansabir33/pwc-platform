@@ -65,9 +65,10 @@ ORG-03 React provides typed synthetic DI initiation from an existing source,
 own cases, requirements/history, marker changes and preparation submission/
 withdrawal. PWC-01 review is explicitly unavailable, with no private queue.
 Flutter provides separate typed DTOs/manifest, own-status/submission/withdrawal
-components and unavailable file/review states; no live gateway is wired.
-Flutter initiation/marker editing/history interaction is **not implemented**;
-those approved-preparation UI extensions remain follow-up work, not live parity.
+components, source-bound initiation, requirements/history and non-file marker
+changes, with unavailable file/review states; no live gateway is wired.
+History/preparation displays are bounded first pages in both clients, not full
+audit exports; web case lists additionally support cursor continuation.
 Private component state is invalidated on scope/gateway/language changes and
 late responses discarded. W1 network blockade and native-backed credential
 handling are unchanged. Components do not authorize backend operations.
