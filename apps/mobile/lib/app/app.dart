@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'providers.dart';
+import '../design/theme.dart';
 import 'strings.dart';
 import '../features/identity.dart';
 import '../features/personal.dart';
@@ -117,11 +118,7 @@ class _PwcAppState extends ConsumerState<PwcApp> with WidgetsBindingObserver {
       locale: Locale(ur ? 'ur' : 'en'),
       supportedLocales: const [Locale('en'), Locale('ur')],
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xff175c47)),
-        inputDecorationTheme: const InputDecorationTheme(filled: true),
-      ),
+      theme: pwcTheme(urdu: ur),
       routerConfig: _router,
       builder: (context, child) => _hidden
           ? Scaffold(

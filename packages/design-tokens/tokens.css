@@ -1,3 +1,12 @@
+@import "./generated.css";
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("/fonts/InterVariable.ttf") format("truetype");
+}
 /* Unmodified Arabic-subset font; copyright and OFL accompany both builds. */
 @font-face {
   font-family: "Noto Sans Arabic Variable";
@@ -10,6 +19,9 @@
 }
 
 :root {
+  font-size: 100%;
+  --color-accent-hover: var(--ds-ngo-hover);
+  --color-accent-pressed: var(--ds-ngo-pressed);
   font-family:
     Inter,
     ui-sans-serif,
@@ -18,17 +30,17 @@
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
-  color: #192f37;
-  background: #f5f7f7;
+  color: var(--ds-text-primary);
+  background: var(--ds-canvas);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
-  --color-ink: #192f37;
-  --color-muted: #52636b;
-  --color-line: #d8e1e2;
-  --color-surface: #ffffff;
-  --color-accent: #146451;
-  --color-accent-soft: #eaf5ef;
-  --color-focus: #ad480a;
+  --color-ink: var(--ds-text-primary);
+  --color-muted: var(--ds-text-secondary);
+  --color-line: var(--ds-border);
+  --color-surface: var(--ds-surface);
+  --color-accent: var(--ds-ngo-primary);
+  --color-accent-soft: var(--ds-success-background);
+  --color-focus: var(--ds-focus);
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -41,14 +53,24 @@
   --radius-lg: 1rem;
 }
 [dir="rtl"] {
-  font-family:
-    "Noto Sans Arabic", "Noto Nastaliq Urdu", Tahoma, system-ui, sans-serif;
+  font-family: "Noto Sans Arabic Variable", Tahoma, system-ui, sans-serif;
 }
 .portal-ops {
-  --color-accent: #354e7a;
-  --color-accent-soft: #eef1f8;
+  --color-accent-hover: var(--ds-ops-hover);
+  --color-accent-pressed: var(--ds-ops-pressed);
+  --color-accent: var(--ds-ops-primary);
+  --color-accent-soft: var(--ds-info-background);
 }
 
 :lang(ur) {
   font-family: "Noto Sans Arabic Variable", Tahoma, system-ui, sans-serif;
+}
+
+:root {
+  --color-success: var(--ds-success);
+  --color-warning: var(--ds-warning);
+  --color-danger: var(--ds-danger);
+  --color-info: var(--ds-info);
+  --elevation-card: 0 1px 2px rgb(25 47 55 / 6%);
+  --elevation-dialog: 0 16px 48px rgb(25 47 55 / 20%);
 }

@@ -7,23 +7,58 @@ import type {
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { useLocale } from "@pwc/web-i18n";
 
+export {
+  PageHeader,
+  Badge,
+  Banner,
+  Card,
+  SelectField,
+  TextArea,
+  Choice,
+  DataTable,
+  Pagination,
+  Skeleton,
+  ConfirmDialog,
+} from "./components";
+
 export function Button({
   type = "button",
+  variant = "primary",
+  busy = false,
+  disabled,
+  className = "",
+  children,
   ...props
-}: ButtonHTMLAttributes<HTMLButtonElement>) {
-  return <button type={type} className="button" {...props} />;
+}: ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: "primary" | "secondary" | "tertiary" | "destructive";
+  busy?: boolean;
+}) {
+  return (
+    <button
+      {...props}
+      type={type}
+      disabled={disabled || busy}
+      aria-busy={busy || undefined}
+      className={`button button-${variant} ${className}`}
+    >
+      {busy && <span aria-hidden="true">… </span>}
+      {children}
+    </button>
+  );
 }
 export function TextField({
   label,
   hint,
   error,
+  id: providedId,
   ...props
 }: InputHTMLAttributes<HTMLInputElement> & {
   label: string;
   hint: string;
   error?: string;
 }) {
-  const id = useId();
+  const generatedId = useId();
+  const id = providedId ?? generatedId;
   return (
     <div className="field">
       <label htmlFor={id}>{label}</label>
@@ -57,7 +92,7 @@ export function StatePanel({
 }: {
   title: string;
   children: ReactNode;
-  kind: "loading" | "empty" | "error";
+  kind: "loading" | "empty" | "error" | "restricted" | "unavailable";
 }) {
   return (
     <section className={`state-panel state-${kind}`}>
@@ -171,6 +206,16 @@ export function PortalShell({
             <span aria-hidden="true" />
             {t("environment")}
           </span>
+          <div className="workspace-context">
+            <span id="workspace-context-label">{t("contextTitle")}</span>
+            <Button
+              id="workspace-context"
+              disabled
+              aria-describedby="workspace-context-label"
+            >
+              {t("disconnected")}
+            </Button>
+          </div>
           <div className="language">
             <label htmlFor="display-language">{t("language")}</label>
             <select
@@ -188,6 +233,14 @@ export function PortalShell({
           </div>
         </header>
         <main id="main" tabIndex={-1}>
+          <nav
+            className="breadcrumbs"
+            aria-label={direction === "rtl" ? "مقام" : "Breadcrumb"}
+          >
+            <Link to="/">{title}</Link>
+            <span aria-hidden="true"> / </span>
+            <span>{t("foundation")}</span>
+          </nav>
           {children}
         </main>
         <footer>

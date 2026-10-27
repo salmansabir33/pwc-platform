@@ -26,9 +26,10 @@
     "test:browser": "playwright test",
     "format": "prettier --write package.json package-lock.json tsconfig.json \"*.config.ts\" .github/workflows/frontend.yml \"apps/{ngo-web,pwc-ops}/**/*.{ts,tsx,html,json,md}\" \"packages/{web-api,web-ui,web-i18n,design-tokens}/**/*.{ts,tsx,css,json,md}\" \"tests/web/**/*.{ts,tsx}\" docs/runbooks/PWC-W1-WEB-FOUNDATION.md",
     "format:check": "prettier --check package.json package-lock.json tsconfig.json \"*.config.ts\" .github/workflows/frontend.yml \"apps/{ngo-web,pwc-ops}/**/*.{ts,tsx,html,json,md}\" \"packages/{web-api,web-ui,web-i18n,design-tokens}/**/*.{ts,tsx,css,json,md}\" \"tests/web/**/*.{ts,tsx}\" docs/runbooks/PWC-W1-WEB-FOUNDATION.md",
-    "check": "npm run typecheck && npm run format:check && npm test && npm run build",
+    "check": "npm run tokens:check && npm run typecheck && npm run format:check && npm test && npm run build",
     "contracts:types": "openapi-typescript packages/api-contracts/openapi-v1.json -o packages/api-contracts/generated/schema.ts",
-    "contracts:types:check": "node scripts/check-contract-types.mjs"
+    "contracts:types:check": "node scripts/check-contract-types.mjs",
+    "tokens:check": "python3 scripts/design_tokens.py --check"
   },
   "devDependencies": {
     "@playwright/test": "1.64.1",

@@ -24,7 +24,9 @@ describe.each(["ngo", "ops"] as const)("%s independent route tree", (app) => {
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
       app === "ngo" ? "independent impact" : "responsible operations",
     );
-    const nav = screen.getByRole("navigation");
+    const nav = screen.getByRole("navigation", {
+      name: "Foundation navigation",
+    });
     expect(within(nav).getAllByRole("link")).toHaveLength(3);
     expect(
       screen.queryByRole("button", { name: /sign in|verify|approve|finance/i }),
@@ -61,7 +63,9 @@ describe.each(["ngo", "ops"] as const)("%s independent route tree", (app) => {
     portal(app);
     const user = userEvent.setup();
     await user.click(
-      within(screen.getByRole("navigation")).getByRole("link", {
+      within(
+        screen.getByRole("navigation", { name: "Foundation navigation" }),
+      ).getByRole("link", {
         name: "Language & accessibility",
       }),
     );
@@ -71,7 +75,9 @@ describe.each(["ngo", "ops"] as const)("%s independent route tree", (app) => {
     expect(screen.getByRole("heading", { level: 1 })).toHaveFocus();
     expect(document.title).toContain("Language & accessibility");
     await user.click(
-      within(screen.getByRole("navigation")).getByRole("link", {
+      within(
+        screen.getByRole("navigation", { name: "Foundation navigation" }),
+      ).getByRole("link", {
         name: "Interface states",
       }),
     );

@@ -65,3 +65,7 @@ Never commit `.env`, private keys, tokens, database dumps, user uploads, credent
 Work in the assigned task branch from main; do not develop on or merge into main automatically. In Arena this session is fixed to `arena/9192ec62-pwc-platform`: do not switch/create/rename branches and push only that branch. Preserve pre-existing user changes. Use focused commits such as `chore(PWC-01): validate backend foundation and document agent workflow`; never commit generated environments/databases or bypass failing checks without disclosure.
 
 Finish each task with changed files, exact commands/results, resolved and unresolved issues, security observations, branch/commit and next-task readiness. Approval blockers must be explicit; passing scaffold tests is not production or M1 sign-off.
+
+## Approved cross-platform visual standard
+
+All future frontend subphases must adopt [PWC Design System v1.0](docs/design/PWC_DESIGN_SYSTEM_v1.0.md) and consult its implementation review. Reuse shared React primitives and Flutter themes; use semantic tokens rather than feature-local brand values. Run token parity, relevant accessibility/RTL/responsive tests and applicable platform checks; report actual screen readiness, exceptions and manual acceptance. UI polish never activates networking, grants, onboarding, verification or finance. Changes to approved visual foundations need versioned product review.

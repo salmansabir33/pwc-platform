@@ -73,16 +73,20 @@ for (const [app, port] of [
     await page.goto(url);
     const menu = page.getByRole("button", { name: "Toggle navigation" });
     await expect(menu).toHaveAttribute("aria-expanded", "false");
-    await expect(page.getByRole("navigation")).toBeHidden();
+    await expect(
+      page.getByRole("navigation", { name: "Foundation navigation" }),
+    ).toBeHidden();
     await menu.click();
     await expect(
       page.getByRole("button", { name: "Close navigation" }),
     ).toHaveAttribute("aria-expanded", "true");
     await page
-      .getByRole("navigation")
+      .getByRole("navigation", { name: "Foundation navigation" })
       .getByRole("link", { name: "Language & accessibility" })
       .click();
-    await expect(page.getByRole("navigation")).toBeHidden();
+    await expect(
+      page.getByRole("navigation", { name: "Foundation navigation" }),
+    ).toBeHidden();
     for (const locale of ["en", "ur"]) {
       await page.getByRole("combobox").selectOption(locale);
       expect(
@@ -104,7 +108,7 @@ for (const [app, port] of [
     await page.keyboard.press("Enter");
     await expect(page.getByRole("main")).toBeFocused();
     await page
-      .getByRole("navigation")
+      .getByRole("navigation", { name: "Foundation navigation" })
       .getByRole("link", { name: "Language & accessibility" })
       .click();
     await expect(page.getByRole("heading", { level: 1 })).toBeFocused();
