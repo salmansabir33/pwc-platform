@@ -24,7 +24,9 @@
     "ngoHover": "#105341",
     "ngoPressed": "#0C4234",
     "opsHover": "#2B4065",
-    "opsPressed": "#22334F"
+    "opsPressed": "#22334F",
+    "dangerHover": "#961E14",
+    "dangerPressed": "#78180F"
   },
   "spacing": [4, 8, 12, 16, 24, 32, 48],
   "radii": [6, 12, 16],
@@ -37,5 +39,8 @@
   "borderWidth": 1,
   "focusWidth": 3,
   "focusOffset": 4,
-  "fonts": { "english": "Inter", "urdu": "Noto Sans Arabic Variable" }
+  "fonts": {
+    "english": "Inter",
+    "urdu": "Noto Sans Arabic Variable"
+  }
 }

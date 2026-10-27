@@ -129,14 +129,18 @@ export function Registry({
         )}
       </p>
       {!gateway && (
-        <p role="status">
+        <p role="status" className="ds-banner tone-restricted">
           {t(
             "Unavailable: browser networking and live authentication remain blocked. Components are contract-tested, not connected.",
             "غیر دستیاب: براؤزر نیٹ ورک اور براہ راست شناخت بند ہیں۔",
           )}
         </p>
       )}
-      {message && <p role="alert">{message}</p>}
+      {message && (
+        <p role="alert" className="ds-banner tone-danger">
+          {message}
+        </p>
+      )}
       <form
         onSubmit={(event) => {
           event.preventDefault();

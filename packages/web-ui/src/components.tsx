@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import type {
   ReactNode,
   HTMLAttributes,
@@ -281,10 +281,45 @@ export function ConfirmDialog({
       if (open && opener?.isConnected) opener.focus();
     };
   }, [open]);
+  useEffect(() => {
+    if (open && busy) ref.current?.focus();
+  }, [open, busy]);
   return (
     <dialog
       ref={ref}
       aria-labelledby={id}
+      tabIndex={-1}
+      onKeyDown={(e) => {
+        if (e.key !== "Tab") return;
+        const nodes = Array.from(
+          e.currentTarget.querySelectorAll<HTMLElement>(
+            'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+          ),
+        ).filter((el) => el.getClientRects().length > 0);
+        const first = nodes[0];
+        const last = nodes[nodes.length - 1];
+        if (!first || !last) {
+          e.preventDefault();
+          e.currentTarget.focus();
+          return;
+        }
+        if (
+          e.shiftKey &&
+          (document.activeElement === first ||
+            document.activeElement === e.currentTarget)
+        ) {
+          e.preventDefault();
+          last.focus();
+        }
+        if (
+          !e.shiftKey &&
+          (document.activeElement === last ||
+            document.activeElement === e.currentTarget)
+        ) {
+          e.preventDefault();
+          first.focus();
+        }
+      }}
       onCancel={(e) => {
         e.preventDefault();
         if (!busy) closeHandler.current();
@@ -301,5 +336,151 @@ export function ConfirmDialog({
         </Button>
       </div>
     </dialog>
+  );
+}
+
+/** Rendered only on the existing, explicitly UI-only foundation specimen route. */
+export function DesignSystemSpecimen({ urdu = false }: { urdu?: boolean }) {
+  const [open, setOpen] = useState(false);
+  const [result, setResult] = useState(false);
+  const t = (en: string, ur: string) => (urdu ? ur : en);
+  useEffect(() => {
+    setOpen(false);
+    setResult(false);
+  }, [urdu]);
+  return (
+    <section
+      className="stack"
+      aria-label={t("Design system examples", "ڈیزائن کی مثالیں")}
+      key={String(urdu)}
+    >
+      <Card
+        title={t(
+          "Design system v1.0 · UI examples only",
+          "ڈیزائن سسٹم · صرف انٹرفیس کی مثالیں",
+        )}
+      >
+        <p>
+          {t(
+            "These controls do not create records, send requests or grant authority.",
+            "یہ مثالیں ریکارڈ، درخواست یا اختیار نہیں بناتیں۔",
+          )}
+        </p>
+        <div className="action-row">
+          <Button onClick={() => setOpen(true)}>
+            {t("Preview confirmation", "تصدیق کی مثال")}
+          </Button>
+          <Button variant="secondary">
+            {t("Secondary example", "ثانوی مثال")}
+          </Button>
+          <Button variant="tertiary">
+            {t("Tertiary example", "تیسری مثال")}
+          </Button>
+          <Button variant="destructive" disabled>
+            {t("Destructive unavailable", "حذف دستیاب نہیں")}
+          </Button>
+          <Button busy>{t("Loading example", "انتظار کی مثال")}</Button>
+        </div>
+        <p aria-live="polite">
+          {result
+            ? t(
+                "Local confirmation dismissed; no command ran.",
+                "مقامی مثال بند ہوئی؛ کوئی کارروائی نہیں ہوئی۔",
+              )
+            : ""}
+        </p>
+        <ConfirmDialog
+          open={open}
+          title={t("UI-only confirmation", "صرف انٹرفیس کی تصدیق")}
+          confirmLabel={t("Confirm example", "مثال کی تصدیق")}
+          cancelLabel={t("Cancel", "منسوخ")}
+          onClose={() => setOpen(false)}
+          onConfirm={() => {
+            setOpen(false);
+            setResult(true);
+          }}
+        >
+          <p>
+            {t(
+              "This is a presentation example, not a business action.",
+              "یہ صرف انٹرفیس کی مثال ہے، کاروباری کارروائی نہیں۔",
+            )}
+          </p>
+        </ConfirmDialog>
+      </Card>
+      <Card title={t("Labeled controls", "نام والے خانے")}>
+        <TextArea
+          label={t("Example notes", "مثالی نوٹس")}
+          hint={t(
+            "Synthetic text only; no private evidence.",
+            "صرف فرضی متن؛ کوئی نجی ثبوت نہیں۔",
+          )}
+          rows={3}
+        />
+        <SelectField
+          label={t("Example selection", "مثالی انتخاب")}
+          defaultValue="one"
+        >
+          <option value="one">{t("First example", "پہلی مثال")}</option>
+          <option value="two">{t("Second example", "دوسری مثال")}</option>
+        </SelectField>
+        <fieldset>
+          <legend>{t("Example choices", "مثالی انتخاب")}</legend>
+          <Choice label={t("Optional example", "اختیاری مثال")} />
+          <Choice
+            type="radio"
+            name="specimen-choice"
+            label={t("Option one", "پہلا اختیار")}
+            value="one"
+          />
+          <Choice
+            type="radio"
+            name="specimen-choice"
+            label={t("Option two", "دوسرا اختیار")}
+            value="two"
+          />
+        </fieldset>
+      </Card>
+      <Banner tone="restricted" title={t("Restricted example", "محدود مثال")}>
+        {t(
+          "A status label never grants permission.",
+          "حالت کا نام اختیار نہیں دیتا۔",
+        )}
+      </Banner>
+      <div className="action-row">
+        {(["success", "warning", "danger", "info", "restricted"] as const).map(
+          (tone, i) => (
+            <Badge key={tone} tone={tone}>
+              {urdu
+                ? ["کامیابی", "انتباہ", "خرابی", "معلومات", "محدود"][i]
+                : tone}
+            </Badge>
+          ),
+        )}
+      </div>
+      <DataTable
+        caption={t(
+          "Technical token examples (not organizational records)",
+          "تکنیکی ٹوکن کی مثالیں، تنظیمی ریکارڈ نہیں",
+        )}
+        headers={[t("Token", "ٹوکن"), t("Value", "قیمت")]}
+        rows={[
+          [
+            <bdi key="id" dir="ltr">
+              text.primary
+            </bdi>,
+            <bdi key="hex" dir="ltr">
+              #192F37
+            </bdi>,
+          ],
+        ]}
+        empty={t("No examples", "کوئی مثال نہیں")}
+      />
+      <Pagination
+        label={t("Example pages", "مثالی صفحات")}
+        previousLabel={t("Previous", "پچھلا")}
+        nextLabel={t("Next", "اگلا")}
+      />
+    </section>
   );
 }

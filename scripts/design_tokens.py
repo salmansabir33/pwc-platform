@@ -1,5 +1,6 @@
 """Small deterministic adapters; manifest meanings shared, never React widgets."""
 import json
+import hashlib
 from pathlib import Path
 import re
 import sys
@@ -28,3 +29,14 @@ for p,text in outputs.items():
   if normalized(file.read_text())!=normalized(text):raise SystemExit('Design token drift: '+p)
  else:file.write_text(text)
 print('Design token adapters checked' if '--check' in sys.argv else 'Design token adapters generated')
+
+# Immutable font provenance is independent from adapter generation.
+provenance=json.loads((root/'packages/design-tokens/font-provenance.json').read_text())
+for name,evidence in provenance.items():
+ paths=[root/'apps/mobile/assets/fonts'/name]
+ if name.startswith('Inter'): paths.append(root/'packages/design-tokens/public/fonts'/name)
+ for path in paths:
+  content=path.read_bytes()
+  if len(content)!=evidence['bytes'] or hashlib.sha256(content).hexdigest()!=evidence['sha256']:
+   raise SystemExit('Font provenance drift: '+str(path))
+print('6 self-hosted font/license copies verified against immutable provenance')

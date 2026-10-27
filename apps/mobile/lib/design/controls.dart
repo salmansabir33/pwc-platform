@@ -26,10 +26,7 @@ class SecretField extends StatelessWidget {
       enableIMEPersonalizedLearning: false,
       autofillHints: null,
       textInputAction: TextInputAction.next,
-      decoration: InputDecoration(
-        labelText: translated(label, ur),
-        border: const OutlineInputBorder(),
-      ),
+      decoration: InputDecoration(labelText: translated(label, ur)),
       validator: (value) =>
           value == null || value.isEmpty ? translated('Required', ur) : null,
     ),

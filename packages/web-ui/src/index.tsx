@@ -6,6 +6,7 @@ import type {
 } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { useLocale } from "@pwc/web-i18n";
+import { DesignSystemSpecimen } from "./components";
 
 export {
   PageHeader,
@@ -417,6 +418,7 @@ export function AccessibilitySpecimen() {
           <p className="hint">{t("focusNote")}</p>
         </Panel>
       </div>
+      <DesignSystemSpecimen urdu={locale === "ur"} />
     </Stack>
   );
 }

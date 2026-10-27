@@ -68,6 +68,8 @@ describe("Design system v1.0 contracts", () => {
       "opsHover",
       "opsPressed",
       "danger",
+      "dangerHover",
+      "dangerPressed",
     ] as const)
       expect(contrast(c.surface, c[state])).toBeGreaterThanOrEqual(4.5);
     expect(

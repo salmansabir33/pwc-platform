@@ -88,18 +88,27 @@ describe.each(["ngo", "ops"] as const)("%s independent route tree", (app) => {
   it("switches English/Urdu direction and clears local specimen drafts on language changes", async () => {
     portal(app, "/foundation/accessibility");
     const user = userEvent.setup();
-    await user.type(screen.getByRole("textbox"), "synthetic text");
-    await user.selectOptions(screen.getByRole("combobox"), "ur");
+    await user.type(
+      screen.getByRole("textbox", { name: "Example display label" }),
+      "synthetic text",
+    );
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: /Display language|نمائش کی زبان/ }),
+      "ur",
+    );
     expect(document.documentElement).toHaveAttribute("lang", "ur");
     expect(document.documentElement).toHaveAttribute("dir", "rtl");
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
       "زبان اور رسائی",
     );
-    expect(screen.getByRole("textbox")).toHaveValue("");
+    expect(screen.getByRole("textbox", { name: "مثالی نام" })).toHaveValue("");
     expect(screen.getByText("PWC-W1 / example@pwc.invalid").tagName).toBe(
       "BDI",
     );
-    await user.selectOptions(screen.getByRole("combobox"), "en");
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: /Display language|نمائش کی زبان/ }),
+      "en",
+    );
     expect(document.documentElement).toHaveAttribute("dir", "ltr");
   });
   it("provides label/hint/error and local-only feedback for the specimen", async () => {

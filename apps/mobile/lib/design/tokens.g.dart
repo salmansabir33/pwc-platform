@@ -27,6 +27,8 @@ abstract final class PwcTokens {
   static const ngoPressed = Color(0xff0c4234);
   static const opsHover = Color(0xff2b4065);
   static const opsPressed = Color(0xff22334f);
+  static const dangerHover = Color(0xff961e14);
+  static const dangerPressed = Color(0xff78180f);
   static const spacing = <double>[4.0, 8.0, 12.0, 16.0, 24.0, 32.0, 48.0];
   static const radii = <double>[6.0, 12.0, 16.0];
   static const typeSizes = <double>[12.0, 14.0, 16.0, 20.0, 24.0, 30.0, 36.0];

@@ -94,12 +94,15 @@ ThemeData pwcTheme({bool operations = false, bool urdu = false}) {
           : PwcTokens.surface,
     ),
     backgroundColor: WidgetStateProperty.resolveWith((states) {
-      if (states.contains(WidgetState.disabled))
+      if (states.contains(WidgetState.disabled)) {
         return PwcTokens.disabledBackground;
-      if (states.contains(WidgetState.pressed))
+      }
+      if (states.contains(WidgetState.pressed)) {
         return operations ? PwcTokens.opsPressed : PwcTokens.ngoPressed;
-      if (states.contains(WidgetState.hovered))
+      }
+      if (states.contains(WidgetState.hovered)) {
         return operations ? PwcTokens.opsHover : PwcTokens.ngoHover;
+      }
       return primary;
     }),
     side: WidgetStateProperty.resolveWith(
@@ -109,6 +112,7 @@ ThemeData pwcTheme({bool operations = false, bool urdu = false}) {
     ),
   );
   return ThemeData(
+    extensions: const [PwcStatusTheme()],
     useMaterial3: true,
     brightness: Brightness.light,
     colorScheme: scheme,
@@ -190,4 +194,41 @@ ThemeData pwcTheme({bool operations = false, bool urdu = false}) {
       contentTextStyle: TextStyle(color: PwcTokens.surface, fontSize: 16),
     ),
   );
+}
+
+/// Status semantics not represented by Material ColorScheme. Light-only v1.
+@immutable
+class PwcStatusTheme extends ThemeExtension<PwcStatusTheme> {
+  final Color success;
+  final Color warning;
+  final Color info;
+  final Color restricted;
+  const PwcStatusTheme({
+    this.success = PwcTokens.success,
+    this.warning = PwcTokens.warning,
+    this.info = PwcTokens.info,
+    this.restricted = PwcTokens.info,
+  });
+  @override
+  PwcStatusTheme copyWith({
+    Color? success,
+    Color? warning,
+    Color? info,
+    Color? restricted,
+  }) => PwcStatusTheme(
+    success: success ?? this.success,
+    warning: warning ?? this.warning,
+    info: info ?? this.info,
+    restricted: restricted ?? this.restricted,
+  );
+  @override
+  PwcStatusTheme lerp(covariant PwcStatusTheme? other, double t) =>
+      other == null
+      ? this
+      : PwcStatusTheme(
+          success: Color.lerp(success, other.success, t)!,
+          warning: Color.lerp(warning, other.warning, t)!,
+          info: Color.lerp(info, other.info, t)!,
+          restricted: Color.lerp(restricted, other.restricted, t)!,
+        );
 }

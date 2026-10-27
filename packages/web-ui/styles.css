@@ -617,7 +617,7 @@ caption {
 }
 .button-destructive:not(:disabled):hover,
 .button-destructive:not(:disabled):active {
-  background: #861b12;
+  background: var(--ds-danger-hover);
 }
 .button:disabled:hover {
   background: var(--ds-disabled-background);
@@ -745,4 +745,23 @@ main li,
   .workspace-context {
     inline-size: 100%;
   }
+}
+fieldset {
+  min-inline-size: 0;
+  margin: var(--space-4) 0;
+  border: 1px solid var(--ds-control-border);
+  border-radius: var(--radius-sm);
+}
+legend {
+  overflow-wrap: anywhere;
+}
+.topbar {
+  flex-wrap: wrap;
+}
+.ds-badge {
+  max-inline-size: 100%;
+}
+
+.button-destructive:not(:disabled):active {
+  background: var(--ds-danger-pressed);
 }
