@@ -10,6 +10,8 @@ import '../features/identity.dart';
 import '../features/personal.dart';
 import '../features/security.dart';
 import '../features/registry.dart';
+import '../features/directory.dart';
+import '../features/workspace_history.dart';
 import '../features/verification.dart';
 
 class PwcApp extends ConsumerStatefulWidget {
@@ -30,7 +32,8 @@ class _PwcAppState extends ConsumerState<PwcApp> with WidgetsBindingObserver {
       initialLocation: '/identity',
       refreshListenable: session,
       redirect: (context, state) {
-        if (!session.authenticated && state.uri.path != '/identity') {
+        if (!session.authenticated &&
+            !['/identity', '/ngo-registry'].contains(state.uri.path)) {
           return '/identity';
         }
         if (session.authenticated && state.uri.path == '/identity') {
@@ -39,6 +42,30 @@ class _PwcAppState extends ConsumerState<PwcApp> with WidgetsBindingObserver {
         return null;
       },
       routes: [
+        GoRoute(
+          path: '/ngo-registry',
+          builder: (c, s) => _Frame(
+            child: Consumer(
+              builder: (context, ref, child) => DirectoryScreen(
+                gateway: ref.watch(directoryProvider),
+                urdu: ref.watch(urduProvider),
+              ),
+            ),
+          ),
+        ),
+        GoRoute(
+          path: '/application-history',
+          builder: (c, s) => _Frame(
+            index: 2,
+            child: Consumer(
+              builder: (context, ref, child) => WorkspaceHistoryScreen(
+                scope:
+                    '${ref.watch(sessionProvider).identity?.session.id}:${ref.watch(sessionProvider).hold}',
+                urdu: ref.watch(urduProvider),
+              ),
+            ),
+          ),
+        ),
         GoRoute(
           path: '/verification',
           builder: (c, s) => _Frame(

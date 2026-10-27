@@ -11,6 +11,27 @@ jobs:
   foundation:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: pwc_synthetic_web
+          POSTGRES_USER: pwc
+          POSTGRES_PASSWORD: test-only-browser-password
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U pwc -d pwc_synthetic_web"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PWC_ENVIRONMENT: test
+      DJANGO_SECRET_KEY: test-only-browser-secret-not-production
+      DB_NAME: pwc_synthetic_web
+      DB_USER: pwc
+      DB_PASSWORD: test-only-browser-password
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      PYTHONPATH: apps/backend
+      PWC_PUBLIC_API_TARGET: http://127.0.0.1:8000
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
@@ -25,6 +46,14 @@ jobs:
       - run: npm audit --audit-level=low
       - run: npm run contracts:types:check
       - run: npm run check
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.12"
+      - name: Prepare actual PostgreSQL public projection for browser integration
+        run: |
+          python -m pip install --require-hashes -r requirements-ci.lock
+          python apps/backend/manage.py migrate --noinput
+          python tests/end-to-end/seed_public_directory.py
       - run: npx playwright install --with-deps chromium
       - run: npm run test:browser
       - name: Redacted browser count evidence

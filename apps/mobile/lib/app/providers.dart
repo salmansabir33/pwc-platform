@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/api.dart';
+import '../core/directory_api.dart';
 import '../core/contracts.g.dart';
 import '../core/session_controller.dart';
 import '../core/storage.dart';
@@ -25,3 +26,12 @@ final sessionProvider = ChangeNotifierProvider<SessionController>((ref) {
   );
 });
 final urduProvider = StateProvider<bool>((ref) => false);
+
+// Independent public-only opt-in; never widens personal/native domain operations.
+const directoryOrigin = String.fromEnvironment('PWC_PUBLIC_DIRECTORY_ORIGIN');
+final directoryProvider = Provider<DirectoryGateway?>((ref) {
+  if (directoryOrigin.isEmpty) return null;
+  final gateway = NativeDirectoryGateway(directoryOrigin);
+  ref.onDispose(gateway.dispose);
+  return gateway;
+});

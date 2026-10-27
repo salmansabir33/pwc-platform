@@ -1,8 +1,10 @@
+import { Directory } from "../../ngo-web/src/PublicDirectory";
 import { useEffect, useState } from "react";
 import { Link, Route, Routes } from "react-router-dom";
 import {
   createFoundationRuntime,
   connectInvalidationChannel,
+  PublicDirectoryClient,
 } from "@pwc/web-api";
 import {
   PortalShell,
@@ -16,6 +18,9 @@ import { ControlledOnboarding } from "./ControlledOnboarding";
 import { config } from "./config";
 
 export function App() {
+  const [directory] = useState(
+    () => new PublicDirectoryClient((url, init) => fetch(url, init)),
+  );
   // Factory per mounted application, never a shared session/cache singleton.
   const [runtime] = useState(() => createFoundationRuntime(config.appId));
   useEffect(() => {
@@ -38,6 +43,7 @@ export function App() {
           element={
             <>
               <Overview portal={config.appId} />
+              <Link to="/ngo-registry">NGO registry · public read-only</Link>
               <Link to="/controlled-onboarding">
                 PWC-01 · Controlled onboarding (unavailable)
               </Link>
@@ -54,6 +60,10 @@ export function App() {
           element={<ControlledOnboarding />}
         />
         <Route path="/verification" element={<Verification review />} />
+        <Route
+          path="/ngo-registry"
+          element={<Directory gateway={directory} />}
+        />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </PortalShell>

@@ -404,3 +404,18 @@ export function connectInvalidationChannel(state: ScopeState): () => void {
     channel.close();
   };
 }
+
+export {
+  PublicDirectoryClient,
+  HistoricalWorkspaceClient,
+  parseDirectory,
+  parseWorkspace,
+} from "./workspace";
+export type {
+  DirectoryGateway,
+  DirectoryFilter,
+  DirectoryPage,
+  WorkspaceGateway,
+  WorkspacePage,
+  WorkspaceApplication,
+} from "./workspace";
