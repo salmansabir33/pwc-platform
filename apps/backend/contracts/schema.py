@@ -137,6 +137,7 @@ AUTH = [
     ("clearHold", "recovery-hold/clear/", "post", "personal", "ClearHold", 204, None, "mfa"),
 ]
 GATES = {
+    "verification": ["PWC_REGISTRY_ENABLED", "PWC_VERIFICATION_ENABLED", "PWC_AUTH_SESSIONS_ENABLED"],
     "registry": ["PWC_REGISTRY_ENABLED", "PWC_AUTH_SESSIONS_ENABLED"],
     "flows": ["PWC_AUTH_FLOWS_ENABLED"],
     "sessions": ["PWC_AUTH_SESSIONS_ENABLED"],
@@ -250,6 +251,9 @@ def build():
     definitions["PublicOrganizations"] = arr(ref("PublicOrganization"))
     assert settings.SESSION_COOKIE_NAME == "__Host-pwc_session"
     from organizations.registry_contract import paths as registry_paths, definitions as registry_definitions
+    from organizations.verification_contract import paths as verification_paths, definitions as verification_definitions
+    paths.update(verification_paths())
+    definitions.update(verification_definitions())
     paths.update(registry_paths())
     definitions.update(registry_definitions())
     return {"openapi": "3.1.0", "info": {"title": "PWC implemented API contracts", "version": VERSION,

@@ -198,3 +198,158 @@ class RegistryEvent(models.Model):
                 fields=["claim", "revision"], name="claim_event_revision"
             ),
         ]
+
+
+class VerificationCase(models.Model):
+    """Personal application preparation, NEVER an authority or verification result."""
+
+    class Purpose(models.TextChoices):
+        ELIGIBILITY = "organization_eligibility", "Organization eligibility"
+        MANDATE = "representative_mandate", "Representative mandate"
+
+    class State(models.TextChoices):
+        DRAFT = "draft", "Preparation draft"
+        SUBMITTED = "submitted", "Preparation submitted; review unavailable"
+        WITHDRAWN = "withdrawn", "Withdrawn"
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    claimant = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
+    draft = models.ForeignKey(OrganizationDraft, null=True, on_delete=models.PROTECT)
+    claim = models.ForeignKey(OrganizationClaim, null=True, on_delete=models.PROTECT)
+    source_revision = models.PositiveBigIntegerField()
+    purpose = models.CharField(max_length=32, choices=Purpose.choices)
+    track = models.CharField(max_length=16, choices=Organization.Classification.choices)
+    state = models.CharField(max_length=16, choices=State.choices, default=State.DRAFT)
+    revision = models.PositiveBigIntegerField(default=1)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["claimant", "id"], name="verification_owner_page")
+        ]
+        constraints = [
+            models.CheckConstraint(
+                condition=(
+                    models.Q(draft__isnull=False, claim__isnull=True)
+                    | models.Q(draft__isnull=True, claim__isnull=False)
+                ),
+                name="verification_one_source",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(state__in=["draft", "submitted", "withdrawn"]),
+                name="verification_state_valid",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(
+                    purpose__in=["organization_eligibility", "representative_mandate"]
+                ),
+                name="verification_purpose_valid",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(track__in=["registered", "unregistered"]),
+                name="verification_track_valid",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(revision__gte=1, source_revision__gte=1),
+                name="verification_revisions_positive",
+            ),
+            models.UniqueConstraint(
+                fields=["claimant", "draft", "purpose"],
+                condition=models.Q(state__in=["draft", "submitted"]),
+                name="one_open_draft_verification",
+            ),
+            models.UniqueConstraint(
+                fields=["claimant", "claim", "purpose"],
+                condition=models.Q(state__in=["draft", "submitted"]),
+                name="one_open_claim_verification",
+            ),
+        ]
+
+
+class EvidencePreparation(models.Model):
+    """Synthetic checklist marker, NOT an evidence object, file or assertion of validity."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    case = models.ForeignKey(VerificationCase, on_delete=models.PROTECT)
+    prepared_offline = models.BooleanField(default=False)
+    state = models.CharField(
+        max_length=16,
+        choices=[("planned", "Planned"), ("withdrawn", "Withdrawn")],
+        default="planned",
+    )
+    revision = models.PositiveBigIntegerField(default=1)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["case"],
+                condition=models.Q(state="planned"),
+                name="one_active_preparation_marker",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(state__in=["planned", "withdrawn"]),
+                name="preparation_state_valid",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(revision__gte=1),
+                name="preparation_revision_positive",
+            ),
+        ]
+
+
+class VerificationEvent(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    case = models.ForeignKey(VerificationCase, on_delete=models.PROTECT)
+    actor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    session = models.ForeignKey("accounts.AuthSession", on_delete=models.PROTECT)
+    reason_code = models.CharField(
+        max_length=32,
+        choices=[
+            (v, v)
+            for v in [
+                "applicant_created",
+                "preparation_added",
+                "preparation_replaced",
+                "preparation_withdrawn",
+                "preparation_submitted",
+                "applicant_withdrawn",
+            ]
+        ],
+    )
+    revision = models.PositiveBigIntegerField()
+    preparation = models.ForeignKey(
+        EvidencePreparation, null=True, on_delete=models.PROTECT
+    )
+    preparation_revision = models.PositiveBigIntegerField(null=True)
+    prepared_offline = models.BooleanField(null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["case", "revision"], name="verification_event_revision"
+            )
+        ]
+
+
+class VerificationReceipt(models.Model):
+    claimant = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    key = models.UUIDField()
+    operation = models.CharField(max_length=24)
+    digest = models.CharField(max_length=64)
+    case = models.ForeignKey(VerificationCase, on_delete=models.PROTECT)
+    preparation = models.ForeignKey(
+        EvidencePreparation, null=True, on_delete=models.PROTECT
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["claimant", "key"], name="verification_retry_key"
+            )
+        ]

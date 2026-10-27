@@ -63,7 +63,7 @@ class ContractTests(SimpleTestCase):
                 validate_schema({'$ref':'#/components/schemas/'+name},body)
 
     @override_settings(PWC_AUTH_FLOWS_ENABLED=False, PWC_AUTH_SESSIONS_ENABLED=False,
-                       PWC_AUTH_MFA_ENABLED=False, PWC_SYNTHETIC_CONTEXT_HTTP_ENABLED=False, PWC_REGISTRY_ENABLED=False,
+                       PWC_AUTH_MFA_ENABLED=False, PWC_SYNTHETIC_CONTEXT_HTTP_ENABLED=False, PWC_REGISTRY_ENABLED=False, PWC_VERIFICATION_ENABLED=False,
                        ALLOWED_HOSTS=['testserver'])
     def test_disabled_endpoints_do_not_masquerade_as_available(self):
         for path, methods in build()['paths'].items():
