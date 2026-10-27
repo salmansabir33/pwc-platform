@@ -58,20 +58,23 @@ class _WorkspaceHistoryScreenState extends State<WorkspaceHistoryScreen> {
     });
     try {
       final page = await api.load(_kind, cursor: cursor);
-      if (mounted && ticket == _generation)
+      if (mounted && ticket == _generation) {
         setState(() {
           _page = page;
         });
+      }
     } catch (_) {
-      if (mounted && ticket == _generation)
+      if (mounted && ticket == _generation) {
         setState(() {
           _error = true;
         });
+      }
     } finally {
-      if (mounted && ticket == _generation)
+      if (mounted && ticket == _generation) {
         setState(() {
           _busy = false;
         });
+      }
     }
   }
 
@@ -97,7 +100,7 @@ class _WorkspaceHistoryScreenState extends State<WorkspaceHistoryScreen> {
           ),
         ),
       DropdownButtonFormField<String>(
-        value: _kind,
+        initialValue: _kind,
         decoration: InputDecoration(
           labelText: t('Application type', 'درخواست کی قسم'),
         ),
@@ -114,11 +117,12 @@ class _WorkspaceHistoryScreenState extends State<WorkspaceHistoryScreen> {
         onChanged: _busy
             ? null
             : (value) {
-                if (value != null)
+                if (value != null) {
                   setState(() {
                     _kind = value;
                     _page = null;
                   });
+                }
               },
       ),
       FilledButton(
@@ -156,7 +160,7 @@ class _WorkspaceHistoryScreenState extends State<WorkspaceHistoryScreen> {
                       ),
                 ),
                 PwcBadge(
-                  label: item.state,
+                  item.state,
                   warning: ['rejected', 'withdrawn'].contains(item.state),
                 ),
                 Text('${t('Revision', 'نظر ثانی')}: ${item.revision}'),

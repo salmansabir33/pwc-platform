@@ -58,20 +58,23 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
     });
     try {
       final page = await api.search(_query.text, _city.text, cursor: cursor);
-      if (mounted && ticket == _generation)
+      if (mounted && ticket == _generation) {
         setState(() {
           _page = page;
         });
+      }
     } catch (_) {
-      if (mounted && ticket == _generation)
+      if (mounted && ticket == _generation) {
         setState(() {
           _error = true;
         });
+      }
     } finally {
-      if (mounted && ticket == _generation)
+      if (mounted && ticket == _generation) {
         setState(() {
           _busy = false;
         });
+      }
     }
   }
 
@@ -137,7 +140,7 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
               children: [
                 Text(row.name),
                 Text(row.city),
-                PwcBadge(label: row.classification),
+                PwcBadge(row.classification),
               ],
             ),
           ),
