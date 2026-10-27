@@ -35,6 +35,8 @@ def preflight(
     ):
         raise PreflightConflict("Stale revision")
     transitions = {
+        ("draft", "edit"): "draft",
+        ("returned", "edit"): "returned",
         ("draft", "submit"): "submitted",
         ("returned", "submit"): "submitted",
         ("submitted", "approve"): "approved",

@@ -69,7 +69,7 @@ describe("revised offline controlled onboarding", () => {
     ).toBeDisabled();
     expect(screen.getAllByText(/No server record/)).toHaveLength(2);
   });
-  it("rejects URLs and document numbers as opaque reference handles", () => {
+  it("rejects URLs and numeric-only strings as opaque reference handles", () => {
     render(
       <LocaleProvider>
         <ControlledOnboarding synthetic />

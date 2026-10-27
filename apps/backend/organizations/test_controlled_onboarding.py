@@ -160,6 +160,14 @@ class RolloutTests(VerificationFixtures, TestCase):
             self.request("post", f"records/{uuid.uuid4()}/approve/").status_code, 503
         )
         self.assertFalse(Record.objects.exists())
+        with (
+            self.settings(PWC_LEGACY_ONBOARDING_TEST_EXERCISE=True),
+            patch(
+                "organizations.controlled_views.command_available", return_value=True
+            ),
+        ):
+            self.assertEqual(self.request("post", "records/").status_code, 503)
+            self.assertFalse(Record.objects.exists())
 
     def test_unavailable_adapters_never_parse_or_persist_files_or_contact_data(self):
         with patch(
@@ -252,6 +260,12 @@ class PreflightTests(TestCase):
     def test_return_correction_reject_withdraw_graph(self):
         self.assertEqual(self.proposal(command="return").next_state, "returned")
         self.assertEqual(
+            self.proposal(state="returned", command="edit", actor="a").next_state,
+            "returned",
+        )
+        with self.assertRaises(PreflightConflict):
+            self.proposal(state="approved", command="edit", actor="a")
+        self.assertEqual(
             self.proposal(state="returned", command="submit", actor="a").next_state,
             "submitted",
         )
@@ -317,7 +331,7 @@ class StorageTests(VerificationFixtures, TestCase):
             with self.assertRaises(DatabaseError), transaction.atomic():
                 type(obj).objects.filter(pk=obj.pk).update(created_at=timezone.now())
 
-    def test_url_document_number_and_markup_are_not_reference_handles(self):
+    def test_url_numeric_and_markup_are_not_reference_handles(self):
         for handle in (
             "https://private.invalid/file",
             "<script>private</script>",

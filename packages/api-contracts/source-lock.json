@@ -31,7 +31,7 @@
   "apps/backend/config/urls.py": "763a94799af7c406f9284f36dbac05356efb2045307344aaf5ff592f2d23c942",
   "apps/backend/organizations/__init__.py": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
   "apps/backend/organizations/controlled_contract.py": "b2becd6b473e02b40b88e4a1a6ef9cf16cc0d65b582f7b2c8e032db00c2ef800",
-  "apps/backend/organizations/controlled_onboarding.py": "8834ebb9451130028fa6b8da417dbc6c12ba6b445301351bb48f2b0a88dca92d",
+  "apps/backend/organizations/controlled_onboarding.py": "2aa9c994cd03af60e3d3af149c71ec95169c4322484cdbea104f95b78c42817c",
   "apps/backend/organizations/controlled_urls.py": "b638893b47e08ae5408d08f5fa59d14f4091cc8bfe1d072f916cad9f71bbcfa9",
   "apps/backend/organizations/controlled_views.py": "48ea35683f031db2f066d0ea2e13d4350ca6526b9735fa9068e511c9a5e92143",
   "apps/backend/organizations/models.py": "45c7d50bb43760097063daa461de79ba66f6ffa3fefcd75e95a97ede0617c0b3",

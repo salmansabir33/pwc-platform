@@ -197,3 +197,31 @@ reviewer appointment or activation path is introduced.
 only after validation. Actual controlled onboarding remains blocked on the exact
 contracts listed in the revised runbook. Stop before 04C/04D, real grants,
 finance, production deployment or any automatic merge.
+
+### Revised validation checkpoint and internal review
+
+Local full contract-instrumented PostgreSQL 16.2 regression: **450 tests passed**,
+**288 observed route/method/status combinations**, 463.879 seconds. This began
+before the final non-writing draft/returned edit-preflight assertion and preview
+bound correction; final exact-head CI must revalidate those changes. Local
+focused suite was re-run afterward: **17 tests passed / 34 wire combinations**.
+Local web check passed **125 unit tests**, typecheck, Prettier and both production
+bundles. Django system checks, additive migrations/application/drift, canonical
+contract/source/inventory/frozen compatibility, hash locks (12 runtime / 33 CI
+pins), pip consistency, six tooling tests, Ruff, tracked-file security scan (0
+findings) and npm advisory audit (0 vulnerabilities) passed.
+
+The HTML Unicode-sets pattern initially failed to enforce the intended opaque
+handle bounds because a hyphen needed escaping; fixed and covered by invalid
+URL/numeric-only-string tests. This is a syntax bound, not document-number or
+PII detection. Local preview history now bounds inside the state updater as
+well as the button guard. Independent approve/reject/return adapters remain
+unavailable even if the generic availability hook is accidentally made true
+or the historical test-exercise setting is injected.
+
+Agent internal review found no known unresolved Critical/High issue in this
+bounded revised slice. It is not an independent security/database/privacy/legal
+or reviewer-IAM review. Final exact-head GitHub evidence, immutable head SHA,
+check URLs/counts and the human-review verdict are recorded in the consolidated
+PR #13 thread. Merging policy/preparation never activates real onboarding,
+reviewer appointments, invitations, NGO grants or production services.

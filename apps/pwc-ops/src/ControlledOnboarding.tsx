@@ -92,7 +92,9 @@ export function ControlledOnboarding({
         onSubmit={(e) => {
           e.preventDefault();
           if (synthetic && history.length < 20) {
-            setHistory((old) => [Object.freeze({ ...draft }), ...old]);
+            setHistory((old) =>
+              old.length < 20 ? [Object.freeze({ ...draft }), ...old] : old,
+            );
           }
         }}
       >
