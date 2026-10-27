@@ -551,6 +551,94 @@ class VerificationTests(VerificationFixtures, TestCase):
             400,
         )
 
+    def test_marker_edit_strict_revision_and_closed_fields(self):
+        case = self.case()
+        marker = self.marker(case)
+        path = f"cases/{case['id']}/preparation/{marker['id']}/"
+        for field, value in (
+            ("revision", True),
+            ("revision", "1"),
+            ("case_revision", "2"),
+            ("prepared_offline", 1),
+            ("filename", "private"),
+        ):
+            data = {"revision": 1, "case_revision": 2, "prepared_offline": True}
+            data[field] = value
+            response = self.vcall("patch", path, data)
+            self.assertEqual(response.status_code, 400)
+            self.assertNotIn("private", response.content.decode())
+        self.assertEqual(VerificationEvent.objects.count(), 2)
+
+    def test_json_body_query_method_and_retry_key_bounds(self):
+        self.assertEqual(self.vcall("post", "cases/", self.payload()).status_code, 400)
+        case = self.case()
+        path = f"cases/{case['id']}/"
+        self.assertEqual(
+            self.vcall("get", path + "?cursor=unexpected").status_code, 400
+        )
+        for method in ("post", "patch", "delete"):
+            self.assertEqual(self.vcall(method, path, {"revision": 1}).status_code, 405)
+        client = Client()
+        for body in (
+            '{"revision":1,"revision":1}',
+            '{"revision":1,"notes":"' + "x" * 8200 + '"}',
+        ):
+            response = client.post(
+                ROOT + path + "submit/",
+                data=body,
+                content_type="application/json",
+                secure=True,
+                HTTP_AUTHORIZATION="Bearer " + self.token,
+            )
+            self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            client.post(
+                ROOT + path + "submit/",
+                data="revision=1",
+                content_type="application/x-www-form-urlencoded",
+                secure=True,
+                HTTP_AUTHORIZATION="Bearer " + self.token,
+            ).status_code,
+            415,
+        )
+
+    def test_owner_pagination_is_bounded_and_context_bound(self):
+        case = self.case()
+        base = VerificationCase.objects.get(pk=case["id"])
+        VerificationCase.objects.bulk_create(
+            [
+                VerificationCase(
+                    claimant=self.user,
+                    organization=base.organization,
+                    draft=base.draft,
+                    source_revision=1,
+                    purpose="organization_eligibility",
+                    track="unregistered",
+                    state="withdrawn",
+                )
+                for _ in range(22)
+            ]
+        )
+        page = self.vcall("get", "cases/").json()
+        self.assertEqual(len(page["results"]), 20)
+        cursor = page["next_cursor"]
+        self.assertTrue(cursor)
+        self.assertEqual(
+            len(self.vcall("get", "cases/?cursor=" + cursor).json()["results"]), 3
+        )
+        self.assertEqual(
+            self.vcall(
+                "get", "cases/?cursor=" + cursor, token=self.other_token
+            ).status_code,
+            400,
+        )
+        self.assertEqual(
+            self.vcall(
+                "get", f"cases/{case['id']}/history/?cursor=" + cursor
+            ).status_code,
+            400,
+        )
+
     def test_cookie_origin_csrf_and_no_legacy_login_fallback(self):
         client, _ = self.web(self.user)
         self.assertEqual(
@@ -610,6 +698,18 @@ class VerificationConcurrencyTests(VerificationFixtures, TransactionTestCase):
         )
         self.assertEqual(sorted(codes), [201, 409])
         self.assertEqual(VerificationEvent.objects.count(), 1)
+
+    def test_duplicate_submission_race(self):
+        case = self.case()
+        codes = self.race(
+            lambda _: (
+                self.vcall(
+                    "post", f"cases/{case['id']}/submit/", {"revision": 1}
+                ).status_code
+            )
+        )
+        self.assertEqual(sorted(codes), [200, 409])
+        self.assertEqual(VerificationEvent.objects.count(), 2)
 
     def test_exact_retry_race(self):
         key = uuid.uuid4()
