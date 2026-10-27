@@ -11,6 +11,7 @@ import {
   StateSpecimens,
   NotFound,
 } from "@pwc/web-ui";
+import { Verification } from "../../ngo-web/src/Verification";
 import { config } from "./config";
 
 export function App() {
@@ -37,6 +38,7 @@ export function App() {
           element={<AccessibilitySpecimen />}
         />
         <Route path="/foundation/states" element={<StateSpecimens />} />
+        <Route path="/verification" element={<Verification review />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </PortalShell>

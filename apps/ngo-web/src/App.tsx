@@ -11,6 +11,7 @@ import {
   StateSpecimens,
   NotFound,
 } from "@pwc/web-ui";
+import { Verification } from "./Verification";
 import { Registry } from "./Registry";
 import { config } from "./config";
 
@@ -37,6 +38,9 @@ export function App() {
           element={
             <>
               <Overview portal={config.appId} />
+              <Link to="/verification">
+                ORG-03 · Verification (unavailable)
+              </Link>
               <Link to="/registry">
                 ORG-01 / ORG-02 · Registry review (not connected)
               </Link>
@@ -48,6 +52,7 @@ export function App() {
           element={<AccessibilitySpecimen />}
         />
         <Route path="/foundation/states" element={<StateSpecimens />} />
+        <Route path="/verification" element={<Verification />} />
         <Route path="/registry" element={<Registry />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

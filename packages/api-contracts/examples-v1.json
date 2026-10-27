@@ -745,238 +745,653 @@
       "status": 503
     },
     {
-      "operationId": "registryListClaims",
-      "kind": "response",
-      "status": 200,
       "body": {
-        "results": [],
-        "next_cursor": null
-      }
+        "next_cursor": null,
+        "results": []
+      },
+      "kind": "response",
+      "operationId": "registryListClaims",
+      "status": 200
     },
     {
-      "operationId": "registryCreateClaim",
-      "kind": "request",
       "body": {
         "organization_id": "00000000-0000-4000-8000-000000000001"
-      }
+      },
+      "kind": "request",
+      "operationId": "registryCreateClaim"
     },
     {
+      "body": {
+        "created_at": "2026-10-27T00:00:00Z",
+        "id": "00000000-0000-4000-8000-000000000001",
+        "organization_id": "00000000-0000-4000-8000-000000000001",
+        "revision": 1,
+        "state": "pending",
+        "updated_at": "2026-10-27T00:00:00Z"
+      },
+      "kind": "response",
       "operationId": "registryCreateClaim",
-      "kind": "response",
-      "status": 201,
+      "status": 201
+    },
+    {
       "body": {
+        "created_at": "2026-10-27T00:00:00Z",
         "id": "00000000-0000-4000-8000-000000000001",
         "organization_id": "00000000-0000-4000-8000-000000000001",
         "revision": 1,
-        "created_at": "2026-10-27T00:00:00Z",
-        "updated_at": "2026-10-27T00:00:00Z",
-        "state": "pending"
-      }
-    },
-    {
+        "state": "pending",
+        "updated_at": "2026-10-27T00:00:00Z"
+      },
+      "kind": "response",
       "operationId": "registryGetClaim",
-      "kind": "response",
-      "status": 200,
-      "body": {
-        "id": "00000000-0000-4000-8000-000000000001",
-        "organization_id": "00000000-0000-4000-8000-000000000001",
-        "revision": 1,
-        "created_at": "2026-10-27T00:00:00Z",
-        "updated_at": "2026-10-27T00:00:00Z",
-        "state": "pending"
-      }
+      "status": 200
     },
     {
+      "body": {
+        "next_cursor": null,
+        "results": []
+      },
+      "kind": "response",
       "operationId": "registryHistoryClaim",
-      "kind": "response",
-      "status": 200,
-      "body": {
-        "results": [],
-        "next_cursor": null
-      }
+      "status": 200
     },
     {
-      "operationId": "registryWithdrawClaim",
-      "kind": "request",
       "body": {
         "revision": 1
-      }
+      },
+      "kind": "request",
+      "operationId": "registryWithdrawClaim"
     },
     {
-      "operationId": "registryWithdrawClaim",
-      "kind": "response",
-      "status": 200,
       "body": {
+        "created_at": "2026-10-27T00:00:00Z",
         "id": "00000000-0000-4000-8000-000000000001",
         "organization_id": "00000000-0000-4000-8000-000000000001",
         "revision": 2,
-        "created_at": "2026-10-27T00:00:00Z",
-        "updated_at": "2026-10-27T00:00:00Z",
-        "state": "withdrawn"
-      }
-    },
-    {
-      "operationId": "registryListDrafts",
-      "kind": "response",
-      "status": 200,
-      "body": {
-        "results": [],
-        "next_cursor": null
-      }
-    },
-    {
-      "operationId": "registryCreateDraft",
-      "kind": "request",
-      "body": {
-        "name": "Synthetic Welfare",
-        "classification": "unregistered"
-      }
-    },
-    {
-      "operationId": "registryCreateDraft",
-      "kind": "response",
-      "status": 201,
-      "body": {
-        "id": "00000000-0000-4000-8000-000000000001",
-        "organization_id": "00000000-0000-4000-8000-000000000001",
-        "name": "Synthetic Welfare",
-        "legal_name": "",
-        "aliases": [],
-        "city": "Faisalabad",
-        "jurisdiction": "",
-        "classification": "unregistered",
-        "contact_email": "",
-        "contact_phone": "",
-        "state": "draft",
-        "revision": 1,
-        "created_at": "2026-10-27T00:00:00Z",
-        "updated_at": "2026-10-27T00:00:00Z"
-      }
-    },
-    {
-      "operationId": "registryGetDraft",
-      "kind": "response",
-      "status": 200,
-      "body": {
-        "id": "00000000-0000-4000-8000-000000000001",
-        "organization_id": "00000000-0000-4000-8000-000000000001",
-        "name": "Synthetic Welfare",
-        "legal_name": "",
-        "aliases": [],
-        "city": "Faisalabad",
-        "jurisdiction": "",
-        "classification": "unregistered",
-        "contact_email": "",
-        "contact_phone": "",
-        "state": "draft",
-        "revision": 1,
-        "created_at": "2026-10-27T00:00:00Z",
-        "updated_at": "2026-10-27T00:00:00Z"
-      }
-    },
-    {
-      "operationId": "registryEditDraft",
-      "kind": "request",
-      "body": {
-        "name": "Synthetic Welfare",
-        "classification": "unregistered",
-        "revision": 1
-      }
-    },
-    {
-      "operationId": "registryEditDraft",
-      "kind": "response",
-      "status": 200,
-      "body": {
-        "id": "00000000-0000-4000-8000-000000000001",
-        "organization_id": "00000000-0000-4000-8000-000000000001",
-        "name": "Synthetic Welfare",
-        "legal_name": "",
-        "aliases": [],
-        "city": "Faisalabad",
-        "jurisdiction": "",
-        "classification": "unregistered",
-        "contact_email": "",
-        "contact_phone": "",
-        "state": "draft",
-        "revision": 1,
-        "created_at": "2026-10-27T00:00:00Z",
-        "updated_at": "2026-10-27T00:00:00Z"
-      }
-    },
-    {
-      "operationId": "registryHistoryDraft",
-      "kind": "response",
-      "status": 200,
-      "body": {
-        "results": [],
-        "next_cursor": null
-      }
-    },
-    {
-      "operationId": "registrySubmitDraft",
-      "kind": "request",
-      "body": {
-        "revision": 1
-      }
-    },
-    {
-      "operationId": "registrySubmitDraft",
-      "kind": "response",
-      "status": 200,
-      "body": {
-        "id": "00000000-0000-4000-8000-000000000001",
-        "organization_id": "00000000-0000-4000-8000-000000000001",
-        "name": "Synthetic Welfare",
-        "legal_name": "",
-        "aliases": [],
-        "city": "Faisalabad",
-        "jurisdiction": "",
-        "classification": "unregistered",
-        "contact_email": "",
-        "contact_phone": "",
-        "state": "submitted",
-        "revision": 2,
-        "created_at": "2026-10-27T00:00:00Z",
-        "updated_at": "2026-10-27T00:00:00Z"
-      }
-    },
-    {
-      "operationId": "registryWithdrawDraft",
-      "kind": "request",
-      "body": {
-        "revision": 1
-      }
-    },
-    {
-      "operationId": "registryWithdrawDraft",
-      "kind": "response",
-      "status": 200,
-      "body": {
-        "id": "00000000-0000-4000-8000-000000000001",
-        "organization_id": "00000000-0000-4000-8000-000000000001",
-        "name": "Synthetic Welfare",
-        "legal_name": "",
-        "aliases": [],
-        "city": "Faisalabad",
-        "jurisdiction": "",
-        "classification": "unregistered",
-        "contact_email": "",
-        "contact_phone": "",
         "state": "withdrawn",
-        "revision": 2,
-        "created_at": "2026-10-27T00:00:00Z",
         "updated_at": "2026-10-27T00:00:00Z"
-      }
+      },
+      "kind": "response",
+      "operationId": "registryWithdrawClaim",
+      "status": 200
     },
     {
-      "operationId": "registrySearch",
-      "kind": "response",
-      "status": 200,
       "body": {
-        "results": [],
-        "next_cursor": null
-      }
+        "next_cursor": null,
+        "results": []
+      },
+      "kind": "response",
+      "operationId": "registryListDrafts",
+      "status": 200
+    },
+    {
+      "body": {
+        "classification": "unregistered",
+        "name": "Synthetic Welfare"
+      },
+      "kind": "request",
+      "operationId": "registryCreateDraft"
+    },
+    {
+      "body": {
+        "aliases": [],
+        "city": "Faisalabad",
+        "classification": "unregistered",
+        "contact_email": "",
+        "contact_phone": "",
+        "created_at": "2026-10-27T00:00:00Z",
+        "id": "00000000-0000-4000-8000-000000000001",
+        "jurisdiction": "",
+        "legal_name": "",
+        "name": "Synthetic Welfare",
+        "organization_id": "00000000-0000-4000-8000-000000000001",
+        "revision": 1,
+        "state": "draft",
+        "updated_at": "2026-10-27T00:00:00Z"
+      },
+      "kind": "response",
+      "operationId": "registryCreateDraft",
+      "status": 201
+    },
+    {
+      "body": {
+        "aliases": [],
+        "city": "Faisalabad",
+        "classification": "unregistered",
+        "contact_email": "",
+        "contact_phone": "",
+        "created_at": "2026-10-27T00:00:00Z",
+        "id": "00000000-0000-4000-8000-000000000001",
+        "jurisdiction": "",
+        "legal_name": "",
+        "name": "Synthetic Welfare",
+        "organization_id": "00000000-0000-4000-8000-000000000001",
+        "revision": 1,
+        "state": "draft",
+        "updated_at": "2026-10-27T00:00:00Z"
+      },
+      "kind": "response",
+      "operationId": "registryGetDraft",
+      "status": 200
+    },
+    {
+      "body": {
+        "classification": "unregistered",
+        "name": "Synthetic Welfare",
+        "revision": 1
+      },
+      "kind": "request",
+      "operationId": "registryEditDraft"
+    },
+    {
+      "body": {
+        "aliases": [],
+        "city": "Faisalabad",
+        "classification": "unregistered",
+        "contact_email": "",
+        "contact_phone": "",
+        "created_at": "2026-10-27T00:00:00Z",
+        "id": "00000000-0000-4000-8000-000000000001",
+        "jurisdiction": "",
+        "legal_name": "",
+        "name": "Synthetic Welfare",
+        "organization_id": "00000000-0000-4000-8000-000000000001",
+        "revision": 1,
+        "state": "draft",
+        "updated_at": "2026-10-27T00:00:00Z"
+      },
+      "kind": "response",
+      "operationId": "registryEditDraft",
+      "status": 200
+    },
+    {
+      "body": {
+        "next_cursor": null,
+        "results": []
+      },
+      "kind": "response",
+      "operationId": "registryHistoryDraft",
+      "status": 200
+    },
+    {
+      "body": {
+        "revision": 1
+      },
+      "kind": "request",
+      "operationId": "registrySubmitDraft"
+    },
+    {
+      "body": {
+        "aliases": [],
+        "city": "Faisalabad",
+        "classification": "unregistered",
+        "contact_email": "",
+        "contact_phone": "",
+        "created_at": "2026-10-27T00:00:00Z",
+        "id": "00000000-0000-4000-8000-000000000001",
+        "jurisdiction": "",
+        "legal_name": "",
+        "name": "Synthetic Welfare",
+        "organization_id": "00000000-0000-4000-8000-000000000001",
+        "revision": 2,
+        "state": "submitted",
+        "updated_at": "2026-10-27T00:00:00Z"
+      },
+      "kind": "response",
+      "operationId": "registrySubmitDraft",
+      "status": 200
+    },
+    {
+      "body": {
+        "revision": 1
+      },
+      "kind": "request",
+      "operationId": "registryWithdrawDraft"
+    },
+    {
+      "body": {
+        "aliases": [],
+        "city": "Faisalabad",
+        "classification": "unregistered",
+        "contact_email": "",
+        "contact_phone": "",
+        "created_at": "2026-10-27T00:00:00Z",
+        "id": "00000000-0000-4000-8000-000000000001",
+        "jurisdiction": "",
+        "legal_name": "",
+        "name": "Synthetic Welfare",
+        "organization_id": "00000000-0000-4000-8000-000000000001",
+        "revision": 2,
+        "state": "withdrawn",
+        "updated_at": "2026-10-27T00:00:00Z"
+      },
+      "kind": "response",
+      "operationId": "registryWithdrawDraft",
+      "status": 200
+    },
+    {
+      "body": {
+        "next_cursor": null,
+        "results": []
+      },
+      "kind": "response",
+      "operationId": "registrySearch",
+      "status": 200
+    },
+    {
+      "body": {
+        "next_cursor": null,
+        "results": []
+      },
+      "kind": "response",
+      "operationId": "verificationListCases",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": {
+          "code": "synthetic",
+          "field_errors": {},
+          "message": "synthetic",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "verificationListCases",
+      "status": 503
+    },
+    {
+      "body": {
+        "purpose": "organization_eligibility",
+        "source_id": "00000000-0000-4000-8000-000000000001",
+        "source_kind": "draft",
+        "source_revision": 1
+      },
+      "kind": "request",
+      "operationId": "verificationCreateCase"
+    },
+    {
+      "body": {
+        "created_at": "2026-10-27T00:00:00Z",
+        "id": "00000000-0000-4000-8000-000000000001",
+        "organization_id": "00000000-0000-4000-8000-000000000001",
+        "purpose": "organization_eligibility",
+        "revision": 1,
+        "source_id": "00000000-0000-4000-8000-000000000001",
+        "source_kind": "draft",
+        "source_revision": 1,
+        "state": "draft",
+        "track": "registered",
+        "updated_at": "2026-10-27T00:00:00Z"
+      },
+      "kind": "response",
+      "operationId": "verificationCreateCase",
+      "status": 201
+    },
+    {
+      "body": {
+        "error": {
+          "code": "synthetic",
+          "field_errors": {},
+          "message": "synthetic",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "verificationCreateCase",
+      "status": 503
+    },
+    {
+      "body": {
+        "created_at": "2026-10-27T00:00:00Z",
+        "id": "00000000-0000-4000-8000-000000000001",
+        "organization_id": "00000000-0000-4000-8000-000000000001",
+        "purpose": "organization_eligibility",
+        "revision": 1,
+        "source_id": "00000000-0000-4000-8000-000000000001",
+        "source_kind": "draft",
+        "source_revision": 1,
+        "state": "draft",
+        "track": "registered",
+        "updated_at": "2026-10-27T00:00:00Z"
+      },
+      "kind": "response",
+      "operationId": "verificationGetCase",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": {
+          "code": "synthetic",
+          "field_errors": {},
+          "message": "synthetic",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "verificationGetCase",
+      "status": 503
+    },
+    {
+      "body": {
+        "error": {
+          "code": "synthetic",
+          "field_errors": {},
+          "message": "synthetic",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "verificationEvidenceUnavailable",
+      "status": 503
+    },
+    {
+      "body": {
+        "error": {
+          "code": "synthetic",
+          "field_errors": {},
+          "message": "synthetic",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "verificationDownloadUnavailable",
+      "status": 503
+    },
+    {
+      "body": {
+        "next_cursor": null,
+        "results": []
+      },
+      "kind": "response",
+      "operationId": "verificationHistory",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": {
+          "code": "synthetic",
+          "field_errors": {},
+          "message": "synthetic",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "verificationHistory",
+      "status": 503
+    },
+    {
+      "body": {
+        "next_cursor": null,
+        "results": []
+      },
+      "kind": "response",
+      "operationId": "verificationListPreparation",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": {
+          "code": "synthetic",
+          "field_errors": {},
+          "message": "synthetic",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "verificationListPreparation",
+      "status": 503
+    },
+    {
+      "body": {
+        "case_revision": 1,
+        "prepared_offline": false
+      },
+      "kind": "request",
+      "operationId": "verificationCreatePreparation"
+    },
+    {
+      "body": {
+        "case_id": "00000000-0000-4000-8000-000000000001",
+        "created_at": "2026-10-27T00:00:00Z",
+        "id": "00000000-0000-4000-8000-000000000001",
+        "prepared_offline": false,
+        "revision": 1,
+        "state": "planned",
+        "updated_at": "2026-10-27T00:00:00Z"
+      },
+      "kind": "response",
+      "operationId": "verificationCreatePreparation",
+      "status": 201
+    },
+    {
+      "body": {
+        "error": {
+          "code": "synthetic",
+          "field_errors": {},
+          "message": "synthetic",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "verificationCreatePreparation",
+      "status": 503
+    },
+    {
+      "body": {
+        "case_id": "00000000-0000-4000-8000-000000000001",
+        "created_at": "2026-10-27T00:00:00Z",
+        "id": "00000000-0000-4000-8000-000000000001",
+        "prepared_offline": false,
+        "revision": 1,
+        "state": "planned",
+        "updated_at": "2026-10-27T00:00:00Z"
+      },
+      "kind": "response",
+      "operationId": "verificationGetPreparation",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": {
+          "code": "synthetic",
+          "field_errors": {},
+          "message": "synthetic",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "verificationGetPreparation",
+      "status": 503
+    },
+    {
+      "body": {
+        "case_revision": 1,
+        "prepared_offline": false,
+        "revision": 1
+      },
+      "kind": "request",
+      "operationId": "verificationReplacePreparation"
+    },
+    {
+      "body": {
+        "case_id": "00000000-0000-4000-8000-000000000001",
+        "created_at": "2026-10-27T00:00:00Z",
+        "id": "00000000-0000-4000-8000-000000000001",
+        "prepared_offline": false,
+        "revision": 1,
+        "state": "planned",
+        "updated_at": "2026-10-27T00:00:00Z"
+      },
+      "kind": "response",
+      "operationId": "verificationReplacePreparation",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": {
+          "code": "synthetic",
+          "field_errors": {},
+          "message": "synthetic",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "verificationReplacePreparation",
+      "status": 503
+    },
+    {
+      "body": {
+        "case_revision": 1,
+        "prepared_offline": false,
+        "revision": 1
+      },
+      "kind": "request",
+      "operationId": "verificationWithdrawPreparation"
+    },
+    {
+      "body": {
+        "case_id": "00000000-0000-4000-8000-000000000001",
+        "created_at": "2026-10-27T00:00:00Z",
+        "id": "00000000-0000-4000-8000-000000000001",
+        "prepared_offline": false,
+        "revision": 2,
+        "state": "withdrawn",
+        "updated_at": "2026-10-27T00:00:00Z"
+      },
+      "kind": "response",
+      "operationId": "verificationWithdrawPreparation",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": {
+          "code": "synthetic",
+          "field_errors": {},
+          "message": "synthetic",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "verificationWithdrawPreparation",
+      "status": 503
+    },
+    {
+      "body": {
+        "accepted_evidence_classes": [],
+        "case_id": "00000000-0000-4000-8000-000000000001",
+        "file_intake_available": false,
+        "purpose": "organization_eligibility",
+        "review_available": false,
+        "rubric_status": "unapproved",
+        "submission_effect": "preparation_record_only",
+        "track": "registered"
+      },
+      "kind": "response",
+      "operationId": "verificationRequirements",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": {
+          "code": "synthetic",
+          "field_errors": {},
+          "message": "synthetic",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "verificationRequirements",
+      "status": 503
+    },
+    {
+      "body": {
+        "revision": 1
+      },
+      "kind": "request",
+      "operationId": "verificationSubmit"
+    },
+    {
+      "body": {
+        "created_at": "2026-10-27T00:00:00Z",
+        "id": "00000000-0000-4000-8000-000000000001",
+        "organization_id": "00000000-0000-4000-8000-000000000001",
+        "purpose": "organization_eligibility",
+        "revision": 2,
+        "source_id": "00000000-0000-4000-8000-000000000001",
+        "source_kind": "draft",
+        "source_revision": 1,
+        "state": "submitted",
+        "track": "registered",
+        "updated_at": "2026-10-27T00:00:00Z"
+      },
+      "kind": "response",
+      "operationId": "verificationSubmit",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": {
+          "code": "synthetic",
+          "field_errors": {},
+          "message": "synthetic",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "verificationSubmit",
+      "status": 503
+    },
+    {
+      "body": {
+        "revision": 1
+      },
+      "kind": "request",
+      "operationId": "verificationWithdraw"
+    },
+    {
+      "body": {
+        "created_at": "2026-10-27T00:00:00Z",
+        "id": "00000000-0000-4000-8000-000000000001",
+        "organization_id": "00000000-0000-4000-8000-000000000001",
+        "purpose": "organization_eligibility",
+        "revision": 2,
+        "source_id": "00000000-0000-4000-8000-000000000001",
+        "source_kind": "draft",
+        "source_revision": 1,
+        "state": "withdrawn",
+        "track": "registered",
+        "updated_at": "2026-10-27T00:00:00Z"
+      },
+      "kind": "response",
+      "operationId": "verificationWithdraw",
+      "status": 200
+    },
+    {
+      "body": {
+        "error": {
+          "code": "synthetic",
+          "field_errors": {},
+          "message": "synthetic",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "verificationWithdraw",
+      "status": 503
+    },
+    {
+      "body": {
+        "error": {
+          "code": "synthetic",
+          "field_errors": {},
+          "message": "synthetic",
+          "request_id": "00000000-0000-4000-8000-000000000001"
+        }
+      },
+      "kind": "response",
+      "operationId": "verificationQueueUnavailable",
+      "status": 503
     }
   ],
   "contract_version": "1.0.0",
