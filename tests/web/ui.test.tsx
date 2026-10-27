@@ -46,7 +46,6 @@ describe.each(["ngo", "ops"] as const)("%s independent route tree", (app) => {
     "/register",
     "/account/security",
     "/ngos/00000000-0000-4000-8000-00000000000a/finance",
-    "/verification",
     "/operations",
     "/api/v1/ngo-contexts/test/private-probe/",
   ])("does not register unfinished route %s", (path) => {

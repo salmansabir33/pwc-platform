@@ -131,7 +131,15 @@ jobs:
           for name in ('pwc-analyze.txt','pwc-tests.txt'):
               path=Path(os.environ['RUNNER_TEMP'])/name
               if path.exists():
-                  text=path.read_text()[-12000:]
+                  lines=path.read_text().splitlines()
+                  # Preserve synthetic failure context, not just progress noise
+                  # at the end of a parallel test run. Still bounded/redacted.
+                  failures=[i for i,line in enumerate(lines) if any(marker in line for marker in ('EXCEPTION CAUGHT', '[E]', 'Expected:', 'Actual:', 'Warning: A call to tap'))]
+                  if failures:
+                      selected=sorted({j for i in failures for j in range(max(0,i-5),min(len(lines),i+40))})
+                      text='\n'.join(lines[j] for j in selected)[:12000]
+                  else:
+                      text='\n'.join(lines)[-12000:]
                   for index in range(0,len(text),3000):
                       chunk=text[index:index+3000].replace('%','%25').replace('\r','%0D').replace('\n','%0A')
                       print(f'::notice title={name} {index//3000+1}::{chunk}')

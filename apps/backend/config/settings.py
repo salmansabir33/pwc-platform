@@ -136,3 +136,6 @@ X_FRAME_OPTIONS = "DENY"
 
 # Claimant-only 04A synthetic exercise; real intake/production remain gated.
 PWC_REGISTRY_ENABLED = ENVIRONMENT["PWC_REGISTRY_ENABLED"]
+
+# 04B synthetic personal-case preparation; never enables files/review/authority.
+PWC_VERIFICATION_ENABLED = ENVIRONMENT["PWC_VERIFICATION_ENABLED"]
