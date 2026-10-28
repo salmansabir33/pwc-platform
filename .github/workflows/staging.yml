@@ -30,17 +30,19 @@ jobs:
         run: sudo env PWC_DISPOSABLE_CI=YES python3 tests/deployment/compose_smoke.py
       - name: Scan deployed images (fixable high/critical gate; all findings retained)
         run: |
-          mkdir -p .cache/trivy
+          mkdir -p .cache/trivy .cache/trivy-cache
           docker pull aquasec/trivy:latest
           scanner=$(docker image inspect aquasec/trivy:latest --format '{{index .RepoDigests 0}}')
           printf '%s\n' "$scanner" > .cache/trivy/scanner-digest.txt
+          printf '::notice title=Scanner digest::%s\n' "$scanner"
           result=0
           index=0
           while IFS= read -r image; do
             index=$((index + 1))
-            docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$PWD/.cache/trivy:/reports" "$scanner" image --scanners vuln --severity HIGH,CRITICAL --format json --output "/reports/image-$index.json" "$image" || result=1
-            docker run --rm -v /var/run/docker.sock:/var/run/docker.sock "$scanner" image --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 --quiet "$image" || result=1
+            docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$PWD/.cache/trivy-cache:/root/.cache/trivy" -v "$PWD/.cache/trivy:/reports" "$scanner" image --scanners vuln --severity HIGH,CRITICAL --format json --output "/reports/image-$index.json" "$image" || result=1
+            docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$PWD/.cache/trivy-cache:/root/.cache/trivy" "$scanner" image --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 --quiet "$image" || result=1
           done < .cache/staging-images.txt
+          python infra/staging/scan_summary.py .cache/trivy || result=1
           exit "$result"
       - name: Retain sanitized A-only evidence (never keys/config/logs/backups)
         if: always()
