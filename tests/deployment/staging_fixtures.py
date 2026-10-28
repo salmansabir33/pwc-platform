@@ -113,3 +113,51 @@ def certificates(value):
             file.chmod(0o640)
         else:
             file.chmod(0o644)
+
+
+def resign_app(value, *, hostname="app.pwc.internal", days=14):
+    """Replace fixture app leaf with same-key/same-CA certificate for negatives."""
+    files = value["files"]
+    root = Path(files["app_key"]).parent
+    extension = root / "app-negative.cnf"
+    extension.write_text(
+        "basicConstraints=critical,CA:FALSE\nkeyUsage=critical,digitalSignature,keyEncipherment\nextendedKeyUsage=serverAuth\nsubjectAltName=DNS:"
+        + hostname
+        + "\n"
+    )
+    for command in (
+        [
+            "req",
+            "-new",
+            "-key",
+            files["app_key"],
+            "-subj",
+            "/CN=Synthetic-negative",
+            "-out",
+            str(root / "app-negative.csr"),
+        ],
+        [
+            "x509",
+            "-req",
+            "-in",
+            str(root / "app-negative.csr"),
+            "-CA",
+            files["app_ca"],
+            "-CAkey",
+            str(root / "app_ca_key"),
+            "-CAcreateserial",
+            "-days",
+            str(days),
+            "-extfile",
+            str(extension),
+            "-out",
+            files["app_cert"],
+        ],
+    ):
+        subprocess.run(
+            ["openssl", *command],
+            stdin=subprocess.DEVNULL,
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )

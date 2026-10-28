@@ -16,7 +16,7 @@ import tempfile
 import time
 import traceback
 
-from staging_fixtures import certificates, config, deploy, ROOT
+from staging_fixtures import certificates, config, deploy, resign_app, ROOT
 
 BASES = {
     "python": "python:3.12-slim-bookworm",
@@ -203,7 +203,7 @@ import django
 django.setup()
 from django.conf import settings as s
 from config.environment import FLAGS
-assert not any(getattr(s,k) for k in FLAGS)
+assert not any(getattr(s,"DEBUG" if k=="DJANGO_DEBUG" else k) for k in FLAGS)
 assert s.SECURE_PROXY_SSL_HEADER is None
 assert not s.USE_X_FORWARDED_HOST and not s.USE_X_FORWARDED_PORT
 assert s.SESSION_COOKIE_SECURE and s.SESSION_COOKIE_HTTPONLY and s.SESSION_COOKIE_SAMESITE=='Lax'
@@ -237,6 +237,27 @@ with connection.cursor() as c:
             assert request(value["ngo_host"], "/api/v1/health/")[0] == 502
             app_cert.write_bytes(original_cert)
             app_key.write_bytes(original_key)
+            # Correct issuing CA, but wrong SAN: exercise hostname verification.
+            resign_app(value, hostname="wrong.pwc.internal")
+            try:
+                deploy.files(value)
+                raise AssertionError("Wrong-name leaf accepted")
+            except ValueError:
+                pass
+            run(*command, "restart", "app")
+            time.sleep(4)
+            assert request(value["ngo_host"], "/api/v1/health/")[0] == 502
+            # Correct CA/name but expired: validity must fail, not just trust.
+            resign_app(value, days=0)
+            try:
+                deploy.files(value)
+                raise AssertionError("Expired leaf accepted")
+            except subprocess.CalledProcessError:
+                pass
+            run(*command, "restart", "app")
+            time.sleep(4)
+            assert request(value["ops_host"], "/api/v1/health/")[0] == 502
+            app_cert.write_bytes(original_cert)
             run(*command, "restart", "app")
             run(*command, "up", "-d", "--wait", "--wait-timeout", "180")
             checks.append("untrusted-wrong-name-upstream-fails-closed-and-recovers")

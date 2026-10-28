@@ -105,7 +105,11 @@ def metadata(value, synthetic=False):
 
 def checked(command):
     result = subprocess.run(
-        command, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, check=True
+        command,
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        check=True,
     )
     return result.stdout
 
@@ -117,6 +121,9 @@ def files(value):
         file = Path(path)
         if file.is_symlink() or not file.is_file():
             fail()
+        if name.endswith("_cert") or name.endswith("_ca"):
+            if b"PRIVATE KEY" in file.read_bytes():
+                fail()
         if name in PASSWORDS or name.endswith("_key"):
             stat = file.stat()
             if (stat.st_mode & 0o777) not in {0o600, 0o640} or not (
@@ -207,6 +214,7 @@ http {{
   default_type application/octet-stream;
   access_log off;
   server_tokens off;
+  ssl_protocols TLSv1.2 TLSv1.3;
   client_body_temp_path /tmp/body;
   proxy_temp_path /tmp/proxy;
   fastcgi_temp_path /tmp/fastcgi;
