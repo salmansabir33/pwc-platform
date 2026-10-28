@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocale } from "@pwc/web-i18n";
-import { Button, Card, Badge, SelectField, Banner } from "@pwc/web-ui";
+import {
+  Button,
+  Card,
+  Badge,
+  SelectField,
+  Banner,
+  ConfirmDialog,
+} from "@pwc/web-ui";
 import type {
   WorkspaceApplication,
   WorkspaceGateway,
@@ -29,12 +36,18 @@ export function WorkspaceHistory({ gateway }: { gateway?: WorkspaceGateway }) {
   const [page, setPage] = useState<WorkspacePage | null>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
+  const [confirmation, setConfirmation] = useState<WorkspaceApplication | null>(
+    null,
+  );
+  const [uncertain, setUncertain] = useState<WorkspaceApplication | null>(null);
   const generation = useRef(0);
   const active = useRef(false);
-  const clear = () => {
+  const clear = (resetPrivate = true) => {
     generation.current++;
     active.current = false;
     setPage(null);
+    setConfirmation(null);
+    if (resetPrivate) setUncertain(null);
     setBusy(false);
     setMessage("");
   };
@@ -62,16 +75,57 @@ export function WorkspaceHistory({ gateway }: { gateway?: WorkspaceGateway }) {
     const ticket = ++generation.current;
     setPage(null);
     try {
-      if (withdrawal) await gateway.withdraw(withdrawal);
+      if (withdrawal) {
+        await gateway.withdraw(withdrawal);
+        if (ticket !== generation.current) return;
+        setConfirmation(null);
+      }
       if (ticket !== generation.current) return;
       const next = await gateway.list(kind, filter, cursor);
       if (ticket === generation.current) setPage(next);
     } catch {
-      if (ticket === generation.current)
+      if (ticket === generation.current) {
+        setConfirmation(null);
+        if (withdrawal) setUncertain(withdrawal);
         setMessage(
           t(
             "Request unavailable or access changed. Refresh after reauthentication. A withdrawal response may be lost; check current history before trying again.",
             "درخواست دستیاب نہیں یا رسائی تبدیل ہو گئی۔ موجودہ تاریخ دوبارہ دیکھیں؛ واپسی کی درخواست خودکار طور پر نہیں دہرائی جائے گی۔",
+          ),
+        );
+      }
+    } finally {
+      if (ticket === generation.current) {
+        active.current = false;
+        setBusy(false);
+      }
+    }
+  }
+  async function reconcile() {
+    if (!gateway?.detail || !uncertain || active.current) return;
+    active.current = true;
+    setBusy(true);
+    const ticket = ++generation.current;
+    try {
+      const current = await gateway.detail(uncertain.kind, uncertain.id);
+      if (ticket !== generation.current) return;
+      const row = current.application;
+      setMessage(
+        t(
+          `Server currently reports ${stateName(row.state)} · revision ${row.revision}. This is a current read, not a withdrawal receipt.`,
+          `سرور کی موجودہ حالت: ${stateName(row.state)} · نظر ثانی ${row.revision}۔ یہ موجودہ معلومات ہیں، واپسی کی رسید نہیں۔`,
+        ),
+      );
+      // An unchanged read cannot prove an in-flight command will not commit.
+      // Never automatically replay, or offer a resend from an old snapshot.
+      if (row.state === "withdrawn" || row.revision > uncertain.revision)
+        setUncertain(null);
+    } catch {
+      if (ticket === generation.current)
+        setMessage(
+          t(
+            "Status unavailable. Do not resend the withdrawal; check again later.",
+            "حالت دستیاب نہیں۔ واپسی دوبارہ نہ بھیجیں؛ بعد میں دوبارہ دیکھیں۔",
           ),
         );
     } finally {
@@ -106,12 +160,49 @@ export function WorkspaceHistory({ gateway }: { gateway?: WorkspaceGateway }) {
           )}
         </p>
       )}
+      {confirmation && (
+        <ConfirmDialog
+          open
+          title={t("Confirm withdrawal", "واپسی کی تصدیق")}
+          confirmLabel={t("Confirm withdrawal", "واپسی کی تصدیق")}
+          cancelLabel={t("Cancel", "منسوخ کریں")}
+          busy={busy}
+          onClose={() => setConfirmation(null)}
+          onConfirm={() => void load(undefined, confirmation)}
+        >
+          {t(
+            "Withdraw this historical application? This does not create or revoke NGO authority. A lost response must be reconciled before any further attempt.",
+            "اس سابقہ درخواست کو واپس لیں؟ اس سے تنظیم کے اختیارات تبدیل نہیں ہوتے۔ جواب نہ ملنے پر موجودہ حالت چیک کریں۔",
+          )}
+        </ConfirmDialog>
+      )}
+      {uncertain && (
+        <Banner
+          title={t(
+            "Withdrawal outcome not confirmed",
+            "واپسی کا نتیجہ غیر مصدقہ",
+          )}
+          tone="restricted"
+        >
+          <p>
+            {t(
+              "No automatic retry. Check this exact application independently of the current filters and page.",
+              "خودکار دوبارہ کوشش نہیں ہوگی۔ فلٹر اور صفحے سے الگ اسی درخواست کی حالت دیکھیں۔",
+            )}
+          </p>
+          {gateway?.detail && (
+            <Button disabled={busy} onClick={() => void reconcile()}>
+              {t("Check withdrawal status", "واپسی کی حالت چیک کریں")}
+            </Button>
+          )}
+        </Banner>
+      )}
       <SelectField
         label={t("Application type", "درخواست کی قسم")}
         value={kind}
         disabled={busy}
         onChange={(e) => {
-          clear();
+          clear(false);
           setKind(e.target.value as "draft" | "claim");
         }}
       >
@@ -127,7 +218,7 @@ export function WorkspaceHistory({ gateway }: { gateway?: WorkspaceGateway }) {
         value={filter}
         disabled={busy}
         onChange={(e) => {
-          clear();
+          clear(false);
           setFilter(e.target.value);
         }}
       >
@@ -207,6 +298,7 @@ export function WorkspaceHistory({ gateway }: { gateway?: WorkspaceGateway }) {
           {item.verification.map((c) => (
             <p key={c.id}>
               {purposeName(c.purpose)} · {stateName(c.state)} ·{" "}
+              {t("Verification revision", "تصدیق کی نظر ثانی")}: {c.revision} ·{" "}
               {t("Source revision", "ماخذ کی نظر ثانی")}: {c.source_revision}{" "}
               {c.stale &&
                 t(
@@ -217,18 +309,8 @@ export function WorkspaceHistory({ gateway }: { gateway?: WorkspaceGateway }) {
           ))}
           {item.can_withdraw && (
             <Button
-              disabled={busy}
-              onClick={() => {
-                if (
-                  window.confirm(
-                    t(
-                      "Withdraw this historical application? This does not revoke or create NGO authority.",
-                      "اس سابقہ درخواست کو واپس لیں؟ اس سے تنظیم کے اختیارات تبدیل نہیں ہوتے۔",
-                    ),
-                  )
-                )
-                  void load(undefined, item);
-              }}
+              disabled={busy || !!uncertain}
+              onClick={() => setConfirmation(Object.freeze({ ...item }))}
             >
               {t("Withdraw application", "درخواست واپس لیں")}
             </Button>

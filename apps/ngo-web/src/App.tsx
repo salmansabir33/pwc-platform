@@ -1,3 +1,4 @@
+import { AdministrationBoundary } from "./AdministrationBoundary";
 import { Directory } from "./PublicDirectory";
 import { useEffect, useState } from "react";
 import { Link, Route, Routes } from "react-router-dom";
@@ -14,7 +15,7 @@ import {
   NotFound,
 } from "@pwc/web-ui";
 import { Verification } from "./Verification";
-import { WorkspaceHistory } from "./WorkspaceHistory";
+import { PersonalWorkspace } from "./PersonalWorkspace";
 import { Registry } from "./Registry";
 import { config } from "./config";
 
@@ -44,6 +45,7 @@ export function App() {
           element={
             <>
               <Overview portal={config.appId} />
+              <Link to="/administration">NGO administration (unavailable)</Link>
               <Link to="/application-history">My application history</Link>
               <Link to="/ngo-registry">NGO registry · public read-only</Link>
               <Link to="/verification">
@@ -60,9 +62,10 @@ export function App() {
           element={<AccessibilitySpecimen />}
         />
         <Route path="/foundation/states" element={<StateSpecimens />} />
+        <Route path="/administration" element={<AdministrationBoundary />} />
         <Route path="/verification" element={<Verification />} />
         <Route path="/registry" element={<Registry />} />
-        <Route path="/application-history" element={<WorkspaceHistory />} />
+        <Route path="/application-history" element={<PersonalWorkspace />} />
         <Route
           path="/ngo-registry"
           element={<Directory gateway={directory} />}

@@ -1,3 +1,4 @@
+import { OperationsStatus } from "./OperationsStatus";
 import { Directory } from "../../ngo-web/src/PublicDirectory";
 import { useEffect, useState } from "react";
 import { Link, Route, Routes } from "react-router-dom";
@@ -43,6 +44,7 @@ export function App() {
           element={
             <>
               <Overview portal={config.appId} />
+              <Link to="/operations-status">Controlled rollout status</Link>
               <Link to="/ngo-registry">NGO registry · public read-only</Link>
               <Link to="/controlled-onboarding">
                 PWC-01 · Controlled onboarding (unavailable)
@@ -59,6 +61,7 @@ export function App() {
           path="/controlled-onboarding"
           element={<ControlledOnboarding />}
         />
+        <Route path="/operations-status" element={<OperationsStatus />} />
         <Route path="/verification" element={<Verification review />} />
         <Route
           path="/ngo-registry"

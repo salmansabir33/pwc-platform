@@ -6,6 +6,7 @@ import {
 } from "./index";
 import type { ContractSchemas, SyntheticTransport } from "./index";
 export type WorkspacePage = ContractSchemas["WorkspacePage"];
+export type WorkspaceDetail = ContractSchemas["WorkspaceDetail"];
 export type WorkspaceApplication = ContractSchemas["WorkspaceApplication"];
 export type DirectoryPage = ContractSchemas["RegistrySearchPage"];
 export type DirectoryFilter = Readonly<{
@@ -142,6 +143,32 @@ export function parseWorkspace(v: unknown): WorkspacePage {
   }
   return structuredClone(v) as WorkspacePage;
 }
+/** Reuse the exact closed page projection validator; no receipt semantics. */
+export function parseWorkspaceDetail(v: unknown): WorkspaceDetail {
+  if (
+    !object(v) ||
+    !closed(v, [
+      "application",
+      "administration_available",
+      "intake_available",
+      "verification_available",
+    ])
+  )
+    bad();
+  const parsed = parseWorkspace({
+    results: [v.application],
+    next_cursor: null,
+    administration_available: v.administration_available,
+    intake_available: v.intake_available,
+    verification_available: v.verification_available,
+  });
+  return {
+    application: parsed.results[0]!,
+    administration_available: false,
+    intake_available: false,
+    verification_available: parsed.verification_available,
+  };
+}
 export interface DirectoryGateway {
   search(
     filters: DirectoryFilter,
@@ -204,6 +231,7 @@ export interface WorkspaceGateway {
     state?: string,
     cursor?: string,
   ): Promise<WorkspacePage>;
+  detail?(kind: "draft" | "claim", id: string): Promise<WorkspaceDetail>;
   withdraw(item: WorkspaceApplication): Promise<void>;
 }
 /** Owner history port only; NO production networking escape for W1 or domain commands. */
@@ -287,6 +315,20 @@ export class HistoricalWorkspaceClient implements WorkspaceGateway {
     return parseWorkspace(
       await this.request("/api/v1/registry/workspace/?" + params),
     );
+  }
+  async detail(
+    kind: "draft" | "claim",
+    value: string,
+  ): Promise<WorkspaceDetail> {
+    if (!["draft", "claim"].includes(kind) || !id(value)) bad();
+    const result = parseWorkspaceDetail(
+      await this.request(
+        `/api/v1/registry/workspace/${kind === "draft" ? "drafts" : "claims"}/${value}/`,
+      ),
+    );
+    if (result.application.id !== value || result.application.kind !== kind)
+      bad();
+    return result;
   }
   async withdraw(item: WorkspaceApplication): Promise<void> {
     if (

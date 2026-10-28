@@ -15,7 +15,16 @@ test("owner history default transport remains gated, accessible and isolated in 
   await expect(
     page.getByRole("button", { name: "Refresh history" }),
   ).toBeDisabled();
-  await expect(page.getByRole("status")).toContainText("disabled");
+  await expect(
+    page
+      .getByRole("status")
+      .filter({ hasText: "Personal networking remains disabled" }),
+  ).toBeVisible();
+  await expect(
+    page
+      .getByRole("status")
+      .filter({ hasText: "No checked personal session." }),
+  ).toBeVisible();
   await page
     .getByRole("combobox", { name: "Display language" })
     .selectOption("ur");
