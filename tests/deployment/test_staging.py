@@ -1,5 +1,7 @@
 import copy
 import json
+import io
+from contextlib import redirect_stdout
 from pathlib import Path
 import subprocess
 import tempfile
@@ -7,6 +9,7 @@ import unittest
 from unittest.mock import patch
 
 from staging_fixtures import config, deploy, ROOT
+from infra.staging.scan_summary import main as scan_summary
 
 
 class StagingTests(unittest.TestCase):
@@ -186,3 +189,59 @@ class StagingTests(unittest.TestCase):
         with patch.object(Path, "is_symlink", return_value=True):
             with self.assertRaises(ValueError):
                 deploy.files(value)
+
+
+class ScanSummaryTests(unittest.TestCase):
+    def reports(self, directory, vulnerabilities):
+        for index in range(1, 6):
+            (Path(directory) / f"image-{index}.json").write_text(
+                json.dumps(
+                    {
+                        "SchemaVersion": 2,
+                        "Metadata": {"Env": ["sensitive-canary-never-print"]},
+                        "Results": [{"Vulnerabilities": vulnerabilities}],
+                    }
+                )
+            )
+
+    def test_fixable_fail_and_no_environment_output(self):
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            redirect_stdout(io.StringIO()) as output,
+        ):
+            self.reports(
+                directory,
+                [
+                    {
+                        "Severity": "HIGH",
+                        "FixedVersion": "2",
+                        "VulnerabilityID": "CVE-2026-12345",
+                    }
+                ],
+            )
+            self.assertEqual(scan_summary(directory), 1)
+            self.assertIn("CVE-2026-12345", output.getvalue())
+            self.assertNotIn("sensitive-canary", output.getvalue())
+
+    def test_unfixed_are_not_hidden(self):
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            redirect_stdout(io.StringIO()) as output,
+        ):
+            self.reports(
+                directory,
+                [{"Severity": "CRITICAL", "VulnerabilityID": "CVE-2026-12345"}],
+            )
+            self.assertEqual(scan_summary(directory), 0)
+            self.assertIn("1 HIGH/CRITICAL; 0 fixable", output.getvalue())
+
+    def test_incomplete_reports_fail(self):
+        with tempfile.TemporaryDirectory() as directory, redirect_stdout(io.StringIO()):
+            self.assertEqual(scan_summary(directory), 1)
+
+    def test_invalid_schema_is_not_clean(self):
+        with tempfile.TemporaryDirectory() as directory, redirect_stdout(io.StringIO()):
+            self.reports(directory, [])
+            (Path(directory) / "image-1.json").write_text("{}")
+            with self.assertRaises(ValueError):
+                scan_summary(directory)

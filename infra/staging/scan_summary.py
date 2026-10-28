@@ -16,6 +16,13 @@ def main(directory):
     failed = False
     for report in reports:
         value = json.loads(report.read_text())
+        if (
+            not re.fullmatch(r"image-[1-5]\.json", report.name)
+            or value.get("SchemaVersion") != 2
+            or not isinstance(value.get("Metadata"), dict)
+            or not isinstance(value.get("Results"), list)
+        ):
+            raise ValueError("Invalid scan schema")
         findings = [
             item
             for result in value.get("Results", [])
