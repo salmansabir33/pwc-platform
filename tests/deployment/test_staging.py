@@ -94,6 +94,15 @@ class StagingTests(unittest.TestCase):
             {"gateway"},
         )
         self.assertIn("pgdata:/var/lib/postgresql/data", services["db"]["volumes"])
+        self.assertEqual(services["db"]["image"], services["dbtool"]["image"])
+        self.assertEqual(
+            services["db"]["build"]["args"]["POSTGRES_IMAGE"],
+            self.value["images"]["postgres"],
+        )
+        self.assertIn(
+            "exec setpriv --reuid=postgres --regid=postgres --init-groups",
+            (ROOT / "infra/staging/postgres-entrypoint.sh").read_text(),
+        )
         for service in services.values():
             self.assertTrue(service["read_only"])
             self.assertEqual(service["cap_drop"], ["ALL"])

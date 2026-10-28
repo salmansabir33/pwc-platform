@@ -333,10 +333,17 @@ def compose(value, destination):
         "health_cert",
         "health_key",
     ]
+    pg_image = f"{project}-db:{release}"
+    pg_build = {
+        "context": str(ROOT),
+        "dockerfile": "infra/staging/postgres.Dockerfile",
+        "args": {"POSTGRES_IMAGE": image["postgres"]},
+    }
     services = {
         "db": {
             **common,
-            "image": image["postgres"],
+            "image": pg_image,
+            "build": pg_build,
             "entrypoint": ["/bin/sh", "/etc/pwc/postgres-entrypoint.sh"],
             "environment": {
                 "POSTGRES_DB": "pwc_staging",
@@ -409,7 +416,8 @@ def compose(value, destination):
         },
         "dbtool": {
             **common,
-            "image": image["postgres"],
+            "image": pg_image,
+            "build": pg_build,
             "restart": "no",
             "profiles": ["maintenance"],
             "user": "10001:10001",

@@ -60,10 +60,13 @@ def main():
         stack = str(ROOT / "infra/staging/stack.sh")
         built = [
             value["project"] + "-" + name + ":" + value["release"]
-            for name in ("app", "ngo", "ops")
+            for name in ("app", "ngo", "ops", "db")
         ]
         try:
-            print("Building three separate staging images", flush=True)
+            print(
+                "Building application, database and two separate portal images",
+                flush=True,
+            )
             run(stack, str(manifest), "build")
             print(
                 "Starting private PostgreSQL, migrations, mTLS application and portals",
@@ -229,6 +232,15 @@ with connection.cursor() as c:
 """
             run(*command, "exec", "-T", "app", "python", "-c", settings_probe)
             checks.append("effective-security-cookies-gates-bounded-role-db-tls")
+            run(
+                *command,
+                "exec",
+                "-T",
+                "db",
+                "sh",
+                "-c",
+                'test ! -e /usr/local/bin/gosu && test "$(stat -c %U /proc/1)" = postgres',
+            )
             # Prove shared aggregate budget and audit INSERT works at threshold.
             for name in ("ngo", "ops"):
                 for _ in range(29):
@@ -351,10 +363,7 @@ with connection.cursor() as c:
             (cache / "staging-smoke.json").write_text(json.dumps(report, indent=2))
             # Scanner consumes only image names; no deployment configuration/artifact.
             (cache / "staging-images.txt").write_text(
-                "\n".join(
-                    built + [value["images"][name] for name in ("postgres", "haproxy")]
-                )
-                + "\n"
+                "\n".join(built + [value["images"]["haproxy"]]) + "\n"
             )
             print(
                 "Synthetic Compose passed: "

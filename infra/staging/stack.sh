@@ -8,7 +8,7 @@ case "$manifest" in /*/compose.json) ;; *) exit 2 ;; esac
 [ -f "$manifest" ] || exit 2
 compose() { docker compose --env-file /dev/null -f "$manifest" "$@"; }
 case "$operation" in
-    build) compose config --quiet; compose build --pull app ngo ops ;;
+    build) compose config --quiet; compose build --pull app ngo ops db ;;
     up)
         # An explicit migration error stops startup. Never automatically migrate on
         # an application restart; maintenance is a controlled separate operation.

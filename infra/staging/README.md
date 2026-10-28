@@ -50,7 +50,9 @@ transport and public projections without those powers.
   and CA issuer remain trusted administrators, not isolated adversaries.
 * Only DB has a persistent named volume. Processes are non-root except the
   official PostgreSQL initialization wrapper, which copies keys to a private
-  tmpfs owned by postgres then drops privileges. All filesystems are read-only,
+  tmpfs owned by postgres then drops privileges using Debian util-linux `setpriv`. The derived PG image
+  removes the unused downloaded Go `gosu` helper; it is not suppressed from scans.
+  `PG_MAJOR=16` is asserted before any data-directory initialization. All filesystems are read-only,
   capabilities dropped (minimal initialization exceptions only for DB), bounded
   processes/memory/log rotation, no Docker socket or host network in the stack.
 * WSGI uses `pwc_app`: public organization/workspace + migration SELECT, abuse
@@ -291,7 +293,7 @@ python3 -m unittest discover -s tests/deployment -v
 sudo env PWC_DISPOSABLE_CI=YES python3 tests/deployment/compose_smoke.py
 ```
 
-`.github/workflows/staging.yml` builds app + separate portal images from immutable
+`.github/workflows/staging.yml` builds app + hardened database + separate portal images from immutable
 resolved base digests; uses ephemeral CAs/secrets outside checkout; tests real
 TLS/WSGI, disabled gates, effective cookies/settings, private TLS DB, bounded role,
 exact Host/SNI, forwarded spoofing/framing rejection, no plaintext ingress,

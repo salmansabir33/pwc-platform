@@ -19,6 +19,7 @@
 !infra/staging
 !infra/staging/runtime.py
 !infra/staging/gunicorn.conf.py
+!infra/staging/postgres.Dockerfile
 !infra/staging/app.Dockerfile
 !infra/staging/portal.Dockerfile
 !package.json
