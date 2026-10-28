@@ -14,6 +14,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import traceback
 
 from staging_fixtures import certificates, config, deploy, ROOT
 
@@ -300,7 +301,7 @@ with connection.cursor() as c:
             try:
                 deploy.files(invalid)
                 raise AssertionError("Untrusted certificate accepted")
-            except subprocess.CalledProcessError:
+            except (ValueError, subprocess.CalledProcessError):
                 pass
             checks.append("render-rejects-unsafe-permissions-keys-untrusted-chain")
             report = {
@@ -328,6 +329,27 @@ with connection.cursor() as c:
                 + " checks; B/C/D not accepted",
                 flush=True,
             )
+        except Exception:
+            status = subprocess.run(
+                [*command, "ps", "-a", "--format", "json"],
+                capture_output=True,
+                text=True,
+            )
+            for line in status.stdout.splitlines():
+                try:
+                    item = json.loads(line)
+                    print(
+                        "::notice title=Redacted container state::"
+                        + json.dumps(
+                            {
+                                key: item.get(key)
+                                for key in ("Service", "State", "Health", "ExitCode")
+                            }
+                        )
+                    )
+                except (ValueError, TypeError):
+                    pass
+            raise
         finally:
             run(*command, "down", "--volumes", "--remove-orphans")
 
@@ -335,7 +357,19 @@ with connection.cursor() as c:
 if __name__ == "__main__":
     try:
         main()
-    except Exception:
+    except Exception as error:
+        frames = [
+            f"{Path(frame.filename).name}:{frame.lineno}"
+            for frame in traceback.extract_tb(error.__traceback__)
+            if Path(frame.filename).name == "compose_smoke.py"
+        ]
+        print(
+            "::error title=Synthetic staging failure::"
+            + type(error).__name__
+            + " at "
+            + ",".join(frames),
+            file=sys.stderr,
+        )
         print(
             "Synthetic Compose test failed; output redacted; no host acceptance",
             file=sys.stderr,
