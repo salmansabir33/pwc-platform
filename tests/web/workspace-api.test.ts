@@ -186,3 +186,44 @@ describe("bounded public and owner-history clients", () => {
     expect(() => parseWorkspace(inconsistent)).toThrow();
   });
 });
+
+describe("exact owner reconciliation read", () => {
+  it("uses a fixed point GET and validates identity/kind without claiming a receipt", async () => {
+    const page = historyPage();
+    const detail = {
+      application: page.results[0],
+      administration_available: false,
+      intake_available: false,
+      verification_available: true,
+    };
+    const transport = vi
+      .fn()
+      .mockResolvedValueOnce(json(detail))
+      .mockResolvedValueOnce(
+        json({
+          ...detail,
+          application: {
+            ...detail.application,
+            id: "00000000-0000-4000-8000-000000000002",
+          },
+        }),
+      );
+    const api = new HistoricalWorkspaceClient(state(), transport);
+    expect((await api.detail("draft", ID)).application.id).toBe(ID);
+    expect(transport.mock.calls[0]?.[0]).toBe(
+      `/api/v1/registry/workspace/drafts/${ID}/`,
+    );
+    expect(transport.mock.calls[0]?.[1]).toMatchObject({
+      method: "GET",
+      credentials: "same-origin",
+      cache: "no-store",
+    });
+    await expect(api.detail("draft", ID)).rejects.toMatchObject({
+      kind: "contract",
+    });
+    await expect(api.detail("draft", "../../escape")).rejects.toMatchObject({
+      kind: "contract",
+    });
+    expect(transport).toHaveBeenCalledTimes(2);
+  });
+});

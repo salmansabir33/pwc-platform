@@ -35,6 +35,22 @@ def history(user, params):
     values = list(query.order_by("id")[:21])
     more = len(values) > 20
     values = values[:20]
+    results = project(user, kind, values)
+    return {
+        "results": results,
+        "next_cursor": signing.dumps(
+            dict(binding, after=str(values[-1].pk)), salt="pwc.workspace.v1"
+        )
+        if more
+        else None,
+        "administration_available": False,
+        "intake_available": False,
+        "verification_available": settings.PWC_VERIFICATION_ENABLED,
+    }
+
+
+def project(user, kind, values):
+    """Same minimized projection for pages and owner-only point reconciliation."""
     ids = [v.pk for v in values]
     cases = VerificationCase.objects.filter(claimant=user, **{kind + "_id__in": ids})
     if not settings.PWC_VERIFICATION_ENABLED:
@@ -73,13 +89,18 @@ def history(user, params):
                 ],
             }
         )
+    return results
+
+
+def detail(user, kind, pk):
+    if kind not in ("draft", "claim"):
+        registry.fail("VALIDATION_ERROR", 400)
+    model = OrganizationDraft if kind == "draft" else OrganizationClaim
+    # User/session locked by adapter, then exact owner lookup; foreign and missing
+    # are indistinguishable. No target organization/profile/receipt lookup.
+    value = registry.own(model, user, pk)
     return {
-        "results": results,
-        "next_cursor": signing.dumps(
-            dict(binding, after=str(values[-1].pk)), salt="pwc.workspace.v1"
-        )
-        if more
-        else None,
+        "application": project(user, kind, [value])[0],
         "administration_available": False,
         "intake_available": False,
         "verification_available": settings.PWC_VERIFICATION_ENABLED,

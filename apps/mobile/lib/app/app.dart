@@ -12,6 +12,7 @@ import '../features/security.dart';
 import '../features/registry.dart';
 import '../features/directory.dart';
 import '../features/workspace_history.dart';
+import '../features/administration_boundary.dart';
 import '../features/verification.dart';
 
 class PwcApp extends ConsumerStatefulWidget {
@@ -50,6 +51,16 @@ class _PwcAppState extends ConsumerState<PwcApp> with WidgetsBindingObserver {
                 gateway: ref.watch(directoryProvider),
                 urdu: ref.watch(urduProvider),
               ),
+            ),
+          ),
+        ),
+        GoRoute(
+          path: '/administration',
+          builder: (c, s) => _Frame(
+            index: 2,
+            child: Consumer(
+              builder: (context, ref, child) =>
+                  AdministrationBoundaryScreen(urdu: ref.watch(urduProvider)),
             ),
           ),
         ),

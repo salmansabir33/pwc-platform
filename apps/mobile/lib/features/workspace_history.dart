@@ -4,7 +4,7 @@ import '../design/controls.dart';
 
 // Read-only port; deliberately absent from NativeApi's personal operation list.
 abstract interface class WorkspaceHistoryGateway {
-  Future<WorkspacePage> load(String kind, {String? cursor});
+  Future<WorkspacePage> load(String kind, {String state = '', String? cursor});
 }
 
 class WorkspaceHistoryScreen extends StatefulWidget {
@@ -24,6 +24,7 @@ class WorkspaceHistoryScreen extends StatefulWidget {
 class _WorkspaceHistoryScreenState extends State<WorkspaceHistoryScreen> {
   WorkspacePage? _page;
   String _kind = 'draft';
+  String _filter = '';
   bool _busy = false;
   bool _error = false;
   int _generation = 0;
@@ -67,7 +68,7 @@ class _WorkspaceHistoryScreenState extends State<WorkspaceHistoryScreen> {
       _page = null;
     });
     try {
-      final page = await api.load(_kind, cursor: cursor);
+      final page = await api.load(_kind, state: _filter, cursor: cursor);
       if (mounted && ticket == _generation) {
         setState(() {
           _page = page;
@@ -135,6 +136,39 @@ class _WorkspaceHistoryScreenState extends State<WorkspaceHistoryScreen> {
                 }
               },
       ),
+      DropdownButtonFormField<String>(
+        initialValue: _filter,
+        decoration: InputDecoration(
+          labelText: t('Application state', 'درخواست کی حالت'),
+        ),
+        items: [
+          DropdownMenuItem(
+            value: '',
+            child: Text(t('All states', 'تمام حالتیں')),
+          ),
+          for (final state in [
+            'draft',
+            'submitted',
+            'pending',
+            'needs_information',
+            'rejected',
+            'withdrawn',
+          ])
+            DropdownMenuItem(value: state, child: Text(stateName(state))),
+        ],
+        onChanged: _busy
+            ? null
+            : (value) {
+                if (value != null) {
+                  setState(() {
+                    _filter = value;
+                    _page = null;
+                    _error = false;
+                    _generation++;
+                  });
+                }
+              },
+      ),
       FilledButton(
         onPressed: widget.gateway == null || _busy ? null : () => load(),
         child: Text(t('Refresh history', 'تاریخ دوبارہ دیکھیں')),
@@ -180,7 +214,7 @@ class _WorkspaceHistoryScreenState extends State<WorkspaceHistoryScreen> {
                 Text('${t('Revision', 'نظر ثانی')}: ${item.revision}'),
                 for (final c in item.verification)
                   Text(
-                    '${c.purpose == 'organization_eligibility' ? t('NGO eligibility', 'تنظیم کی اہلیت') : t('Representative mandate', 'نمائندے کا اختیار')} · ${stateName(c.state)}${c.stale ? t(' · Stale source', ' · پرانا ماخذ') : ''}',
+                    '${c.purpose == 'organization_eligibility' ? t('NGO eligibility', 'تنظیم کی اہلیت') : t('Representative mandate', 'نمائندے کا اختیار')} · ${stateName(c.state)} · ${t('Verification revision', 'تصدیق کی نظر ثانی')}: ${c.revision} · ${t('Source revision', 'ماخذ کی نظر ثانی')}: ${c.sourceRevision}${c.stale ? t(' · Stale source', ' · پرانا ماخذ') : ''}',
                   ),
               ],
             ),

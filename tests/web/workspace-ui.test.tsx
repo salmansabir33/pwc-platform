@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { LocaleProvider } from "@pwc/web-i18n";
@@ -6,6 +6,14 @@ import { Directory } from "../../apps/ngo-web/src/PublicDirectory";
 import { WorkspaceHistory } from "../../apps/ngo-web/src/WorkspaceHistory";
 import { ScopeState } from "@pwc/web-api";
 import type { WorkspacePage } from "@pwc/web-api";
+beforeEach(() => {
+  HTMLDialogElement.prototype.showModal = function () {
+    this.setAttribute("open", "");
+  };
+  HTMLDialogElement.prototype.close = function () {
+    this.removeAttribute("open");
+  };
+});
 const ID = "00000000-0000-4000-8000-000000000001";
 const page = (): WorkspacePage => ({
   results: [
@@ -103,7 +111,6 @@ describe("permission-aware public and personal history screens", () => {
         ],
       });
     const withdraw = vi.fn().mockResolvedValue(undefined);
-    vi.spyOn(window, "confirm").mockReturnValue(true);
     const u = userEvent.setup();
     render(
       <LocaleProvider>
@@ -115,6 +122,8 @@ describe("permission-aware public and personal history screens", () => {
     await u.click(screen.getByRole("button", { name: "Refresh history" }));
     expect(await screen.findByText("Synthetic Welfare")).toBeVisible();
     await u.click(screen.getByRole("button", { name: "Withdraw application" }));
+    expect(withdraw).not.toHaveBeenCalled();
+    await u.click(screen.getByRole("button", { name: "Confirm withdrawal" }));
     expect(
       await screen.findByText("Withdrawn", { selector: "span" }),
     ).toBeVisible();
@@ -148,5 +157,65 @@ describe("permission-aware public and personal history screens", () => {
     expect(
       screen.getByRole("button", { name: "Refresh history" }),
     ).not.toBeDisabled();
+  });
+  it("never retries a lost response and reconciles the exact item even when filters exclude it", async () => {
+    const current = page();
+    const list = vi.fn().mockResolvedValue(current);
+    const withdraw = vi
+      .fn()
+      .mockRejectedValue(new Error("discarded actual response"));
+    const detail = vi
+      .fn()
+      .mockResolvedValueOnce({
+        application: current.results[0],
+        administration_available: false,
+        intake_available: false,
+        verification_available: true,
+      })
+      .mockResolvedValueOnce({
+        application: {
+          ...current.results[0],
+          state: "withdrawn",
+          revision: 2,
+          can_withdraw: false,
+        },
+        administration_available: false,
+        intake_available: false,
+        verification_available: true,
+      });
+    const u = userEvent.setup();
+    render(
+      <LocaleProvider>
+        <WorkspaceHistory
+          gateway={{ state: new ScopeState("ngo"), list, withdraw, detail }}
+        />
+      </LocaleProvider>,
+    );
+    await u.selectOptions(
+      screen.getByLabelText("Application state"),
+      "submitted",
+    );
+    await u.click(screen.getByRole("button", { name: "Refresh history" }));
+    await u.click(
+      await screen.findByRole("button", { name: "Withdraw application" }),
+    );
+    await u.click(screen.getByRole("button", { name: "Confirm withdrawal" }));
+    await u.click(
+      await screen.findByRole("button", { name: "Check withdrawal status" }),
+    );
+    // Unchanged state cannot prove the command won't commit later.
+    expect(
+      await screen.findByText("Withdrawal outcome not confirmed"),
+    ).toBeVisible();
+    await u.click(
+      screen.getByRole("button", { name: "Check withdrawal status" }),
+    );
+    expect(
+      await screen.findByText(/Server currently reports Withdrawn/),
+    ).toBeVisible();
+    expect(withdraw).toHaveBeenCalledTimes(1);
+    expect(list).toHaveBeenCalledTimes(1);
+    expect(detail).toHaveBeenCalledWith("draft", ID);
+    expect(screen.queryByText("Withdrawal outcome not confirmed")).toBeNull();
   });
 });

@@ -38,6 +38,14 @@ def definitions():
                 "verification": dict(arr(ref("WorkspaceVerification")), maxItems=2),
             }
         ),
+        "WorkspaceDetail": obj(
+            {
+                "application": ref("WorkspaceApplication"),
+                "administration_available": {"type": "boolean", "const": False},
+                "intake_available": {"type": "boolean", "const": False},
+                "verification_available": {"type": "boolean"},
+            }
+        ),
         "WorkspacePage": obj(
             {
                 "results": dict(arr(ref("WorkspaceApplication")), maxItems=20),
@@ -93,7 +101,9 @@ def paths():
         {"in": "query", "name": "cursor", "schema": dict(S, maxLength=1024)},
     ]
     directory["x-pwc"]["unknown_query"] = "reject"
-    directory["x-pwc"]["client_network_exception"] = "Explicit public-only reader: exact directory GET, credentials omitted, no private/auth operations. Frozen W1 web_network=disabled continues to govern original authenticated client."
+    directory["x-pwc"]["client_network_exception"] = (
+        "Explicit public-only reader: exact directory GET, credentials omitted, no private/auth operations. Frozen W1 web_network=disabled continues to govern original authenticated client."
+    )
     for code in ("400", "429", "503"):
         directory["responses"][code] = response("AuthError")
     for code in ("403", "404", "405"):
@@ -102,7 +112,26 @@ def paths():
     directory["responses"]["429"]["headers"]["Retry-After"] = {
         "schema": {"type": "string"}
     }
+    details = {}
+    for kind in ("Draft", "Claim"):
+        op = operation(
+            "registryWorkspace" + kind,
+            "personal",
+            None,
+            200,
+            "WorkspaceDetail",
+            "registry",
+        )
+        op["description"] = (
+            "Current owner-only minimized historical application status, with latest verification summaries. For explicit lost-response reconciliation; NOT a command receipt or proof of who caused withdrawal. An unchanged row cannot prove an in-flight command will not commit. No mutation, retry, new intake or NGO authority. Missing/foreign UUIDs indistinguishable. No query/body accepted."
+        )
+        op["parameters"] = [
+            {"in": "path", "name": "pk", "required": True, "schema": UUID}
+        ]
+        op["x-pwc"]["unknown_query"] = "reject"
+        details["/api/v1/registry/workspace/" + kind.lower() + "s/{pk}/"] = {"get": op}
     return {
+        **details,
         "/api/v1/directory/": {"get": directory},
         "/api/v1/registry/workspace/": {"get": workspace},
     }

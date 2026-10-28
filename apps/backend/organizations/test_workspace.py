@@ -219,3 +219,79 @@ class WorkspaceTests(VerificationFixtures, TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["results"], [])
         self.assertNotIn(self.source["id"].encode(), response.content)
+
+    def test_exact_reconciliation_is_owner_minimized_read_not_receipt(self):
+        path = f"workspace/drafts/{self.source['id']}/"
+        before = self.call("get", path)
+        self.assertEqual(before.status_code, 200, before.content)
+        self.assertEqual(
+            before.json()["application"], self.workspace().json()["results"][0]
+        )
+        self.assertEqual(before["Cache-Control"], "no-store")
+        foreign = self.call("get", path, token=self.other_token)
+        missing = self.call(
+            "get", f"workspace/drafts/{uuid.uuid4()}/", token=self.other_token
+        )
+        self.assertEqual(foreign.status_code, 404)
+        foreign_error, missing_error = foreign.json()["error"], missing.json()["error"]
+        foreign_error.pop("request_id")
+        missing_error.pop("request_id")
+        self.assertEqual(foreign_error, missing_error)
+        self.assertEqual(self.call("post", path).status_code, 405)
+        self.assertEqual(
+            self.call("get", path, {"state": "withdrawn"}).status_code, 400
+        )
+        self.assertEqual(
+            self.call("get", f"workspace/claims/{self.source['id']}/").status_code, 404
+        )
+        with self.settings(PWC_LEGACY_ONBOARDING_TEST_EXERCISE=False):
+            result = self.call(
+                "post", f"drafts/{self.source['id']}/withdraw/", {"revision": 1}
+            )
+            self.assertEqual(result.status_code, 200, result.content)
+            # Caller may discard/loss the response. Current point read remains
+            # available when the old list filter no longer contains the record.
+            self.assertEqual(self.workspace(state="draft").json()["results"], [])
+            after = self.call("get", path).json()
+            self.assertEqual(after["application"]["state"], "withdrawn")
+            self.assertEqual(after["application"]["revision"], 2)
+            self.assertTrue(after["application"]["verification"][0]["stale"])
+            self.assertFalse(after["administration_available"])
+            self.assertNotIn("receipt", after)
+            self.assertEqual(
+                RegistryEvent.objects.filter(
+                    draft_id=self.source["id"], action="withdraw"
+                ).count(),
+                1,
+            )
+
+    def test_point_read_rechecks_session_hold_and_deployment_gates(self):
+        path = f"workspace/drafts/{self.source['id']}/"
+        self.user.recovery_hold_state = "restricted"
+        self.user.hold_set_at = timezone.now()
+        self.user.hold_reason = "compromise"
+        self.user.save()
+        self.assertEqual(self.call("get", path).status_code, 403)
+        self.user.recovery_hold_state = "clear"
+        self.user.hold_set_at = None
+        self.user.hold_reason = ""
+        self.user.save()
+        with self.settings(PWC_REGISTRY_ENABLED=False):
+            self.assertEqual(self.call("get", path).status_code, 503)
+        with self.settings(PWC_ENVIRONMENT="production"):
+            self.assertEqual(self.call("get", path).status_code, 503)
+        AuthSession.objects.filter(user=self.user).update(
+            revoked_at=timezone.now(), revocation_reason="logout"
+        )
+        self.assertEqual(self.call("get", path).status_code, 401)
+
+    def test_point_claim_does_not_disclose_private_target(self):
+        row = self.workspace(kind="claim").json()["results"][0]
+        result = self.call("get", f"workspace/claims/{row['id']}/")
+        self.assertEqual(result.status_code, 200, result.content)
+        self.assertEqual(result.json()["application"], row)
+        self.assertIsNone(row["name"])
+        self.assertIsNone(row["city"])
+        self.assertIsNone(row["classification"])
+        self.assertFalse(OrganizationAccess.objects.exists())
+        self.assertFalse(NGOGrant.objects.exists())

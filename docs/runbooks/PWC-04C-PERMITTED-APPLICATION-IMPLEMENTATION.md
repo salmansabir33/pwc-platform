@@ -132,3 +132,57 @@ network permission, signing or API authority. No suppression, allowlist or audit
 weakening is introduced. Final Android compilation and actual selected-coordinate
 OSV evidence must pass on the patched immutable PR head. Local Android SDK remains
 absent; no local native build is claimed.
+
+## 10. Authenticated workspace follow-on — 28 October 2026
+
+Baseline: merged PR27 / `5bee4d8133c9bb75eb768603e3d63eeb6a6424a0`.
+This is additive implementation, not authority to reopen intake or activate W2.
+
+### Delivery matrix
+
+| Area | Classification | Implemented behavior / precise boundary |
+| --- | --- | --- |
+| Public NGO registry, both React portals | Fully functional within existing public-read exception | Existing fixed public reader, filters, signed pagination, errors, EN/UR; exercised against actual PostgreSQL again. No publication/consent expansion. |
+| Owner point reconciliation | Backend functional; shipped browser integration gated | New GET `/api/v1/registry/workspace/drafts/{pk}/` and `/claims/{pk}/`. Exact owner-filtered lookup, same locked session/user, recovery/config/transport gates, no query/body, no-store, bounded minimized current projection. Missing/foreign IDs indistinguishable. Claims never join private target names. |
+| Personal session composition | Backend functional; shipped browser integration gated | Explicit injected-only `PersonalWorkspaceSession`: real `me`, fresh CSRF bootstrap after personal scope selection, memory-only CSRF, verified-contact/hold restriction, scope purge and logout. No ambient fetch, environment enable switch, login/MFA bypass or NGO context inferred. Default application route has no adapter. |
+| Owner history/withdrawal React | Backend functional; shipped browser integration gated | Shared accessible confirmation dialog, revision-bound original withdrawal, no optimistic success, no automatic replay, exact-record reconciliation independent of filters/page, source and verification revisions. Scope/locale/unmount discard late data. Unknown result remains unresolved after an unchanged read; filter changes do not discard uncertainty. |
+| Operations rollout policy | Backend functional; shipped browser integration gated | Fixed authenticated GET of existing generic `controlledRequirements`; strict closed constant validation. Displays actual policy version, server source and blockers when injected; default unavailable. This is NOT a capability response, private verification summary, queue, audit reader or reviewer authorization. No invented counts or decisions. |
+| NGO information/admin/representatives/nonfinance permissions/invitations/appointments | UI-state preparation | `/administration`: EN/UR unavailable/no-context/restricted/expired boundaries, no private profile/roster/grant/token payload or mutation buttons. Public organization information remains in separate approved registry. Invitation acceptance is explicitly distinct from grant activation; 72-hour maximum remains. |
+| Flutter history/admin | UI-state preparation for private domains | History state filter forwarded to optional read-only port, case/source revision display; new EN/UR administration boundary states/route/tests. No new native networking or personal allowlist operation. Generated detail DTOs do not authorize native transport. Existing public fixed HTTPS reader unchanged. |
+| Privileged writers and readers | Privileged unavailable | Officer provisioning, appointment/grant activation, review queues/decisions, recipient-bound invitation acceptance, private administration, finance/signatory/support/alliance powers remain deny-default. No new table or migration. |
+
+### Lost-response semantics
+
+The point read returns `WorkspaceDetail.application` plus the existing false administration/intake flags and verification availability. It is **not** a withdrawal command receipt, an idempotency result, proof of who caused a state change, or proof that an in-flight command will not commit. An unchanged old revision keeps the UI outcome unresolved and does not offer automatic resend. A withdrawn state or later revision can resolve the stale snapshot. Normal CAS/state checks still prevent duplicate withdrawal events. The original withdrawal schemas and audit behavior are unchanged.
+
+### Genuine executable synthetic integration
+
+`tests/end-to-end/auth-harness/` is a separate, nonshipped Vite entry; neither app imports it. `authenticated-workspace.py` requires explicit test environment, PostgreSQL and a `pwc_synthetic_*` disposable database. It creates/drops a separate test database, constructs historical fixtures using preserved tests, then closes intake during browser execution. Browser cookies originate from actual Django web-login fixtures. No fixture HTTP endpoint, bearer bridge, development proxy trust rule or production credential toggle is added.
+
+A temporary TLS certificate covers **synthetic** `.invalid` portal aliases. The WSGI server recognizes HTTPS only on actual TLS sockets, with exact port-qualified portal origins. Playwright trusts the self-signed certificate only in these test contexts. The test performs real React → direct TLS → Django → PostgreSQL requests for both public portals, authenticated policy, owner history, cross-owner denial, CSRF failure/purge/explicit session recheck (no mutation retry), deliberate loss of an actual successful withdrawal response, exact-record reconciliation despite an excluding filter, stale source revision, duplicate conflict, wrong-portal cookie denial and logout/session invalidation. Final database checks require exactly one withdrawal event and no authority grants. Nothing here proves production certificate/provider/ingress acceptance.
+
+Reproduce after installing locked dependencies and setting the existing test database environment:
+
+```sh
+npx vite build --config tests/end-to-end/auth-harness/vite.config.ts
+python tests/end-to-end/authenticated-workspace.py
+# Normal regression (run from backend directory, or name all four apps):
+python apps/backend/manage.py test accounts access organizations contracts --testrunner contracts.testing.ContractRunner --noinput
+npm run check
+npm run contracts:types:check
+npm run test:browser # with existing PWC_PUBLIC_API_TARGET and synthetic public seed
+```
+
+The frontend CI job runs the direct-TLS integration as well as normal browser regression; it uses no new dependency or workflow permission. Browser tests and synthetic component/widget tests remain separate evidence categories.
+
+### Exact remaining gate / evidence discipline
+
+ADR-0003 §4 still requires independently accepted evidence for **both exact live portal hosts**: TLS/certificates, Host/portal and cookie/session/MFA/CSRF binding, proxy/IP/NAT/provider configuration and ingress behavior. HTTP Compose or Arena's TLS-terminating preview is expressly not the accepted live authenticated ingress. AUTH-01–09 remain pending; E/GM/REAL approvals are not inferred. Therefore credentialed shipped web transport remains disabled, as does private native-domain networking. No live reviewer/admin success, physical device/native Urdu rendering, manual accessibility, production deployment or completion of 04C is claimed.
+
+### Follow-on validation at implementation head
+
+Local actual PostgreSQL full regression: **474 tests passed**, **310 distinct route/method/status wire combinations** (496.850 seconds). The new workspace/contracts subset also passed 28 tests / 84 wire combinations. An earlier full run correctly caught the two missing new success examples; examples were added and both the targeted and complete suites rerun successfully (no suppression).
+
+`npm run check` passed: tokens, TypeScript, formatting, **172 unit/component tests**, both production builds. Canonical OpenAPI/security/example/source checks and TypeScript generation drift check passed. Production-bundle browser regression: **26 passed**, no failures/skips, including the two new unavailable-state routes at 320px with EN/UR RTL and automated axe checks. The separate genuine direct-TLS authenticated synthetic workflow passed again; its assertions are not counted as the 26 production-bundle tests. npm audit reported zero vulnerabilities. Python dependency consistency, Django system/migration drift/application checks passed; no model migration was introduced.
+
+Local Flutter/Android SDKs are absent; WASM Dart formatting is only preparation, not Flutter analyzer/build/device proof. Hosted checks on this new branch must supply the authoritative pinned Flutter/Android results. Prior PR27's results are not attributed to this implementation. Human Urdu, physical-device/native rendering, manual accessibility and live ingress/provider approvals remain outstanding regardless of automated results.

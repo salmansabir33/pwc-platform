@@ -277,12 +277,13 @@ export class ApiClient {
       this.csrf = null;
     });
   }
-  async bootstrapCsrf(signal?: AbortSignal): Promise<void> {
+  async bootstrapCsrf(signal?: AbortSignal): Promise<string> {
     const generation = this.state.generation;
     const token = await this.request("csrf", parseCsrf, undefined, signal);
     if (generation !== this.state.generation || signal?.aborted)
       throw new StaleResponseError();
     this.csrf = token;
+    return token;
   }
   async request<O extends Operation, T>(
     operation: O,
@@ -410,6 +411,7 @@ export {
   HistoricalWorkspaceClient,
   parseDirectory,
   parseWorkspace,
+  parseWorkspaceDetail,
 } from "./workspace";
 export type {
   DirectoryGateway,
@@ -417,5 +419,9 @@ export type {
   DirectoryPage,
   WorkspaceGateway,
   WorkspacePage,
+  WorkspaceDetail,
   WorkspaceApplication,
 } from "./workspace";
+
+export { PersonalWorkspaceSession } from "./personal-session";
+export { OperationsPolicyClient } from "./operations-policy";
