@@ -28,6 +28,7 @@
     "apps/pwc-ops",
     "packages/web-*",
     "tests/web",
-    "*.ts"
+    "*.ts",
+    "tests/end-to-end/auth-harness"
   ]
 }

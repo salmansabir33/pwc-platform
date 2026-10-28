@@ -7,7 +7,7 @@ for (const [origin, path, title] of [
     "/operations-status",
     "Operations · Controlled rollout status",
   ],
-]) {
+] as const) {
   test(`${path}: default-gated boundary is responsive, localized and makes no API calls`, async ({
     page,
   }) => {
@@ -18,11 +18,11 @@ for (const [origin, path, title] of [
     });
     await page.setViewportSize({ width: 320, height: 844 });
     await page.goto(origin + path);
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText(title!);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(title);
     for (const locale of ["en", "ur"]) {
       await page
         .getByRole("combobox", {
-          name: locale === "en" ? "Display language" : "Display language",
+          name: "Display language",
         })
         .selectOption(locale);
       await expect(page.locator("html")).toHaveAttribute(

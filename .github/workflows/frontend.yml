@@ -55,6 +55,10 @@ jobs:
           python apps/backend/manage.py migrate --noinput
           python tests/end-to-end/seed_public_directory.py
       - run: npx playwright install --with-deps chromium
+      - name: Direct TLS synthetic authenticated browser to Django and PostgreSQL
+        run: |
+          npx vite build --config tests/end-to-end/auth-harness/vite.config.ts
+          python tests/end-to-end/authenticated-workspace.py
       - run: npm run test:browser
       - name: Redacted browser count evidence
         run: |
