@@ -138,6 +138,7 @@ Use an immutable reviewed checkout, not a writable development worktree.
 # Set these locally to owner-chosen absolute paths, outside the checkout.
 export STAGING_CONFIG=/absolute/managed/config.json
 export STAGING_RENDER=/absolute/managed/rendered-release
+python3 infra/staging/deploy.py --config "$STAGING_CONFIG" --check
 python3 infra/staging/deploy.py --config "$STAGING_CONFIG" --output "$STAGING_RENDER"
 # Generated compose contains paths/origins but no secret values. Keep it private.
 docker compose --env-file /dev/null -f "$STAGING_RENDER/compose.json" config --quiet
@@ -146,6 +147,11 @@ infra/staging/stack.sh "$STAGING_RENDER/compose.json" build
 infra/staging/stack.sh "$STAGING_RENDER/compose.json" up
 infra/staging/stack.sh "$STAGING_RENDER/compose.json" status
 ```
+
+Render output must be a **new/empty directory**; existing nonempty output is
+never overwritten. Use a new immutable render directory for every release/config
+change, so Compose recreates services against changed bind mount sources. `--check`
+validates without writing and can be repeated safely.
 
 `up`: DB healthy -> one-shot owner migrations/grants -> app genuine mTLS/DB health
 -> distinct portals -> gateway. Any error stops the script. It is idempotent but
@@ -165,7 +171,10 @@ work and confers **no** B/C/D acceptance. Never use it on an actual staging host
 ## PKI provisioning, DNS validation and renewal
 
 Use the approved issuer/secret manager, not the disposable test PKI generator.
-All leaf certs/keys must match and have >7 days remaining. Renderer uses OpenSSL
+All leaf certs/keys must match, use distinct keys and have >7 days remaining.
+Server certificates require exactly their listed DNS SAN, not a wildcard/shared
+SAN certificate. CA bundles must be distinct and public cert/CA files must not
+contain private key material. Renderer uses OpenSSL
 chain/purpose/hostname checks and rejects invalid/untrusted chains/keys.
 
 | Files | Required identity / purpose |

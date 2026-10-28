@@ -74,6 +74,8 @@ def metadata(value, synthetic=False):
             pass
         else:
             fail()
+        if synthetic and not host.endswith(".test"):
+            fail()
         if host.endswith((".invalid", ".localhost")) or (
             not synthetic
             and host.endswith(
@@ -499,10 +501,17 @@ def render(config, output, synthetic=False):
     ):
         fail()
     files(value)
+    if output is None:
+        print(
+            "Staging configuration validated; no files written or deployment performed"
+        )
+        return None
     output = Path(output).resolve()
     if any(c in str(output) for c in ("$", "\n", "\r", ":")):
         fail()
     if output.is_relative_to(ROOT):
+        fail()
+    if output.exists() and any(output.iterdir()):
         fail()
     output.mkdir(parents=True, exist_ok=True, mode=0o700)
     output.chmod(0o700)
@@ -557,7 +566,13 @@ backend denied
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", required=True)
-    parser.add_argument("--output", required=True)
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument(
+        "--output", help="New/empty immutable render directory outside Git"
+    )
+    mode.add_argument(
+        "--check", action="store_true", help="Validate only; never write files"
+    )
     parser.add_argument(
         "--synthetic",
         action="store_true",

@@ -136,7 +136,18 @@ def main():
                 assert not any(
                     key.lower().startswith("access-control-allow") for key in headers
                 )
-                assert request(host, "/api/v1/directory/")[0] == 200
+                assert (
+                    request(
+                        host,
+                        "/api/v1/directory/",
+                        {
+                            "X-Forwarded-For": "203.0.113.99",
+                            "Forwarded": "for=198.51.100.7",
+                            "X-Real-IP": "192.0.2.1",
+                        },
+                    )[0]
+                    == 200
+                )
                 # Disabled auth is asserted, not bypassed for infrastructure tests.
                 assert request(host, "/api/v1/auth/me/")[0] in (401, 403, 404, 503)
                 assert request(host, "/api/v1/not-a-route/")[0] == 404
@@ -336,6 +347,7 @@ with connection.cursor() as c:
             }
             cache = ROOT / ".cache"
             cache.mkdir(exist_ok=True)
+            os.chown(cache, ROOT.stat().st_uid, ROOT.stat().st_gid)
             (cache / "staging-smoke.json").write_text(json.dumps(report, indent=2))
             # Scanner consumes only image names; no deployment configuration/artifact.
             (cache / "staging-images.txt").write_text(
