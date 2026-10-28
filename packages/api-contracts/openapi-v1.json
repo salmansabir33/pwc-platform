@@ -2180,6 +2180,32 @@
         ],
         "type": "object"
       },
+      "WorkspaceDetail": {
+        "additionalProperties": false,
+        "properties": {
+          "administration_available": {
+            "const": false,
+            "type": "boolean"
+          },
+          "application": {
+            "$ref": "#/components/schemas/WorkspaceApplication"
+          },
+          "intake_available": {
+            "const": false,
+            "type": "boolean"
+          },
+          "verification_available": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "application",
+          "administration_available",
+          "intake_available",
+          "verification_available"
+        ],
+        "type": "object"
+      },
       "WorkspacePage": {
         "additionalProperties": false,
         "properties": {
@@ -19987,6 +20013,562 @@
           }
         ],
         "summary": "registryWorkspace",
+        "x-pwc": {
+          "authorization": "backend-only; no role/MFA escalation or NGO/finance inheritance",
+          "availability": "default-disabled",
+          "csrf": "required-for-cookie-unsafe",
+          "direct_https": true,
+          "disabled": {
+            "code": "AUTH_UNAVAILABLE",
+            "status": 503
+          },
+          "error_precedence": "transport, method, parsing and configuration guards can precede the nominal disabled response; synthetic HTTP gate hides unsupported methods too",
+          "gates": [
+            "PWC_REGISTRY_ENABLED",
+            "PWC_AUTH_SESSIONS_ENABLED"
+          ],
+          "transport": "personal",
+          "unknown_query": "reject"
+        }
+      }
+    },
+    "/api/v1/registry/workspace/claims/{pk}/": {
+      "get": {
+        "description": "Current owner-only minimized historical application status, with latest verification summaries. For explicit lost-response reconciliation; NOT a command receipt or proof of who caused withdrawal. An unchanged row cannot prove an in-flight command will not commit. No mutation, retry, new intake or NGO authority. Missing/foreign UUIDs indistinguishable. No query/body accepted.",
+        "operationId": "registryWorkspaceClaim",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "pk",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceDetail"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              },
+              "Retry-After": {
+                "description": "Optional retry hint, never automatic command replay",
+                "schema": {
+                  "pattern": "^[0-9]+$",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Framework/proxy failures can be non-JSON; clients must fail closed without rendering raw bodies"
+          }
+        },
+        "security": [
+          {
+            "browserCookie": []
+          },
+          {
+            "mobileBearer": []
+          }
+        ],
+        "summary": "registryWorkspaceClaim",
+        "x-pwc": {
+          "authorization": "backend-only; no role/MFA escalation or NGO/finance inheritance",
+          "availability": "default-disabled",
+          "csrf": "required-for-cookie-unsafe",
+          "direct_https": true,
+          "disabled": {
+            "code": "AUTH_UNAVAILABLE",
+            "status": 503
+          },
+          "error_precedence": "transport, method, parsing and configuration guards can precede the nominal disabled response; synthetic HTTP gate hides unsupported methods too",
+          "gates": [
+            "PWC_REGISTRY_ENABLED",
+            "PWC_AUTH_SESSIONS_ENABLED"
+          ],
+          "transport": "personal",
+          "unknown_query": "reject"
+        }
+      }
+    },
+    "/api/v1/registry/workspace/drafts/{pk}/": {
+      "get": {
+        "description": "Current owner-only minimized historical application status, with latest verification summaries. For explicit lost-response reconciliation; NOT a command receipt or proof of who caused withdrawal. An unchanged row cannot prove an in-flight command will not commit. No mutation, retry, new intake or NGO authority. Missing/foreign UUIDs indistinguishable. No query/body accepted.",
+        "operationId": "registryWorkspaceDraft",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "pk",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceDetail"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              },
+              "Retry-After": {
+                "description": "Optional retry hint, never automatic command replay",
+                "schema": {
+                  "pattern": "^[0-9]+$",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Framework/proxy failures can be non-JSON; clients must fail closed without rendering raw bodies"
+          }
+        },
+        "security": [
+          {
+            "browserCookie": []
+          },
+          {
+            "mobileBearer": []
+          }
+        ],
+        "summary": "registryWorkspaceDraft",
         "x-pwc": {
           "authorization": "backend-only; no role/MFA escalation or NGO/finance inheritance",
           "availability": "default-disabled",

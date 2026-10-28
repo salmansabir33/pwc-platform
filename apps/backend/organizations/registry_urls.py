@@ -1,9 +1,11 @@
 from django.urls import path
 from .registry_views import RegistryView
-from .workspace_views import WorkspaceView
+from .workspace_views import WorkspaceView, WorkspaceDetailView
 
 urlpatterns = [
     path("workspace/", WorkspaceView.as_view()),
+    path("workspace/drafts/<uuid:pk>/", WorkspaceDetailView.as_view(kind="draft")),
+    path("workspace/claims/<uuid:pk>/", WorkspaceDetailView.as_view(kind="claim")),
     path("search/", RegistryView.as_view(resource="search")),
 ]
 for plural, kind in (("drafts", "draft"), ("claims", "claim")):

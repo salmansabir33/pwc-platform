@@ -41,7 +41,7 @@
   "apps/backend/organizations/registry.py": "34f1836494e3c85b8ccab4af7f326a395f9392ad97cca60cb87ea3e80911a01e",
   "apps/backend/organizations/registry_contract.py": "e99a1e7ebb04ab1f4a612d7257c9041999bd76f49f1875003665745638ec7182",
   "apps/backend/organizations/registry_serializers.py": "8ddc0825659e7f6c3ee39a08dc6cfe76b800ed985adff61c03e023966ccc250f",
-  "apps/backend/organizations/registry_urls.py": "bce5e3b85e236483f232ff9648b4d0d750d2a7935237b48f759e2ec638b6fdaa",
+  "apps/backend/organizations/registry_urls.py": "32d140941345fb0c895639b68bc0bc47ccae5a229f2c2c1715404394e50fc58d",
   "apps/backend/organizations/registry_views.py": "f54cbedbebc5c3c16a45081faa5c972c71fde0bec1e12e9e7153f6bead480d74",
   "apps/backend/organizations/verification.py": "8d34b13bfea55315930d90855f7638f3d92df606c11bdac37e4b549369859ffd",
   "apps/backend/organizations/verification_contract.py": "453456590765e0a719d3670e901c43fa4c5a2b75c69fd83a827c3e8a070fd80c",
@@ -49,7 +49,7 @@
   "apps/backend/organizations/verification_urls.py": "e93e60c9d2e8baa78f8c8b407939723743b0536689d5769dcf9d000fe27276c0",
   "apps/backend/organizations/verification_views.py": "5c8a7a0bd229f44219a827bb68a044b0a9abd784f42b425379d815986b1d1ac8",
   "apps/backend/organizations/views.py": "373ac31b0c2b676e42204fc84f2b690c068bbf460e860ca7eb13dd131dae39b0",
-  "apps/backend/organizations/workspace.py": "8e0a0e46ef8156469d1b73bee065ad57347028a93f4a0a21da9425c2330240e4",
-  "apps/backend/organizations/workspace_contract.py": "14fd326b3d56b44407d6e17e1f07b3d0cd87ea1fb6b6e52cc13ce9db4c2b44ee",
-  "apps/backend/organizations/workspace_views.py": "6c1aec65771948fd07987a307c9a0321b40bea139b6d1b3592cdf41d38facf0a"
+  "apps/backend/organizations/workspace.py": "192598cebdd1eb9bec84d627b4d52287a5ac838cb1fef5233762a5d679306fde",
+  "apps/backend/organizations/workspace_contract.py": "28d1608740d21f3e7fa599ef6405489bc14fe3fee0fab8751ced782555fb63c8",
+  "apps/backend/organizations/workspace_views.py": "7f2b385af0d99e4b6a335143761c5b8bc15d9ee4fe663df8777ad3f7a7497d80"
 }

@@ -1606,6 +1606,68 @@
       "kind": "response",
       "operationId": "registryWorkspace",
       "status": 200
+    },
+    {
+      "operationId": "registryWorkspaceDraft",
+      "kind": "response",
+      "status": 200,
+      "body": {
+        "administration_available": false,
+        "intake_available": false,
+        "verification_available": true,
+        "application": {
+          "can_withdraw": true,
+          "city": "Faisalabad",
+          "classification": "unregistered",
+          "id": "00000000-0000-4000-8000-000000000001",
+          "kind": "draft",
+          "name": "Synthetic Welfare",
+          "organization_id": "00000000-0000-4000-8000-000000000001",
+          "revision": 1,
+          "state": "submitted",
+          "verification": [
+            {
+              "id": "00000000-0000-4000-8000-000000000001",
+              "purpose": "organization_eligibility",
+              "revision": 1,
+              "source_revision": 1,
+              "stale": false,
+              "state": "submitted"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "operationId": "registryWorkspaceClaim",
+      "kind": "response",
+      "status": 200,
+      "body": {
+        "administration_available": false,
+        "intake_available": false,
+        "verification_available": true,
+        "application": {
+          "can_withdraw": true,
+          "city": null,
+          "classification": null,
+          "id": "00000000-0000-4000-8000-000000000001",
+          "kind": "claim",
+          "name": null,
+          "organization_id": "00000000-0000-4000-8000-000000000001",
+          "revision": 1,
+          "state": "submitted",
+          "verification": [
+            {
+              "id": "00000000-0000-4000-8000-000000000001",
+              "purpose": "organization_eligibility",
+              "revision": 1,
+              "source_revision": 1,
+              "stale": false,
+              "state": "submitted"
+            }
+          ]
+        }
+      }
     }
   ],
   "contract_version": "1.0.0",
