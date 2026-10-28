@@ -7,9 +7,11 @@ import {
   PublicDirectoryClient,
 } from "@pwc/web-api";
 import { PersonalWorkspace } from "../../../apps/ngo-web/src/PersonalWorkspace";
+import { OperationsWorkspace } from "../../../apps/pwc-ops/src/OperationsWorkspace";
 import { OperationsStatus } from "../../../apps/pwc-ops/src/OperationsStatus";
 import { Directory } from "../../../apps/ngo-web/src/PublicDirectory";
 import "../../../packages/design-tokens/tokens.css";
+import "@pwc/web-ui/styles.css";
 let lose = false;
 let csrfFault = false;
 const transport: typeof fetch = async (path, init) => {
@@ -57,11 +59,14 @@ function Harness() {
       >
         Corrupt next CSRF (test only)
       </button>
-      <button onClick={() => void session.logout()}>
-        End personal session (test only)
-      </button>
-      <PersonalWorkspace session={session} />
-      <OperationsStatus gateway={policy} />
+      {location.hostname.startsWith("ops.") ? (
+        <OperationsWorkspace session={session} policy={policy} />
+      ) : (
+        <>
+          <PersonalWorkspace session={session} />
+          <OperationsStatus gateway={policy} />
+        </>
+      )}
       <Directory gateway={directory} />
     </main>
   );

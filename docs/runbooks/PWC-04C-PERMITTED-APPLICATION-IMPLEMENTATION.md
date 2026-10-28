@@ -186,3 +186,75 @@ Local actual PostgreSQL full regression: **474 tests passed**, **310 distinct ro
 `npm run check` passed: tokens, TypeScript, formatting, **172 unit/component tests**, both production builds. Canonical OpenAPI/security/example/source checks and TypeScript generation drift check passed. Production-bundle browser regression: **26 passed**, no failures/skips, including the two new unavailable-state routes at 320px with EN/UR RTL and automated axe checks. The separate genuine direct-TLS authenticated synthetic workflow passed again; its assertions are not counted as the 26 production-bundle tests. npm audit reported zero vulnerabilities. Python dependency consistency, Django system/migration drift/application checks passed; no model migration was introduced.
 
 Local Flutter/Android SDKs are absent; WASM Dart formatting is only preparation, not Flutter analyzer/build/device proof. Hosted checks on this new branch must supply the authoritative pinned Flutter/Android results. Prior PR27's results are not attributed to this implementation. Human Urdu, physical-device/native rendering, manual accessibility and live ingress/provider approvals remain outstanding regardless of automated results.
+
+## 11. Browser authentication integration and ADR-0003 review — 28 October 2026
+
+Baseline independently verified: PR28 merged at `d2dd4dd21a4f609394c68499fc76754dd4bac8a1`.
+This follow-on implements actual browser password/MFA issuance and shared accessible
+session controls, not another readiness-only report. The new fixed-path authentication
+adapter consumes existing `webLogin` / `webMfaConfirm` contracts without changing the
+original six-operation foundation catalog or any mobile allowlist. It is injected-only;
+neither shipped application supplies a credentialed adapter.
+
+- CSRF is bootstrapped before password login and renewed after backend cookie/CSRF
+  rotation, including the 202 preauthentication phase. Challenge/control remain in
+  memory with a monotonic maximum-five-minute deadline; 202 never creates a scope.
+  Explicit TOTP/recovery confirmation is followed by authoritative `me` and fresh CSRF.
+- Personal scope only: clear recovery hold and verified contact required before history.
+  A recovery-code session renders restricted. No recovery-clearance or role workaround.
+- Forms support paste/password managers, clear password/code fields immediately,
+  discard preauth on cancel/expiry/navigation/visibility/invalidation, and keep secrets
+  out of app storage/URLs/logs/serialized session objects. Same-origin non-sensitive
+  broadcast invalidation is connected only while the controller is mounted. No polling.
+- Logout clears local data immediately, reacquires CSRF for an explicit retry, requires
+  actual 204 success, and reports unconfirmed server outcome on error. Throttled attempts
+  respect retry delays without timer-driven requests or automatic unsafe replay.
+- The Operations portal has compatible personal-session presentation, but login grants
+  no officer powers. Its default-disabled `/personal-session` route exposes no login
+  form or private reader. Existing public and default-disabled status routes are retained.
+- Backend now explicitly pins host-only/root CSRF defaults and fails closed on broader
+  CSRF cookie domain/path, unsafe SameSite or nonempty trusted origins at the browser
+  session gate. Canonical wire schemas are unchanged; source-lock regenerated. No model
+  or migration is added; production flag, proxy-trust, delivery and history gates remain.
+
+The direct-TLS test now uses **real browser password login** for successful sessions,
+not positive fixture-cookie injection. It enrolls a synthetic MFA account using existing
+backend contracts and tests real TOTP and recovery-code login, anonymous/cross-owner,
+CSRF mismatch/recheck, exact revision and lost-response reconciliation, duplicate/stale,
+wrong-portal cookie, logout, expired/revoked/inactive negative sessions, Host/Origin and
+forwarded-header misuse, cookie/storage/URL policies. Negative pre-expired/revoked cookie
+fixtures remain explicitly synthetic. EN/UR narrow-viewport sign-in controls receive
+real Chromium/axe checks. No production-host evidence is attributed to these certificates.
+
+See [the exact deployment handoff](../../infra/web-auth/README.md) and the credential-free
+`python scripts/web_host_preflight.py --help` observer for operator-supplied actual hosts.
+No hosts were provided; no external DNS/certificate/ingress validation is claimed. Actual
+hosts, trusted upstream/peer configuration, source-IP/NAT budgets, log/rotation/restore
+review and independent acceptance remain missing. The staging/production parser also
+continues to reject enabled service flags; development/test history remains gated. Host
+acceptance alone is not permission to change those separate runtime contracts.
+
+### This follow-on: local validation and acceptance matrix
+
+Actual PostgreSQL full suite: **478 passed / 310 distinct route-method-status wire
+combinations** (488.064s); new ingress subset: 4 passed. `npm run check`: **187 web
+unit/component tests passed**, type/format/token checks and both production builds.
+Normal production-bundle browser regression: **27 passed / 0 failures / 0 skipped**.
+Separate real-browser password/TOTP/recovery/session/workspace TLS workflow: **PASS**,
+with one withdrawal event and zero grants asserted in PostgreSQL. The host observer's
+four unit tests pass; **they are not external-host observations**. OpenAPI/security/
+examples/source/compatibility and TS generation checks, dependency consistency, Django
+system/migration drift/application checks passed; npm audit reports zero findings.
+Flutter source/contracts/native allowlists are unchanged; local Flutter/Android SDK is
+absent. Hosted checks on this new implementation must supply current platform evidence.
+
+| Acceptance category | Result |
+| --- | --- |
+| Locally integrated and verified | Actual browser password/TOTP/recovery login, owner historical workspace and withdrawal/reconciliation against Django/PostgreSQL; security negatives and EN/UR automated UI checks |
+| Production-host verified | **None** — no real origins, deployment topology, certificates or independent evidence supplied; no real-host probe or successful acceptance invented |
+| Implemented but disabled pending host/operational acceptance | Fixed-path browser authentication, NGO workspace and separate compatible OPS session/status infrastructure; production service/runtime gates preserved, no shipped credentialed adapter |
+| Privileged operation separately blocked | All reviewer/officer provisioning, private queues/commands, new intake, invitations/grants and finance/signatory/support authority |
+
+No branch merge, hosted green check or synthetic test is a live W2/production security
+signature. Use the deployment handoff for accountable exact-host review before any
+separately authorized runtime/transport activation work.

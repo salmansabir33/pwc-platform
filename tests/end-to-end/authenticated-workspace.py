@@ -27,6 +27,12 @@ from django.conf import settings  # noqa: E402
 from django.core.handlers.wsgi import WSGIHandler  # noqa: E402
 from django.test import override_settings  # noqa: E402
 from django.test.utils import setup_databases, teardown_databases  # noqa: E402
+from accounts.test_mfa import MFA_CONFIG, MfaFixtures
+from accounts.test_registration import PASSWORD
+from accounts.models import AuthSession
+from django.utils import timezone
+from datetime import timedelta
+import pyotp
 from accounts.test_sessions import NGO, OPS  # noqa: E402
 from organizations.test_verification import CONFIG, VerificationFixtures  # noqa: E402
 from organizations.models import RegistryEvent, OrganizationAccess  # noqa: E402
@@ -52,6 +58,10 @@ class Fixtures(VerificationFixtures, unittest.TestCase):
     pass
 
 
+class BrowserMfaFixtures(MfaFixtures, unittest.TestCase):
+    pass
+
+
 def run():
     if settings.PWC_ENVIRONMENT != "test":
         raise SystemExit(
@@ -68,7 +78,19 @@ def run():
         raise SystemExit("Build the NONSHIPPED auth-harness first")
     database = setup_databases(verbosity=0, interactive=False)
     try:
-        with tempfile.TemporaryDirectory() as temporary, override_settings(**CONFIG):
+        with (
+            tempfile.TemporaryDirectory() as temporary,
+            override_settings(
+                **dict(
+                    CONFIG,
+                    **{
+                        k: v
+                        for k, v in MFA_CONFIG.items()
+                        if k.startswith("PWC_AUTH_MFA")
+                    },
+                )
+            ),
+        ):
             cert, key = Path(temporary) / "cert.pem", Path(temporary) / "key.pem"
             subprocess.run(
                 [
@@ -131,24 +153,64 @@ def run():
                 f.setup_verification()
                 f.case()
                 source = f.source["id"]
-                cookies = {}
-                for name, user, host in [
-                    ("owner", f.user, NGO),
-                    ("foreign", f.other, NGO),
-                    ("ops", f.user, OPS),
-                ]:
-                    client, _ = f.web(user, host=f"{host}:{port}")
-                    cookies[name] = [
+                # Browser performs real password/MFA login; no positive cookie injection.
+                mf = BrowserMfaFixtures()
+                mf.user, _ = f.account("browser-mfa")
+                mf.auth = mf.mobile(mf.user)
+                mf.token = mf.auth["access_token"]
+                enrolled = mf.enrollment()
+                activation = mf.call(
+                    "mfa/enrollment/confirm",
+                    {
+                        "enrollment_id": enrolled["enrollment_id"],
+                        "code": pyotp.TOTP(enrolled["secret"]).now(),
+                    },
+                )
+                mf.assertEqual(activation.status_code, 200)
+                negatives = {}
+                for name in ("revoked", "expired", "inactive"):
+                    user, _ = f.account("browser-" + name)
+                    client, response = f.web(user, host=f"{NGO}:{port}")
+                    session_id = response.json()["session"]["id"]
+                    if name == "revoked":
+                        AuthSession.objects.filter(pk=session_id).update(
+                            revoked_at=timezone.now(), revocation_reason="logout"
+                        )
+                    elif name == "expired":
+                        AuthSession.objects.filter(pk=session_id).update(
+                            created_at=timezone.now() - timedelta(hours=2),
+                            last_interactive_at=timezone.now() - timedelta(hours=1),
+                            absolute_expires_at=timezone.now() - timedelta(seconds=1),
+                        )
+                    else:
+                        user.is_active = False
+                        user.save()
+                    negatives[name] = [
                         {
-                            "name": morsel.key,
-                            "value": morsel.value,
-                            "url": f"https://{host}:{port}/",
+                            "name": m.key,
+                            "value": m.value,
+                            "url": f"https://{NGO}:{port}/",
                             "secure": True,
-                            "httpOnly": bool(morsel["httponly"]),
-                            "sameSite": "Strict",
+                            "httpOnly": bool(m["httponly"]),
+                            "sameSite": "Lax",
                         }
-                        for morsel in client.cookies.values()
+                        for m in client.cookies.values()
                     ]
+                fixture = {
+                    "port": port,
+                    "certificate": str(cert),
+                    "source": source,
+                    "accounts": {
+                        "owner": f.user.email,
+                        "foreign": f.other.email,
+                        "ops": f.user.email,
+                        "mfa": mf.user.email,
+                    },
+                    "password": PASSWORD,
+                    "mfaSecret": enrolled["secret"],
+                    "recoveryCode": activation.json()["recovery_codes"][0],
+                    "negatives": negatives,
+                }
                 # Historical fixtures only; actual browser workload has intake closed.
                 with override_settings(PWC_LEGACY_ONBOARDING_TEST_EXERCISE=False):
                     thread = Thread(target=server.serve_forever, daemon=True)
@@ -159,9 +221,7 @@ def run():
                             cwd=ROOT,
                             env={
                                 **os.environ,
-                                "PWC_SYNTHETIC_BROWSER_FIXTURE": json.dumps(
-                                    {"port": port, "cookies": cookies, "source": source}
-                                ),
+                                "PWC_SYNTHETIC_BROWSER_FIXTURE": json.dumps(fixture),
                             },
                             check=True,
                         )

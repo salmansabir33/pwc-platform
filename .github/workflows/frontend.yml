@@ -58,6 +58,7 @@ jobs:
       - name: Direct TLS synthetic authenticated browser to Django and PostgreSQL
         run: |
           npx vite build --config tests/end-to-end/auth-harness/vite.config.ts
+          python -m unittest discover -s tests/deployment -v
           python tests/end-to-end/authenticated-workspace.py
       - run: npm run test:browser
       - name: Redacted browser count evidence
