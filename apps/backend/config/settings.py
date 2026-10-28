@@ -113,6 +113,10 @@ SESSION_COOKIE_DOMAIN = None
 SESSION_COOKIE_PATH = "/"
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_DOMAIN = None
+CSRF_COOKIE_PATH = "/"
+# Exact same-origin contract: no sibling/wildcard exception to repair ingress.
+CSRF_TRUSTED_ORIGINS = []
 AUTHENTICATION_BACKENDS = ["accounts.backends.VerifiedEmailBackend"]
 
 # Separate default-off synthetic MFA switch and external factor encryption ring.
