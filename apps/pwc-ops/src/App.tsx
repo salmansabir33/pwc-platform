@@ -1,3 +1,4 @@
+import { OperationsWorkspace } from "./OperationsWorkspace";
 import { OperationsStatus } from "./OperationsStatus";
 import { Directory } from "../../ngo-web/src/PublicDirectory";
 import { useEffect, useState } from "react";
@@ -62,6 +63,7 @@ export function App() {
           element={<ControlledOnboarding />}
         />
         <Route path="/operations-status" element={<OperationsStatus />} />
+        <Route path="/personal-session" element={<OperationsWorkspace />} />
         <Route path="/verification" element={<Verification review />} />
         <Route
           path="/ngo-registry"

@@ -7,6 +7,11 @@ for (const [origin, path, title] of [
     "/operations-status",
     "Operations · Controlled rollout status",
   ],
+  [
+    "http://127.0.0.1:5174",
+    "/personal-session",
+    "Operations · Controlled rollout status",
+  ],
 ] as const) {
   test(`${path}: default-gated boundary is responsive, localized and makes no API calls`, async ({
     page,

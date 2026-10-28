@@ -354,6 +354,8 @@ export class ApiClient {
           this.state.invalidate("access-denied");
         throw error;
       }
+      if (operation === "logout" && response.status !== 204)
+        throw new ApiError("contract", response.status, "INVALID_RESPONSE");
       let result: T;
       try {
         result = decode(payload);
