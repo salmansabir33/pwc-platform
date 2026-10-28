@@ -60,6 +60,14 @@ class PersonalScreen extends ConsumerWidget {
             ur ? 'میری درخواستوں کی تاریخ' : 'My application history',
           ),
         ),
+        TextButton(
+          onPressed: () => context.push('/administration'),
+          child: Text(
+            ur
+                ? 'تنظیم کی انتظامیہ (غیر دستیاب)'
+                : 'NGO administration (unavailable)',
+          ),
+        ),
         const SizedBox(height: 16),
         FilledButton(
           onPressed: session.busy

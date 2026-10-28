@@ -7,8 +7,14 @@ import 'package:pwc_mobile/features/workspace_history.dart';
 class FakeHistory implements WorkspaceHistoryGateway {
   Completer<WorkspacePage>? pending;
   bool fail = false;
+  String? lastState;
   @override
-  Future<WorkspacePage> load(String kind, {String? cursor}) async {
+  Future<WorkspacePage> load(
+    String kind, {
+    String state = '',
+    String? cursor,
+  }) async {
+    lastState = state;
     if (fail) throw StateError('private server note');
     if (pending != null) return pending!.future;
     return WorkspacePage.fromJson({
@@ -23,7 +29,16 @@ class FakeHistory implements WorkspaceHistoryGateway {
           'city': 'City',
           'classification': 'unregistered',
           'can_withdraw': false,
-          'verification': [],
+          'verification': [
+            {
+              'id': '00000000-0000-4000-8000-000000000003',
+              'purpose': 'organization_eligibility',
+              'state': 'submitted',
+              'revision': 1,
+              'source_revision': 1,
+              'stale': true,
+            },
+          ],
         },
       ],
       'next_cursor': null,
@@ -87,4 +102,26 @@ void main() {
     expect(find.text('Synthetic historical draft'), findsNothing);
     expect(find.textContaining('transport unavailable'), findsOneWidget);
   });
+  testWidgets(
+    'state filter reaches read-only port and source revisions are explicit',
+    (tester) async {
+      final api = FakeHistory();
+      await tester.pumpWidget(history(gateway: api));
+      final filter = tester
+          .widgetList<DropdownButtonFormField<String>>(
+            find.byType(DropdownButtonFormField<String>),
+          )
+          .last;
+      filter.onChanged!('withdrawn');
+      await tester.pump();
+      await tester.tap(find.text('Refresh history'));
+      await tester.pumpAndSettle();
+      expect(api.lastState, 'withdrawn');
+      expect(
+        find.textContaining('Verification revision: 1 · Source revision: 1'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('Stale source'), findsOneWidget);
+    },
+  );
 }
