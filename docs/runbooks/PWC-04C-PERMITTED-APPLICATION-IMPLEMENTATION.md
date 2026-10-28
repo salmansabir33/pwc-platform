@@ -178,3 +178,11 @@ The frontend CI job runs the direct-TLS integration as well as normal browser re
 ### Exact remaining gate / evidence discipline
 
 ADR-0003 §4 still requires independently accepted evidence for **both exact live portal hosts**: TLS/certificates, Host/portal and cookie/session/MFA/CSRF binding, proxy/IP/NAT/provider configuration and ingress behavior. HTTP Compose or Arena's TLS-terminating preview is expressly not the accepted live authenticated ingress. AUTH-01–09 remain pending; E/GM/REAL approvals are not inferred. Therefore credentialed shipped web transport remains disabled, as does private native-domain networking. No live reviewer/admin success, physical device/native Urdu rendering, manual accessibility, production deployment or completion of 04C is claimed.
+
+### Follow-on validation at implementation head
+
+Local actual PostgreSQL full regression: **474 tests passed**, **310 distinct route/method/status wire combinations** (496.850 seconds). The new workspace/contracts subset also passed 28 tests / 84 wire combinations. An earlier full run correctly caught the two missing new success examples; examples were added and both the targeted and complete suites rerun successfully (no suppression).
+
+`npm run check` passed: tokens, TypeScript, formatting, **172 unit/component tests**, both production builds. Canonical OpenAPI/security/example/source checks and TypeScript generation drift check passed. Production-bundle browser regression: **26 passed**, no failures/skips, including the two new unavailable-state routes at 320px with EN/UR RTL and automated axe checks. The separate genuine direct-TLS authenticated synthetic workflow passed again; its assertions are not counted as the 26 production-bundle tests. npm audit reported zero vulnerabilities. Python dependency consistency, Django system/migration drift/application checks passed; no model migration was introduced.
+
+Local Flutter/Android SDKs are absent; WASM Dart formatting is only preparation, not Flutter analyzer/build/device proof. Hosted checks on this new branch must supply the authoritative pinned Flutter/Android results. Prior PR27's results are not attributed to this implementation. Human Urdu, physical-device/native rendering, manual accessibility and live ingress/provider approvals remain outstanding regardless of automated results.
