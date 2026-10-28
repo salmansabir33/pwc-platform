@@ -131,3 +131,12 @@ A passing synthetic direct-TLS test in this repo is **local integration evidence
 Reviewers must attach exact-host results and explicitly accept the applicable version/
 environment with exclusions. Merging code/documents or running the observer does not
 change any pending security/operations/release status.
+
+## Disabled-service staging foundation
+
+[PWC-04C staging infrastructure](../staging/README.md) supplies a separate
+Compose/PKI/build/migration/backup foundation with genuine application TLS and
+all service gates off. Its synthetic infrastructure tests are category **A only**;
+actual deployment (B), independent exact-host acceptance against this baseline
+(C), and explicit credential-transport/runtime authorization (D) remain separate.
+It does not enable this authentication handoff or replace any requirement above.

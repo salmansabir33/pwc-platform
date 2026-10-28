@@ -15,3 +15,7 @@ pycparser==3.12
 
 # PWC-03A.4: RFC6238 TOTP (encryption remains cryptography/Fernet).
 pyotp==2.10.0
+
+# TLS-capable staging WSGI server (not Django runserver).
+gunicorn==26.2.0
+packaging==26.3

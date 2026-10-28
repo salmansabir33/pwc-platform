@@ -1,0 +1,55 @@
+name: Staging foundation
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  compose:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --require-hashes -r requirements-ci.lock
+      - name: Offline deployment and host-observer tests
+        run: |
+          python -m unittest discover -s tests/deployment -v
+          ruff check --select E4,E7,E9,F infra/staging tests/deployment
+          ruff format --check infra/staging/*.py tests/deployment/staging_fixtures.py tests/deployment/test_staging.py tests/deployment/compose_smoke.py apps/backend/config/staging.py
+          for file in infra/staging/*.sh; do sh -n "$file"; done
+          python scripts/security_checks.py
+      - name: Actual disposable Compose with synthetic TLS and PostgreSQL
+        run: sudo env PWC_DISPOSABLE_CI=YES python3 tests/deployment/compose_smoke.py
+      - name: Scan deployed images (fixable high/critical gate; all findings retained)
+        run: |
+          mkdir -p .cache/trivy
+          docker pull aquasec/trivy:latest
+          scanner=$(docker image inspect aquasec/trivy:latest --format '{{index .RepoDigests 0}}')
+          printf '%s\n' "$scanner" > .cache/trivy/scanner-digest.txt
+          result=0
+          index=0
+          while IFS= read -r image; do
+            index=$((index + 1))
+            docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$PWD/.cache/trivy:/reports" "$scanner" image --scanners vuln --severity HIGH,CRITICAL --format json --output "/reports/image-$index.json" "$image" || result=1
+            docker run --rm -v /var/run/docker.sock:/var/run/docker.sock "$scanner" image --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 --quiet "$image" || result=1
+          done < .cache/staging-images.txt
+          exit "$result"
+      - name: Retain sanitized A-only evidence (never keys/config/logs/backups)
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: staging-foundation-synthetic
+          path: |
+            .cache/staging-smoke.json
+            .cache/trivy/*.json
+            .cache/trivy/scanner-digest.txt
+          retention-days: 7
+          if-no-files-found: warn
