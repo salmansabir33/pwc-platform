@@ -451,3 +451,6 @@ export function NotFound() {
     </div>
   );
 }
+
+export { PersonalSessionPanel } from "./personal-session-panel";
+export type { PersonalSessionPort } from "./personal-session-panel";

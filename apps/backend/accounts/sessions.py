@@ -78,6 +78,10 @@ def portal(request):
         or settings.SESSION_COOKIE_PATH != "/"
         or settings.SESSION_COOKIE_SAMESITE not in ("Lax", "Strict")
         or not settings.CSRF_COOKIE_SECURE
+        or settings.CSRF_COOKIE_DOMAIN is not None
+        or settings.CSRF_COOKIE_PATH != "/"
+        or settings.CSRF_COOKIE_SAMESITE not in ("Lax", "Strict")
+        or settings.CSRF_TRUSTED_ORIGINS
     ):
         raise FlowProblem("AUTH_UNAVAILABLE", 503)
     if any(

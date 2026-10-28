@@ -310,3 +310,19 @@ admin grant/permission atom, private roster/audit, real evidence intake or produ
 release is enabled by this implementation. Existing I/A/U/R and03B.3 dependencies
 remain; no04D/P5–P8 work begins. This entry supplements, never erases, earlier review
 checkpoints, the original P0–P8 structure, or remaining M1 functional acceptance.
+
+### 11.7 PWC-04C browser authentication integration — 28 October 2026
+
+PR28 was independently verified merged at `d2dd4dd21a4f609394c68499fc76754dd4bac8a1`.
+The continuation adds fixed-contract browser password/MFA sign-in, memory-only preauth/
+CSRF renewal, shared NGO/Operations session presentation and real browser login into the
+historical owner workspace under synthetic direct TLS/PostgreSQL. Cookie/CSRF ingress
+configuration is stricter, not relaxed. Native personal/private-network allowlists and
+all officer/reviewer/new-intake/finance boundaries remain unchanged.
+
+This remains PWC-04C under original P0–P8, **not live W2 or P3/G1b completion**.
+See [runbook §11](../runbooks/PWC-04C-PERMITTED-APPLICATION-IMPLEMENTATION.md#11-browser-authentication-integration-and-adr-0003-review--28-october-2026)
+and [deployment procedure/matrix](../../infra/web-auth/README.md). Real portal hosts and
+reviewed ingress evidence were not supplied; neither application has a production
+credentialed adapter or enable switch. Production flag/proxy/real-authority gates are
+not waived by implementation or tests. No 04D/later work or automatic merge is authorized.
