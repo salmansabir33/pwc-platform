@@ -1,0 +1,37 @@
+{
+  "project": "pwc-staging",
+  "release": "SET_TO_CHECKED_OUT_40_HEX_GIT_COMMIT",
+  "ngo_host": "OWNER_MUST_SUPPLY_EXACT_NGO_DNS_NAME",
+  "ops_host": "OWNER_MUST_SUPPLY_EXACT_OPS_DNS_NAME",
+  "images": {
+    "python": "OWNER_APPROVED_REPOSITORY@sha256:REQUIRED_64_HEX_DIGEST",
+    "node": "OWNER_APPROVED_REPOSITORY@sha256:REQUIRED_64_HEX_DIGEST",
+    "nginx": "OWNER_APPROVED_REPOSITORY@sha256:REQUIRED_64_HEX_DIGEST",
+    "postgres": "OWNER_APPROVED_REPOSITORY@sha256:REQUIRED_64_HEX_DIGEST",
+    "haproxy": "OWNER_APPROVED_REPOSITORY@sha256:REQUIRED_64_HEX_DIGEST"
+  },
+  "files": {
+    "django_secret": "/OWNER_MANAGED_DIRECTORY/django_secret",
+    "db_owner_password": "/OWNER_MANAGED_DIRECTORY/db_owner_password",
+    "db_app_password": "/OWNER_MANAGED_DIRECTORY/db_app_password",
+    "abuse_key": "/OWNER_MANAGED_DIRECTORY/abuse_key",
+    "ngo_cert": "/OWNER_MANAGED_DIRECTORY/ngo_cert",
+    "ngo_key": "/OWNER_MANAGED_DIRECTORY/ngo_key",
+    "ops_cert": "/OWNER_MANAGED_DIRECTORY/ops_cert",
+    "ops_key": "/OWNER_MANAGED_DIRECTORY/ops_key",
+    "app_cert": "/OWNER_MANAGED_DIRECTORY/app_cert",
+    "app_key": "/OWNER_MANAGED_DIRECTORY/app_key",
+    "db_cert": "/OWNER_MANAGED_DIRECTORY/db_cert",
+    "db_key": "/OWNER_MANAGED_DIRECTORY/db_key",
+    "ngo_client_cert": "/OWNER_MANAGED_DIRECTORY/ngo_client_cert",
+    "ngo_client_key": "/OWNER_MANAGED_DIRECTORY/ngo_client_key",
+    "ops_client_cert": "/OWNER_MANAGED_DIRECTORY/ops_client_cert",
+    "ops_client_key": "/OWNER_MANAGED_DIRECTORY/ops_client_key",
+    "health_cert": "/OWNER_MANAGED_DIRECTORY/health_cert",
+    "health_key": "/OWNER_MANAGED_DIRECTORY/health_key",
+    "public_ca": "/OWNER_MANAGED_DIRECTORY/public_ca",
+    "app_ca": "/OWNER_MANAGED_DIRECTORY/app_ca",
+    "db_ca": "/OWNER_MANAGED_DIRECTORY/db_ca",
+    "client_ca": "/OWNER_MANAGED_DIRECTORY/client_ca"
+  }
+}
