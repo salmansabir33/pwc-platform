@@ -87,3 +87,15 @@ Read [AGENTS.md](AGENTS.md) before development. Planning drafts and unresolved d
 ## Known limitations
 
 Registration, email verification and password recovery are implemented as disabled-by-default, synthetic-only backend flows; see [the recovery/security review](docs/runbooks/PWC-03A2-RECOVERY-REVIEW.md) and [registration runbook](docs/runbooks/PWC-03A2-REGISTRATION.md). Browser/mobile login and session lifecycle are also implemented behind a separate disabled flag; see [the sessions contract and validation](docs/runbooks/PWC-03A3-SESSIONS.md). MFA/TOTP, recovery codes and personal operation-bound assurance are implemented under another default-off flag; see [the MFA/assurance policy and evidence](docs/runbooks/PWC-03A4-MFA-ASSURANCE.md). Private tenant APIs, granular permissions, memberships/import/claim, finance and alliance workflows remain unimplemented. Authentication security events/outbox are scoped evidence, not a general audit platform. The configured session authentication and minimal access labels are not a finished authentication/authorization system. The existing finance-named test only checks a scaffold role value, not finance enforcement. The current Flutter and W1 web foundation runbooks supersede historical placeholder descriptions; neither is production deployment or complete NGO business functionality. No RLS, production hosting or operational backup/restore acceptance is configured. Frontend and scoped quality/security CI gates exist; see the current runbooks. Local debug/server/database settings must not be used in production. PWC-02 identity work requires an approved authentication/recovery ADR; passing scaffold checks does not resolve that decision.
+
+## PWC-04C permitted application features
+
+Both web portals now provide `/ngo-registry`, a bounded read-only HTTP client for
+only the existing four-field public verified-workspace projection. The optional
+local proxy forwards that exact public endpoint only—no authentication/private
+paths, cookies or writes. Owner-only historical application/verification summaries
+and existing revision-checked withdrawal are implemented/tested on PostgreSQL;
+credentialed browser/native history transport remains gated. Flutter adds a
+separate opt-in exact HTTPS public reader and permission-aware history screen.
+No officer provisioning, real review/invitation/admin grant or new intake is enabled.
+See [setup, working workflows, exact validation and remaining gates](docs/runbooks/PWC-04C-PERMITTED-APPLICATION-IMPLEMENTATION.md).

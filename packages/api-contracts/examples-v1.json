@@ -1556,6 +1556,56 @@
       "kind": "response",
       "operationId": "controlledRequirements",
       "status": 200
+    },
+    {
+      "body": {
+        "next_cursor": null,
+        "results": [
+          {
+            "city": "Faisalabad",
+            "classification": "unregistered",
+            "id": "00000000-0000-4000-8000-000000000001",
+            "name": "Synthetic Welfare"
+          }
+        ]
+      },
+      "kind": "response",
+      "operationId": "publicDirectory",
+      "status": 200
+    },
+    {
+      "body": {
+        "administration_available": false,
+        "intake_available": false,
+        "next_cursor": null,
+        "results": [
+          {
+            "can_withdraw": true,
+            "city": "Faisalabad",
+            "classification": "unregistered",
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kind": "draft",
+            "name": "Synthetic Welfare",
+            "organization_id": "00000000-0000-4000-8000-000000000001",
+            "revision": 1,
+            "state": "submitted",
+            "verification": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "purpose": "organization_eligibility",
+                "revision": 1,
+                "source_revision": 1,
+                "stale": false,
+                "state": "submitted"
+              }
+            ]
+          }
+        ],
+        "verification_available": true
+      },
+      "kind": "response",
+      "operationId": "registryWorkspace",
+      "status": 200
     }
   ],
   "contract_version": "1.0.0",

@@ -15,6 +15,15 @@ export default defineConfig({
       : {},
   },
   webServer: [
+    ...(process.env.PWC_PUBLIC_API_TARGET
+      ? [
+          {
+            command: `${process.env.PWC_E2E_PYTHON ?? "python"} apps/backend/manage.py runserver 127.0.0.1:8000 --noreload`,
+            url: "http://127.0.0.1:8000/api/v1/health/",
+            reuseExistingServer: !process.env.CI,
+          },
+        ]
+      : []),
     {
       command: "npm run preview -w @pwc/ngo-web",
       url: "http://127.0.0.1:5173",

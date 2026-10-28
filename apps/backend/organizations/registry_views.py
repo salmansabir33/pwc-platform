@@ -150,7 +150,9 @@ class RegistryView(APIView):
             ):
                 raise FlowProblem("SELF_SERVICE_UNAVAILABLE", 503)
             allowed_query = (
-                {"q", "city", "cursor"}
+                {"kind", "state", "cursor"}
+                if self.resource == "workspace"
+                else {"q", "city", "cursor"}
                 if self.resource == "search"
                 else {"cursor"}
                 if pk is None and request.method == "GET" or self.command == "history"

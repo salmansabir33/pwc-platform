@@ -48,6 +48,18 @@ class PersonalScreen extends ConsumerWidget {
           onPressed: () => context.push('/registry'),
           child: Text(t('ORG-01 / ORG-02 · Registry (unavailable)')),
         ),
+        TextButton(
+          onPressed: () => context.push('/ngo-registry'),
+          child: Text(
+            ur ? 'عوامی تنظیموں کی فہرست' : 'NGO registry · public read-only',
+          ),
+        ),
+        TextButton(
+          onPressed: () => context.push('/application-history'),
+          child: Text(
+            ur ? 'میری درخواستوں کی تاریخ' : 'My application history',
+          ),
+        ),
         const SizedBox(height: 16),
         FilledButton(
           onPressed: session.busy

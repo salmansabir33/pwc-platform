@@ -259,6 +259,9 @@ def build():
     definitions.update(controlled_definitions())
     paths.update(registry_paths())
     definitions.update(registry_definitions())
+    from organizations.workspace_contract import paths as workspace_paths, definitions as workspace_definitions
+    paths.update(workspace_paths())
+    definitions.update(workspace_definitions())
     return {"openapi": "3.1.0", "info": {"title": "PWC implemented API contracts", "version": VERSION,
         "description": "Versioned offline contract of existing Django APIs. No planned routes included. /api/v1 is the API major; info.version is the contract release. No runtime version-header negotiation exists."},
         "x-pwc-onboarding-policy": {"version": "offline_initial_2026_10_27", "self_service": "unavailable; historical 04A/04B success DTOs retained for history and explicit isolated test-only exercise", "live_operator_commands": "unavailable pending exact E04/GM contracts", "historical_reads_withdrawal": "owner scoped, no authority"},

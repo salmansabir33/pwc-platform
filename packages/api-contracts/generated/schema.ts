@@ -712,6 +712,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/directory/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * publicDirectory
+         * @description Bounded keyset search over existing verified four-field public projection only. No additional publication, consent approval, private fields or authority. Cursor signed, filter-bound, max age 3600s; page <=20, no total count, no snapshot guarantee. Public caller credentials are ignored. No real onboarding or private browser/mobile integration enabled.
+         */
+        get: operations["publicDirectory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/health/": {
         parameters: {
             query?: never;
@@ -1116,6 +1136,26 @@ export interface paths {
          * @description Claimant-only 04A. Default-off synthetic development/test exercise; no real intake/NGO authority/reviewer/publication/grant operations. Holds deny both reads and writes. UUID keyset pages, not snapshots; only existing four-field public projection is searchable. No auto-merge or private collision oracle.
          */
         get: operations["registrySearch"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/registry/workspace/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * registryWorkspace
+         * @description Owner-only historical applications and latest-per-purpose exact-source-revision verification summaries (at most two per application), hidden when verification feature is disabled. Not NGO membership/administration. No new intake, reviewer, evidence or private target-organization reader. Claim labels are redacted. Withdrawal uses existing revision-checked endpoint; reads never mutate or issue authority.
+         */
+        get: operations["registryWorkspace"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1887,6 +1927,42 @@ export interface components {
         Verified: {
             /** @enum {string} */
             status: "verified";
+        };
+        WorkspaceApplication: {
+            can_withdraw: boolean;
+            city: string | null;
+            classification: ("registered" | "unregistered") | null;
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            kind: "draft" | "claim";
+            name: string | null;
+            /** Format: uuid */
+            organization_id: string;
+            revision: number;
+            /** @enum {string} */
+            state: "draft" | "submitted" | "pending" | "needs_information" | "rejected" | "withdrawn";
+            verification: components["schemas"]["WorkspaceVerification"][];
+        };
+        WorkspacePage: {
+            /** @constant */
+            administration_available: false;
+            /** @constant */
+            intake_available: false;
+            next_cursor: string | null;
+            results: components["schemas"]["WorkspaceApplication"][];
+            verification_available: boolean;
+        };
+        WorkspaceVerification: {
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            purpose: "organization_eligibility" | "representative_mandate";
+            revision: number;
+            source_revision: number;
+            stale: boolean;
+            /** @enum {string} */
+            state: "draft" | "submitted" | "withdrawn";
         };
     };
     responses: never;
@@ -6466,6 +6542,109 @@ export interface operations {
             };
         };
     };
+    publicDirectory: {
+        parameters: {
+            query?: {
+                q?: string;
+                city?: string;
+                classification?: "" | "registered" | "unregistered";
+                cursor?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Implemented response */
+            200: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegistrySearchPage"];
+                };
+            };
+            /** @description Implemented response */
+            400: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            403: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            404: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            405: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            429: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    "Retry-After"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            503: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Framework/proxy failures can be non-JSON; clients must fail closed without rendering raw bodies */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+        };
+    };
     health: {
         parameters: {
             query?: never;
@@ -9876,6 +10055,131 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RegistrySearchPage"];
+                };
+            };
+            /** @description Implemented response */
+            400: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            401: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            403: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            404: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            405: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            409: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            429: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    /** @description Optional retry hint, never automatic command replay */
+                    "Retry-After"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Implemented response */
+            503: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthError"];
+                };
+            };
+            /** @description Framework/proxy failures can be non-JSON; clients must fail closed without rendering raw bodies */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+        };
+    };
+    registryWorkspace: {
+        parameters: {
+            query?: {
+                kind?: "draft" | "claim";
+                state?: "" | "draft" | "submitted" | "pending" | "needs_information" | "rejected" | "withdrawn";
+                cursor?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Implemented response */
+            200: {
+                headers: {
+                    "Cache-Control"?: "no-store";
+                    "Referrer-Policy"?: "no-referrer";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkspacePage"];
                 };
             };
             /** @description Implemented response */

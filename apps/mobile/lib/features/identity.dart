@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../app/providers.dart';
 import '../app/strings.dart';
 import '../design/controls.dart';
@@ -72,6 +73,12 @@ class _IdentityState extends ConsumerState<IdentityScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          TextButton(
+            onPressed: () => context.push('/ngo-registry'),
+            child: Text(
+              ur ? 'عوامی تنظیموں کی فہرست' : 'NGO registry · public read-only',
+            ),
+          ),
           Text(
             t('ID-01 · Sign in'),
             style: Theme.of(context).textTheme.headlineSmall,

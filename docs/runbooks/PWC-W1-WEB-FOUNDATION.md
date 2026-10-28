@@ -150,3 +150,13 @@ Baseline output per app: JavaScript **280.99 kB** (~89.8 kB gzip), CSS **8.55 kB
 - **Deployment:** ADR-0003 preferred verified end-to-end HTTPS or separately reviewed trusted-termination extension; exact Host/scheme/origin, restricted ingress, sanitized forwarding/source-IP trust and abuse controls. No Django proxy setting or HTTPS gate is changed by W1.
 
 Proceed only to human web-foundation integration review after the normal branch checkpoint. No PR, merge or W2 integration is authorized by the W1 completion report.
+
+## PWC-04C additive public-only reader
+
+The original W1 credentialed client/network gates above remain unchanged. The
+comprehensive04C implementation adds one separately bounded public-only exception:
+`/ngo-registry` requests **only** `/api/v1/directory/` with credentials omitted,
+fixed GET and no private/authentication proxy. It reads the existing four public
+fields, not NGO authority or additional publication data. The owner-history screen's
+private gateway stays default-disabled. See
+[04C implementation setup and validation](PWC-04C-PERMITTED-APPLICATION-IMPLEMENTATION.md).

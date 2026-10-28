@@ -284,3 +284,29 @@ externally verified controlled onboarding, not reopened applicant intake. PWC-04
 P4–P8, M1–M3 scope, REAL03 domain exclusions and independent real-activation/
 release acceptance remain unchanged. This documentation review does not start
 any privileged implementation, networking, authority activation or next subphase.
+
+### 11.6 PWC-04C permitted application implementation — 27 October 2026
+
+Starting merged PR26 (`444576d`), the comprehensive implementation assignment delivers
+actual bounded public registry browsing (both React portals and a separate opt-in
+native public reader), an owner-isolated historical application workspace API,
+exact-source-revision verification summaries, preserved revision-checked withdrawal,
+nonwriting controlled-submission packet validation and canonical clients/tests.
+See [the implementation/runbook record](../runbooks/PWC-04C-PERMITTED-APPLICATION-IMPLEMENTATION.md)
+and consolidated implementation PR27 for execution evidence and exclusions.
+
+The public-only exact-directory GET is an explicit bounded networking exception:
+no credentials/writes, no new public fields and no private/auth proxy. Original W1
+credentialed runtime and native domain/history networking remain disabled. Browser
+integration exercises actual Django/PostgreSQL public fixtures, not mock successes.
+The history screens/adapters are permission-aware tested components, not activated
+NGO administration. No new authority tables or migrations are justified for these
+reads; all valid history and current synthetic restrictions are preserved.
+
+**PWC-04C remains partial.** PR26 confirms reviewer role arrangements but individual
+appointments and AUTH-01–09 technical signatures remain pending. No officer writer,
+real verification decision/queue reader, nominee invitation/acceptance, nonfinance
+admin grant/permission atom, private roster/audit, real evidence intake or production
+release is enabled by this implementation. Existing I/A/U/R and03B.3 dependencies
+remain; no04D/P5–P8 work begins. This entry supplements, never erases, earlier review
+checkpoints, the original P0–P8 structure, or remaining M1 functional acceptance.
