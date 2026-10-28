@@ -87,8 +87,8 @@ source propagation implementation. This foundation is not ready for public load.
    explicitly deny DB/WSGI/HTTP ports, including Docker-published-port bypasses of
    host firewall tooling. Do not expose Docker daemon remotely.
 3. Approved digest-pinned base images: Python 3.12 slim Debian, Node 22.22.3
-   bookworm-slim (npm 10), compatible stable Nginx Debian, HAProxy 3.2 Debian,
-   PostgreSQL **16 bookworm**. Digest pinning does not prove an image is safe:
+   bookworm-slim (npm 10), maintained stable Nginx/HAProxy 3.2 Debian Trixie,
+   PostgreSQL **16 Trixie**. Retired Bookworm portal/gateway tags must not be used. Digest pinning does not prove an image is safe:
    record provenance/SBOM, scan every resulting image and approve findings.
    Renderer checks immutable reference syntax, not publisher trust/version.
 4. Deployment-owned external secret/PKI directory, issuance/renewal/rotation owner,

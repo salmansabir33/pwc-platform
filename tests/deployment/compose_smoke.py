@@ -21,9 +21,9 @@ from staging_fixtures import certificates, config, deploy, resign_app, ROOT
 BASES = {
     "python": "python:3.12-slim-bookworm",
     "node": "node:22.22.3-bookworm-slim",
-    "nginx": "nginx:stable-bookworm",
-    "postgres": "postgres:16-bookworm",
-    "haproxy": "haproxy:3.2-bookworm",
+    "nginx": "nginx:1.30.6-trixie",
+    "postgres": "postgres:16.15-trixie",
+    "haproxy": "haproxy:3.2.26-trixie",
 }
 
 

@@ -31,8 +31,8 @@ jobs:
       - name: Scan deployed images (fixable high/critical gate; all findings retained)
         run: |
           mkdir -p .cache/trivy .cache/trivy-cache
-          docker pull aquasec/trivy:latest
-          scanner=$(docker image inspect aquasec/trivy:latest --format '{{index .RepoDigests 0}}')
+          scanner=aquasec/trivy@sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c
+          docker pull "$scanner"
           printf '%s\n' "$scanner" > .cache/trivy/scanner-digest.txt
           printf '::notice title=Scanner digest::%s\n' "$scanner"
           result=0
