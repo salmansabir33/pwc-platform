@@ -346,3 +346,9 @@ substituted for or imposed on unrelated accepted local development. This is an
 internal PWC-04C checkpoint, not a new phase, P3 completion, 04D start or authority
 activation. Invocation names, lifetimes, cryptographic choices and D proposals are
 not installed permissions or approved behavior merely because this text merges.
+
+**3 November bounded implementation update:** actual independently safe code now
+adds nonauthoritative command-shape validation, unsaved synthetic builders and
+PostgreSQL denial/locking/rollback harnesses. See [package §11.9](../reviews/PWC-04C-IMPLEMENTATION-AUTHORIZATION-PACKAGE-v1.0.md#119-bounded-implementation-started--3-november-2026).
+Protected execution remains unavailable pending D1/D2(abstract)/D3–D6/minimal D12;
+no new acceptance, migration, privileged writer or later-phase activation.

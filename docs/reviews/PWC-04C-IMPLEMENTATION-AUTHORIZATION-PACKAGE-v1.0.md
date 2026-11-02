@@ -418,3 +418,73 @@ reject/defer), stating per-command scope and residual exclusions. For the minima
 checkpoint, accept only its admission subset if appropriate; do not request a
 production transport signature as a substitute. This assignment prepares those
 exact contracts and test obligations; it records no new human acceptance.
+
+### 11.9 Bounded implementation started — 3 November 2026
+
+This addendum implements the subsequently requested **independently safe** work;
+it does not amend §11.5's admission rule for executable protected components.
+PR #31 remains open; neither this code nor PR disposition signs D1–D12.
+Latest merged `main` checked at `64a51ea` before implementation.
+
+**Implemented without privileged transitions:**
+
+- `organizations/controlled_command_shape.py`: closed **proposed** four-name
+  vocabulary, immutable/redacted syntax objects, bounded strict UTF-8 JSON,
+  duplicate/unknown-key rejection, canonical nonzero UUIDs, integer-only bounded
+  source revisions and structural source/tenant matching. This is not canonical
+  proof serialization, authenticated source binding, an authorization registry,
+  assurance or an executable command. No route/adapter calls it; its success
+  result confers no authority. Existing `command_available` remains false.
+- `test_controlled_command_shape.py`: unsaved synthetic source builder and
+  database-free negative tests, reusing existing `prepare_submission` and
+  `preflight` rather than creating a second state machine or auth system.
+- `test_controlled_boundary_harness.py`: actual PostgreSQL multi-connection
+  NOWAIT contention, structural rollback fault and ephemeral nonlogin role
+  read/lock/DML/DDL denials. Role creation is rolled back, requires the same
+  isolated test-cluster role-administration privilege as existing kernel tests,
+  and ships **no production principal, writer, migration or privileged service**.
+  This no-table-privilege probe is not the future runtime/verifier/writer policy,
+  nor evidence of its SET ROLE isolation or cross-NGO query enforcement.
+
+**Exact remaining executable checkpoint blockers** (proposals remain unsigned):
+
+| Decision | Required recorded disposition before affected implementation |
+|---|---|
+| D1 | These four exact atoms, issuer/target/confirmer and synthetic actor/source/conflict charter; no role-name authority fallback. |
+| D2 (unavoidable other-row dependency) | Abstract independently authenticated source/trust-anchor model, outside runtime/fixture control. Actual named appointments/bootstrap provisioning are not needed for safe local scaffolding. |
+| D3 | GM06 factor removal/replacement/recovery fencing and independently approved protected eligibility/reverification. |
+| D4 | Separate command-bound fresh password/new eligible TOTP intent, proof bindings, lifetime, failure/replay budgets; no personal recent-MFA reuse. |
+| D5 | Provenance model and separated restricted runtime, verifier and narrow writer trust; runtime cannot forge source/proof or promote fixtures. |
+| D6 | Reviewed lock graph including auth helpers, locked revalidation, atomic transition/event/notice/receipt and exact replay/duplicate-key semantics. |
+| D12 minimum | Minimized evidence/event/receipt/notice model, audiences and fixture tombstone lifetime. Production statutory periods are not prerequisites for disposable-fixture testing. |
+
+Aligned AUTH/E/GM gates remain. D7–D11 invitation/grant decisions do not block this
+no-invite/no-grant work; neither O1/O2, Contabo nor live transport approval blocks
+unrelated local code. Disposable fixture data is destroyed with its test database.
+
+**Not built or claimed tested:** protected submission; independent exact-revision
+approve/reject/return; domain password/TOTP verification or sealed proofs; real
+source authorization; atomic audit/idempotent receipt; receipt replay/revocation,
+NGO-isolated protected queries, full auth/source lock graph or decision races.
+Those tests require the affected contracts and actual implementation, not fake
+successful fixture authorities. No endpoint, client, native allowlist, deployment,
+credentialed transport, invitation, grant, publication or finance changes.
+
+**Validation for this bounded code:** PostgreSQL 16.2, Python 3.11; locked CI Python
+requirements installed without changes. `manage.py test` for command-shape,
+boundary-harness, controlled-onboarding and controlled-preparation modules: **32
+passed**. Full `coverage run manage.py test --testrunner
+contracts.testing.ContractRunner --noinput`: **488 passed**, **309** observed
+route/method/status combinations. Initial full run caught the expected new-module
+source-lock drift; standard `contracts.generate` added only its SHA-256 entry;
+rerun passed. Frozen API compatibility, OpenAPI and generated clients unchanged.
+Django check, migration drift/plan/application/check, pip check, focused Ruff and
+contract generation/type checks passed. `npm run check`: **187 passed**, typecheck,
+format/token checks and both builds passed. No browser/Flutter rerun or independent
+host acceptance claimed. Existing PR31 head before this update had Django 3.11/3.12
+and compose green, foundation red at `npm audit --audit-level=low`. Local audit
+reproduced **3 moderate** package findings (`minimatch`, propagated through
+`@redocly/openapi-core` and `openapi-typescript`; GHSA-g3hv-75wg-m249). Dependency
+upgrade remains separate; audit gate is unchanged. New-head CI is separate from
+these local results and must be checked after push. None of these tests supplies
+the pending contract signatures or protected-workflow acceptance.
