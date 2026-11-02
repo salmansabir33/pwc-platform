@@ -326,3 +326,23 @@ and [deployment procedure/matrix](../../infra/web-auth/README.md). Real portal h
 reviewed ingress evidence were not supplied; neither application has a production
 credentialed adapter or enable switch. Production flag/proxy/real-authority gates are
 not waived by implementation or tests. No 04D/later work or automatic merge is authorized.
+
+### 11.8 PWC-04C implementation-contract closure — 2 November 2026
+
+Baseline PR30 is merged at `64a51ea`; PR27–29's permitted application and browser
+integration and PR30's disabled-service staging foundation remain delivered, not
+work to repeat. Actual host deployment, independent host acceptance and credential
+transport authorization remain separate; no Contabo work is required for local tests.
+
+[Authorization package §11](../reviews/PWC-04C-IMPLEMENTATION-AUTHORIZATION-PACKAGE-v1.0.md#11-implementation-contract-closure-delta--2-november-2026)
+now separates fixed accepted constraints from exact D1–D12 technical/product
+proposals and O1/O2 actual-operation evidence. It prepares a finite issuer matrix,
+protected-intent/DB/receipt protocol and minimum fixture-only submit/independent-
+decision coding checkpoint, with branch-specific acceptance and adversarial tests.
+**No new independent sign-off or privileged implementation is recorded.** Existing
+AUTH/E/GM/REAL implementation gates remain; a synthetic exercise needs its own
+explicit affected charter acceptance, while live staffing/DNS/Contabo cannot be
+substituted for or imposed on unrelated accepted local development. This is an
+internal PWC-04C checkpoint, not a new phase, P3 completion, 04D start or authority
+activation. Invocation names, lifetimes, cryptographic choices and D proposals are
+not installed permissions or approved behavior merely because this text merges.
