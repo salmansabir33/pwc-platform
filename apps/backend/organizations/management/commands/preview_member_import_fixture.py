@@ -1,53 +1,28 @@
 """Run only built-in fictional CSV scenarios; no file/network/intake option."""
 
 import json
-from uuid import UUID
 from django.core.management.base import BaseCommand, CommandError
-from organizations.member_import_preview import PreviewCatalog, preview_csv
+from organizations.member_import_fixtures import (
+    SCENARIOS,
+    UnknownFixtureScenario,
+    preview_fixture,
+)
 
 
 class Command(BaseCommand):
     help = "Exercise nonwriting member CSV preview with synthetic fixtures only"
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            "--scenario", choices=("valid", "duplicate", "invalid"), default="valid"
-        )
+        parser.add_argument("--scenario", choices=SCENARIOS, default="valid")
 
     def handle(self, *args, **options):
-        organization = UUID("00000000-0000-4000-8000-000000000001")
-        header = "record_reference,display_name,category_reference\n"
-        cases = {
-            "valid": "MEMBER_A,Synthetic Person A,ORDINARY\nMEMBER_B,Synthetic Person B,ORDINARY\n",
-            "duplicate": "MEMBER_A,Synthetic Person A,ORDINARY\nMEMBER_A,Synthetic Person B,ORDINARY\n",
-            "invalid": "MEMBER_A,=FORMULA,UNKNOWN\n",
-        }
-        # call_command(..., scenario=...) bypasses argparse's choices check.
-        # Enforce the same fixture-only boundary for programmatic callers.
-        scenario = options["scenario"]
-        if type(scenario) is not str or scenario not in cases:
-            raise CommandError("Unknown synthetic preview scenario")
-        report = preview_csv(
-            (header + cases[scenario]).encode(),
-            organization_id=organization,
-            catalog=PreviewCatalog(organization, frozenset({"ORDINARY"})),
-        )
-        # Counts/codes only, never names/raw cells, source authority or a receipt.
+        try:
+            report = preview_fixture(options["scenario"])
+        except UnknownFixtureScenario:
+            raise CommandError("Unknown synthetic preview scenario") from None
+        # Reuse the single redacted projection. No raw values, names or contacts.
         self.stdout.write(
-            json.dumps(
-                {
-                    "synthetic_only": True,
-                    "commit_available": report.commit_available,
-                    "rows": [
-                        {
-                            "record": row.number,
-                            "errors": row.errors,
-                            "warnings": row.warnings,
-                        }
-                        for row in report.rows
-                    ],
-                }
-            )
+            json.dumps(dict(report.to_summary(), synthetic_only=True), sort_keys=True)
         )
         if any(row.errors for row in report.rows):
             raise CommandError("Synthetic preview contains invalid rows")

@@ -384,3 +384,13 @@ User/member creation, claim, commit or UI transport is enabled. Actual 05A/05B
 services require accepted membership admission/category rules, explicit scoped
 member/import actions and issuer/source contracts, privacy/intake/retention,
 locked revision/audit/idempotency and claim/duplicate-resolution semantics.
+
+**Structured preview increment (3 November, after merged PR36):** the same parser
+now consumes a validated frozen internal template and produces immutable
+record/column diagnostics with all-occurrence conflict positions and bounded,
+value-free versioned summaries/counts. A shared synthetic fixture selector and
+checked CSV/JSON examples exercise the existing CLI, including unsupported-value
+negatives and database-free projection. This is preparation for future clients,
+not a new accepted wire API, import permission, intake surface or member writer.
+The exact 05A/05B dependencies above and locked 04C acceptance remain unchanged.
+See [structured contract runbook](../runbooks/PWC-05B-MEMBER-IMPORT-PREVIEW.md#structured-template-and-report-contracts-internal-v1).

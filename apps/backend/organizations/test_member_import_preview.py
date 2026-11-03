@@ -177,12 +177,27 @@ class MemberImportPreviewTests(SimpleTestCase):
                         )
                 report = json.loads(output.getvalue())
                 self.assertEqual(
-                    set(report), {"synthetic_only", "commit_available", "rows"}
+                    set(report),
+                    {
+                        "synthetic_only",
+                        "commit_available",
+                        "rows",
+                        "format",
+                        "template",
+                        "organization_id",
+                        "non_authoritative",
+                        "row_count",
+                        "accepted_count",
+                        "rejected_count",
+                        "warning_count",
+                    },
                 )
                 self.assertTrue(report["synthetic_only"])
                 self.assertIs(report["commit_available"], False)
                 for row in report["rows"]:
-                    self.assertEqual(set(row), {"record", "errors", "warnings"})
+                    self.assertEqual(
+                        set(row), {"record", "errors", "warnings", "diagnostics"}
+                    )
                 self.assertNotIn("Synthetic Person", output.getvalue())
                 self.assertNotIn("=FORMULA", output.getvalue())
 
@@ -224,6 +239,11 @@ class ImportPreviewPostgreSQLTests(TestCase):
                 organization_id=b.pk,
                 catalog=PreviewCatalog(b.pk, frozenset({"ORDINARY"})),
             )
+            summaries = (first.to_summary(), second.to_summary())
+        self.assertEqual(tuple(s["accepted_count"] for s in summaries), (0, 1))
+        self.assertEqual(
+            tuple(s["organization_id"] for s in summaries), (str(a.pk), str(b.pk))
+        )
         self.assertIn("EXISTING_REFERENCE", first.rows[0].errors)
         self.assertEqual(second.rows[0].errors, ())
         self.assertEqual(second.organization_id, b.pk)
