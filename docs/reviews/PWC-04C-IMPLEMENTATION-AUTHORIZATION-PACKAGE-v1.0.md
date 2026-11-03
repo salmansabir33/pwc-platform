@@ -6,7 +6,9 @@
 **Baseline:** main after merged PR #24 (`9d2f5072`)  
 **Purpose:** Bring the eight critical implementation blockers in the PWC-04C readiness review to explicit accountable decisions in **one** package, without a string of separate product-choice PRs.
 
-**Current closure delta:** [§11](#11-implementation-contract-closure-delta--2-november-2026) supplies exact proposed rules, acceptance ownership and the smallest coding checkpoint. Earlier pending rows remain pending; authoritative product constraints are carried forward without reopening them.
+**Current fixture implementation contract:** [§12](#12-version-locked-fixture-implementation-contract), `C04C-FIXTURE-20261103.1`, is the single proposed acceptance target for this checkpoint. No acceptance is recorded.
+
+**Historical closure delta:** [§11](#11-implementation-contract-closure-delta--2-november-2026) supplies exact proposed rules, acceptance ownership and the smallest coding checkpoint. Earlier pending rows remain pending; authoritative product constraints are carried forward without reopening them.
 
 ## 1. Evidence hierarchy and boundaries
 
@@ -449,7 +451,8 @@ Latest merged `main` checked at `64a51ea` before implementation.
 
 **Exact remaining executable checkpoint blockers** (proposals remain unsigned):
 
-The following is the **current fixture-checkpoint decision queue**, reconciled
+The following is the **historical PR32 fixture-checkpoint queue**, now consolidated
+into the single version-locked acceptance register in §12.2. It was reconciled
 against merged PR31 (`5118ad685740c06350c3d2e3f69336347d9a9950`). Each row is
 **PENDING accountable acceptance**; accept/amend/reject the exact referenced
 proposal using §8 (reviewer/role, immutable version/commit, date, fixture scope,
@@ -525,3 +528,366 @@ source-lock hash changes in API artifacts; no API operation/client/migration/mod
 or personal auth changes. No privileged transition or D-dependent service/writer
 was added. D1–D6/minimum D12 remain blocked as listed; D7–D11, host acceptance,
 Contabo and production retention are not prerequisites for these safe tests.
+
+## 12. Version-locked fixture implementation contract
+
+<!-- BEGIN C04C-FIXTURE-20261103.1 -->
+### 12.1 Review identity, scope and acceptance boundary
+
+**Contract ID: `C04C-FIXTURE-20261103.1` — PROPOSED; NOT ACCEPTED.**
+Baseline: merged PR32, `d7c5f977e0ca7c4f23d04a00ccb576fa1fb65a80`.
+This is the single consolidated technical proposal for the four-command local
+fixture checkpoint. For this checkpoint its explicit details supersede earlier
+D sketches, not accepted constraints or historical decisions. Any unresolved
+conflict with F1–F9/ADR requirements blocks the affected component, not those rules.
+
+The adjacent `PWC-04C-fixture-contract-lock.json` pins the exact UTF-8 bytes of this
+marked block and §11.1 (F1–F9, including adopted E05 ceilings). Review records must
+cite **this ID + both SHA-256 values + immutable Git commit containing them**.
+The baseline above is provenance, not the commit of this new contract. Amendments
+require a new contract ID, updated lock and explicit disposition of affected prior
+acceptances; never transfer signatures automatically. Byte integrity is not
+approval, a signature, source authentication or an implementation enable switch.
+An editor can rehash changed text; reviewers must compare the immutable Git commit
+and independently authenticate every acceptance. The tool cannot enforce honesty
+or automatically carry a prior signature onto a new hash.
+
+IN: disposable PostgreSQL, fictional personal identities, two distinct external
+findings, domain assurance, submit, independent approve/reject/return, minimized
+notice intents and atomic receipts. OUT: real intake/appointments/provisioning,
+invitations, grants, finance, publication, client/credentialed transport activation,
+public/private HTTP adapters, deployment, Contabo and Oracle access. D7–D11 and
+O1/O2 are not admission dependencies. F1–F9 and E05 numbers remain fixed, not votes.
+
+**Acceptance audit:** at baseline, PR32 is merged with no GitHub review/comment
+acceptance entries. §2/§8, ADR-0002/0004 and the E/GM registers contain no accountable
+acceptance of these affected new domain contracts. Existing core/synthetic and
+product approvals retain their narrower scopes. Every D row below is **PENDING**;
+design preferences, merged PRs, AI text and passing integrity/tests sign nothing.
+
+### 12.2 One decision/evidence/dependency register
+
+Owners below are required accountable functions under the role arrangements, not
+claims of appointed individuals. Security means the designated Cybersecurity /
+Information Security Specialist; DB/API means the Senior Backend/Database Architect;
+privacy means legal adviser **and** data privacy specialist jointly where listed.
+
+**Evidence has two stages:** before coding, reviewers accept this design, threat
+model and specified test obligations (or request amendments). After coding,
+actual restricted-principal executions, negative tests and concurrency/fault traces
+must substantiate implementation acceptance. Planned tests are not passed evidence;
+unbuilt protected tests are not a reason to prohibit unrelated safe preparation.
+
+| Decision / status | Proposed exact rule | Accountable acceptance functions | Required security evidence | Precise code dependency |
+|---|---|---|---|---|
+| D1 / PENDING | Exactly the four literal atoms in §12.3; assigned submitter/reviewer, person-level conflicts and immutable submitted-source binding; one independent officer decision, no extra quorum or role-label authority. | Product + founding/NGO governance + security + DB/API + operations | Before: complete actor/action/target/conflict matrix and two-accounts/one-person vectors. After: every cell, unknown atom, wrong case/tenant, nominee/self-review/staff/Board/superuser/legacy/synthetic shortcut denials. | Domain registry/authorization resolver and submit/review coordinator; existing planning vocabulary is not this registry. |
+| Necessary D2 subset / PENDING | §12.4 independently confirmed, signed fixture charter; external fixture trust anchor, bounded source and immutable person mapping, inaccessible to runtime/verifier. No live bootstrap/appointment implementation. | Founding governance + security + operations + DB/API + legal/privacy | Before: signer/loader/runtime threat model, manifest bytes and invalid-signature/nonce/version/expiry vectors. After: actual restricted sessions cannot forge/replace source, promote fixture kind or self-assign a case. | Fixture-only authenticated source loader/resolver; no permissive source stub inside writer. |
+| D3 / PENDING | GM06 B: personal removal allowed; removal/replacement, password/contact recovery or hold fences protected eligibility/intents under User locks; session/credential rotation invalidates bound intents but does not itself replace an eligible factor. Initial eligibility and re-verification bind independently approved factor ID/revision; no automatic restoration/cooldown/recent-login substitute. | Auth/security + product + operations + privacy | Before: auth mutation/eligibility invalidation matrix. After: old proof/new factor/recovery and remove-vs-confirm/execute races, plus unchanged personal-flow regressions. | Additive protected-factor eligibility/generation integration into existing auth helpers, not a personal MFA allowlist extension. |
+| D4 / PENDING | §12.5 exact canonical bindings; purpose-separated HMAC-SHA256, 256-bit secret/verifier, ≤180s original deadline; fresh password then new eligible TOTP, terminal fifth failed credential and strict budgets. | Auth/security + DB/API + operations | Before: canonical bytes/HMAC known vectors, deadline and failure table, secret-flow/DoS review. After: field substitution, duplicate JSON, cached MFA, step replay, fifth failure, expiry-after-wait and session/factor/source invalidation tests; no secret artifacts. | Separate domain-intent issuer and isolated verifier; never reuse personal recent-MFA or install NGO operations in personal scope. |
+| D5 / PENDING | §12.6 fixed restricted writer/verifier ownership, trusted search_path, no caller actor assertion; immutable fixture provenance distinct from existing synthetic kernel and real authority. | DB/API + security + operations | Before: SQL privilege/membership matrix, verifier authentication and function/search_path review. After: actual restricted login sessions, DML/DDL/EXECUTE/SET ROLE/source/proof forgery denials; migration/restore rehearsal. SET ROLE from an owner session alone is insufficient. | New additive source/eligibility/intent/receipt/pinning schema and fixed writer functions; no general ORM authority service. |
+| D6 / PENDING | §12.7 locks and effective time, separately committed assurance fence; atomic transition + record revision + proof consumption + immutable event + notice intent + receipt; owned exact-key retries. | DB/API + auth/security | Before: code-backed helper lock graph, retry/error/receipt state table and fault schedule. After: multi-connection decision/duplicate/revocation races; fail every atomic stage; lost-response and post-wait expiry tests. | Transaction coordinator, narrow submit/review writers, receipt/status boundary and additive constraints. |
+| Minimum D12 / PENDING | §12.8 closed minimized evidence/event/receipt/notice model and assigned-case/owned-receipt audiences; fixture tombstones retained through replay/restore then destroyed with disposable DB. | Joint legal/privacy + NGO governance + security + DB/API + operations | Before: field/classification/audience/notice-purpose matrix and fixture disposal plan. After: schema/log/trace secret scans, unauthorized reads/receipt oracles and disposable backup destruction evidence. | Metadata migrations, event/notice/receipt serializers and internal scoped readers; no broad audit endpoint or production-retention policy. |
+
+### 12.3 Command, state and exact-revision contract (D1/D6)
+
+- `ngo.onboard.submit.v1`: current fixture Super Admin capability, exact assigned
+  case; actor is original initiator. `draft` or `returned` → `submitted`.
+- `ngo.onboard.review.approve.v1`: assigned fixture Verification Officer;
+  `submitted` → `approved`.
+- `ngo.onboard.review.reject.v1`: same reviewer conditions; `submitted` → `rejected`.
+- `ngo.onboard.review.return.v1`: same reviewer conditions; `submitted` → `returned`.
+
+All four require fresh domain assurance. Unknown atoms deny; no edit/withdraw/
+appointment/invitation/grant atom is admitted. Submit needs independently sourced
+`organization_eligibility` AND `representative_mandate` findings on its exact
+snapshot. Reviewer differs from initiator and nominee **as fictional natural
+persons**, not only accounts; unresolved person/conflict/source mapping denies.
+The signed charter supplies exact case assignment and conflict exclusions; no
+wildcard tenant or inferred workspace/audit authority. One authorized reviewer
+suffices; separate offline findings are not a second online confirmer.
+
+**Reconciliation that must not be hidden by a test stub:** current `preflight`
+increments the root revision, while snapshots/attestations are immutable.
+Submitting root/snapshot revision 1 yields root revision 2 with submitted snapshot
+revision 1. Review therefore binds **expected root revision 2 AND pinned snapshot
+ID/source revision 1**, not an impossible equality of both revisions. Add guarded
+submitted-snapshot/submitted-root-revision pinning after acceptance. An event refers
+to that snapshot plus the new root revision/command/receipt correlation. Do not
+copy/re-attest evidence merely to advance a state counter. Existing
+`check_source_shape`/`prepare_submission` same-revision checks remain pre-submit
+structural tools, not the review binding API. Reuse `preflight` for state/actor/
+next-revision proposals; source trust/person conflicts/locked review binding are
+additional checks, not a second state machine.
+
+Submit sets current reviewer to null and pins the snapshot plus the resulting
+submitted-root revision; a review sets reviewer to the sealed actor. Initiator is
+immutable. Historical reviewer provenance stays in immutable events, including
+after resubmission clears the current reviewer.
+
+Each successful command increments root revision exactly once. Approval/rejection
+is terminal in this checkpoint. Return requires a new immutable snapshot and fresh
+findings before resubmission, prepared by the trusted test controller (no new edit
+writer); previous proof/decision cannot authorize the new source. Test root 1 →
+submit 2 → return 3 → fresh fixture snapshot 4 → resubmit 5 → decision 6. Snapshot
+4 has its own new attestations. Review always targets the exact submitted revision.
+No successful decision creates any NGOGrant, OrganizationAccess or publication.
+
+### 12.4 Fixture trust charter (necessary D2, not provisioning)
+
+Propose one immutable charter per disposable scenario, independently confirmed by
+an authorized fixture confirmer distinct from executor and beneficiaries. The
+trusted test controller supplies fictional person/account/contact/factor mappings,
+issuer, scenario UUID, database identity, policy/contract ID, exact actor atoms,
+record/tenant (null tenant allowed only for its specific new case), nominee person,
+case assignments/conflict exclusions, source revision, validity and single-use
+nonce. Serialize with §12.5 rules; sign with Ed25519 under an ephemeral test key
+whose verification key is pinned outside runtime/verifier control. Loader verifies
+signature, confirmer/executor/beneficiary separation, database/scenario binding,
+nonce uniqueness, exact version and `effective_at <= DB now < expires_at` with
+lifetime ≤24h. No reference string alone proves authority.
+
+Only the isolated test-controller loader may insert these source records before
+runtime exercise; runtime/verifier cannot load, sign, update or promote them.
+Trusting that controller is explicit: DB owners/test administrators are outside
+the unprivileged adversary boundary, not cryptographically prevented from forging
+all database state. Tampered, wrong-scenario, stale, revoked or unsigned charters
+deny. A new charter/source revision never silently reinstates old eligibility.
+Ephemeral keys/data are test-only and destroyed with the scenario; no real key,
+appointment, issuer credential or provisioning command is generated by this task.
+Existing `access` synthetic principals/grants are neither these sources nor a
+fallback. This new fixture source kind has no real-authority execution path.
+
+### 12.5 Domain intent and verifier (D3/D4)
+
+Proposed server-built canonical object has these **literal closed field names**:
+
+```text
+contract_id, policy_version, command, actor_id, actor_person_id, session_id,
+credential_generation, auth_epoch, recovery_generation, tenant_id, record_id,
+expected_record_revision, snapshot_id, snapshot_revision, submitted_revision,
+actor_source_id, actor_source_revision, case_assignment_id,
+case_assignment_revision, contact_id, contact_revision, factor_id, factor_revision,
+eligibility_generation, attestations, next_state, next_revision, idempotency_key
+```
+
+`attestations` is exactly two objects with fields `id`, `purpose`,
+`source_revision`, sorted by purpose. `source_revision` binds the authenticated
+finding source version (initially 1 for each immutable finding), not the advancing
+root counter. `policy_version` is the positive integer 1 for this contract;
+`contract_id` is this contract ID. Only `tenant_id` and pre-submit
+`submitted_revision` are nullable. `next_state`/`next_revision` derive from
+`preflight`; `submitted_revision` is the pinned post-submit root revision for
+review. No arbitrary caller actor/proof-digest/authority fields, bundles or grants.
+Resolve all values server-side from verified sources. Session/epoch counters use
+existing valid counter values without incrementing or redefining personal epochs;
+new source/revision counters are strictly positive. Unknown/absent fields deny.
+
+UUIDs are nonzero lowercase hyphenated strings; counters exact integers (not
+bool/float); idempotency key is 128 random client bits encoded as 32 lowercase
+hex characters. All object keys sort; UTF-8 JSON, separators `(',', ':')`, no ASCII
+escaping/NaN, duplicate/unknown fields or arbitrary evidence strings. Charter/intent
+times use UTC `YYYY-MM-DDTHH:mm:ss.ffffffZ`. Canonical digest is HMAC-SHA256 under
+a versioned external command key over `PWC/domain-command/v1` ASCII bytes, a NUL
+byte, then these exact canonical bytes. Intent separately stores the server-chosen
+key version. Proof secret verifier uses a separate key and `PWC/domain-proof/v1`,
+NUL, canonical lowercase intent UUID ASCII, NUL, then the 32 raw secret bytes.
+Distinct labels/keys prevent cross-use. Different command/decision/source/revision/
+key changes the binding. This is a new contract DTO, not the current five-field
+planning parser or shipped wire API.
+
+Issuer creates one 256-bit random secret, storing only its purpose-separated keyed
+verifier. Bind the intent to the canonical digest and all generations; opaque
+secret returned only to internal fixture caller, never URL/storage/log/audit.
+`expires_at = min(DB issued_at + 180s, original session/access/idle/source/command
+deadlines)`, valid half-open; confirmation does not restart this clock. Missing,
+wrong/changed binding, generation/source change, stale revision or expiry terminally
+invalidates. Missing bindings do not become nullable/default authority.
+
+Confirmation authenticates the current session, validates fresh password, then a
+newly supplied independently eligible TOTP. Reuse existing ±1 30s window and strictly
+increasing accepted step; no cached login MFA, personal `recent()`, recovery code or
+new factor fallback. Five bad-secret/password/TOTP submissions per intent terminally
+invalidate; earlier credential failures permit only another newly supplied attempt
+on the unchanged intent. Never return credential-specific authority details.
+Retain stricter personal limits. Issuance/confirmation each spend purpose-separated
+`domain-intent`/`domain-assurance` actor and observed REMOTE_ADDR buckets, 30/900s,
+independently **before User/domain locks**. No forwarded-IP trust. Factor budget
+remains shared `mfa:300`, 5/300s. Normal denial must commit attempt accounting;
+exceptional verifier rollback still leaves actor/IP cost spent. Verifier commits
+accepted step + sealed proof state first; execution later consumes proof. Failure
+of the domain transaction never unspends a successful TOTP step.
+
+### 12.6 Restricted PostgreSQL boundary (D5)
+
+Use additive migrations only after acceptance: fixture source/assignment/person
+mapping, protected factor eligibility/generations, domain intents/sealed proofs,
+submitted-source pinning, receipt uniqueness and event/notice correlation. Preserve
+existing immutable snapshots/attestations/history and source-kind constraints.
+The schema must enforce record/snapshot/attestation/tenant/source consistency through
+FK/UNIQUE/guarded cross-row checks, not cross-table CHECK expressions.
+
+Roles: nonlogin migration/data owners; nonlogin fixed-function owners; restricted
+runtime caller; isolated verifier principal; isolated fixture-loader controller.
+No owner/verifier/loader membership, CREATE, TRUNCATE or protected table DML for
+runtime. No PUBLIC EXECUTE on protected functions; revoke default privileges in
+the same migration transaction. Runtime can only invoke the allowlisted intent/
+transition/owned-receipt entry points. Verifier can read bound auth/intent data and
+seal verified proof via a fixed function, not mutate domain outcomes/source grants.
+Loader has no runtime entry point. Restrict unneeded table reads as well as writes.
+
+Fixed SECURITY DEFINER functions have explicit trusted search_path (pg_catalog plus
+private owner schema, no pg_temp/public resolution), schema-qualified relations,
+no dynamic SQL or arbitrary role/actor argument. Narrow execution input is intent
+ID + opaque proof + client key; actor/session/command/tenant/source/digest come
+from immutable verifier-sealed bindings and authenticated runtime context. Missing
+or unsealed proof denies. Reauthenticate/revalidate inside the writer; no caller
+`actor_is_officer`. Fixtures cannot SET ROLE to owners/verifier or mint sealed proof.
+Test using independent restricted connections, not just owner-issued SET ROLE.
+
+### 12.7 Serialization, atomicity, receipts and errors (D6)
+
+READ COMMITTED on primary PostgreSQL; 2s lock/5s statement bounds, no workload SLA.
+Resolve candidates without disclosing data, then lock all involved Users by UUID;
+contacts, factors (each class UUID order); sessions, mobile credentials, intents;
+platform roots then NGO roots by UUID; assignments/source records; controlled root,
+snapshot/findings/submitted pin; receipt slot. No late User/root edges. Source
+revocation, recovery, factor change and domain execution must serialize through
+these same parent locks. Source invalidation is enforcement, asynchronous cleanup
+is not. Re-read all sources/deadlines with DB wall clock **after waits** and before
+mutation; no physical-commit-before-expiry guarantee.
+
+Code-backed helper review is mandatory: `sessions.authenticate_locked` takes User
+→ contact → session → mobile credential; `mfa_views.endpoint` User → factors →
+authenticate_locked → intent; `mfa.verify_totp` assumes factor then abuse bucket/step;
+`sessions.revoke_all_locked` assumes User then ordered sessions/credentials. New
+coordinator prelocks every User, contacts then factors before these edges. Reuse
+service primitives, not HTTP MFA adapters. Never call `registration.spend`'s separate
+budget transaction while holding domain roots. Inventory any new helper edge and
+stop if it reverses the graph; do not silently reorder shipped personal flows.
+
+Within one writer transaction revalidate actor/session/source/person conflicts,
+proof/digest/revisions, consume proof, advance root state/revision, record submitted
+pin or reviewer provenance, append immutable event, minimized notice intent and
+receipt. Any stage failure rolls all these back; no external delivery inside locks.
+Sealed verifier step stays spent. No lazy protected queryset escapes the transaction.
+
+At intent creation reserve (actor, literal command, tenant/record, client key)
+against one canonical digest in a unique key slot. A different digest conflicts
+even if no domain result committed; expiry/failure never permits key recycling.
+Reservation is not a success receipt. Retain it through fixture destruction.
+
+Receipt uniqueness: (actor, literal command, tenant/record, client key), enforced
+in DB including **null tenant** (use NULLS NOT DISTINCT or equivalent nonnullable
+scope key, never nullable UNIQUE loopholes). Same key/different digest conflicts;
+identical committed digest returns the original minimized receipt without rerunning
+mutation or consuming proof again. Current session/actor eligibility and scoped
+receipt authorization apply first even on retry. For an authorized committed retry,
+root revision naturally advanced: do not run new-mutation stale-revision checks or
+require a new TOTP step for the old result. Revoked/ineligible actors cannot use
+receipt/status as an oracle. Concurrent duplicate creation waits and rereads winner.
+Missing receipt after lost response is **unknown**, never proof of noncommit or
+permission for automatic new-key retry. Only explicit same-key unchanged retry.
+
+Internal errors retain existing auth/CSRF behavior; invisible case/receipt 404;
+owned missing revision 428, stale 412, digest/key conflict 409; dependency, deadlock,
+lock timeout or audit failure 503 (no automatic retry). Abuse 429 retains Retry-After.
+No public DTO/status route or changed unavailable HTTP behavior in this checkpoint.
+
+### 12.8 Minimum evidence, event, receipt and notice model (D12)
+
+No new raw evidence or free-text reasons. Existing bounded opaque evidence/method/
+nomination handles, purposes, examiner and examined time remain on immutable source
+snapshots/attestations. Validity/custody is authenticated by the fixture charter,
+not by handle syntax. Do not persist password, OTP, seed, proof secret, verifier,
+canonical payload or external document/person number in event/notice/receipt/logs.
+Verifier/digest storage is restricted to its dedicated intent/proof records.
+
+Event fields: ID, contract/policy, literal command, record/tenant, pinned snapshot,
+old/new root revisions/state, actor/session and immutable source references,
+DB effective time, receipt correlation. Receipt fields: ID, actor, scoped key and
+restricted digest binding, command/record, committed resulting state/revision,
+event/notice correlation and DB time; output excludes key digest/proof/source dossier.
+Notice intent: ID, receipt/event reference, server-resolved assigned recipient,
+generic status/reference, dedup key and pending test-sink state. No provider/worker.
+Exactly one required notice per successful command to the other assigned officer
+(submit→reviewer; review→initiator), deduped by receipt+recipient; no nominee notice
+or publication in this slice. No actual delivery is claimed.
+
+Internal case reads constrain exact assignment and record/tenant before access;
+executor/reviewer see only required assigned-case metadata; receipts are actor-owned
+and require current authority. No Board/staff/global audit audience or public
+nominee dossier. Logs contain generic error/correlation only, not payloads/keys.
+Fixture receipts/tombstones and sources survive all replay/restore tests; disposable
+DB, backups, keys and test artifacts are destroyed together. No production statutory
+period, indefinite retention authorization or real-data legal basis is inferred.
+
+### 12.9 One coordinated reviewer checklist and bounded execution order
+
+All boxes are uncompleted. One review packet/meeting may coordinate functions;
+it cannot let one function impersonate another or self-certify its implementation.
+
+- [ ] Confirm contract ID, baseline, both lock hashes and the immutable review
+  commit; run `python scripts/check_pwc04c_contract.py`. A pass proves bytes only.
+- [ ] Record accountable qualified reviewers/functions and conflicts in §8 records;
+  use approved nonpublic evidence references, not public identity documents. Actual
+  officer appointments/host approval are not prerequisites to this fixture design.
+- [ ] Disposition **each** D row above: accept/amend/reject/defer, exact scope,
+  residual conditions/exclusions, evidence references and date. No blanket
+  “recommendations approved” or implicit transfer of product-owner preferences.
+- [ ] Jointly inspect source/verifier/runtime threat model, canonical vectors,
+  two-revision binding, null-tenant receipt uniqueness, failure tables and actual
+  auth-helper lock edges. Amend/version again if any design gap remains.
+- [ ] Separate conditions required **before coding** from evidence due **after
+  coding**; no unresolved required I gate for a component may be bypassed with a flag.
+- [ ] After accepted design, implement the bounded steps below; require independent
+  implementation review of SQL, assurance and privacy, with actual evidence.
+- [ ] Confirm adversarial suite and unchanged shipped functionality; keep runtime
+  command availability false, no live source fallback or privileged HTTP routes.
+- [ ] Record implementation acceptance separately from deployment, transport,
+  independent host acceptance or real activation. None is granted here.
+
+Implementation plan **after affected recorded design acceptance**:
+
+1. **D1+D2+D5+D12:** additive isolated fixture source/assignment/person schema and
+   signed-charter loader; pin exact IDs/versions/expiry and test restricted source
+   forgery/fixture-promotion/tenant substitution. No officer provisioning/grants.
+2. **D3+D4+D5+D6+D12:** domain intent + isolated verifier/eligibility fence using
+   existing personal cryptography/session helpers; migrations/keys remain test-only.
+   Verify canonical vectors, fresh password/TOTP, fifth failure, budgets, all
+   recovery/factor/session/hold changes and after-wait expiry before enabling callers.
+3. **D1–D6+minimum D12:** narrow protected submit and three independent decisions,
+   guarded submitted pin and atomic event/notice/receipt, restricted internal readers.
+   Exercise root 1/source 1→root 2/source 1 review, return/new-source/resubmit,
+   no self-review under two accounts, zero grants/publication at every outcome.
+4. **Same accepted contracts:** multi-connection approve-vs-reject/return,
+   duplicate same-key/same-body and changed-body (including null tenant), source/
+   actor revoke-vs-execute, factor replace-vs-confirm/execute, lock timeout and
+   expiry after wait. One winner/revision/event/receipt; no stale successful write.
+   Fault-inject proof-consumption/domain/event/notice/receipt stages and recover
+   lost response through owned same-key receipt; never reuse a spent TOTP step.
+5. **Implementation acceptance:** PostgreSQL migrations/drift/forward-fix/restore,
+   actual restricted login/session privilege probes (not owner simulation), full
+   backend/contract/auth/tenant regression, minimized log/data inspection, relevant
+   web/mobile contract regressions if shared artifacts change. Attach exact results,
+   known failures and reviewer dispositions. No automatic merge or activation.
+
+Until acceptances: existing nonwriting preparation, bounded syntax, read-denial/
+locking/rollback harnesses and integrity/tooling tests may continue. No privileged
+writer, source loader, factor eligibility mutation or sealed proof is implemented
+by this package or the integrity tool.
+<!-- END C04C-FIXTURE-20261103.1 -->
+
+### 12.10 Non-normative preparation evidence (outside the locked contract)
+
+This task adds only review-byte tooling, not D-dependent domain implementation.
+`python scripts/check_pwc04c_contract.py` passes. Tooling suite: **15 passed**
+(including nine new lock tests); existing database-free command-shape/preparation
+suite: **15 passed**. Ruff repository check and scoped CI format check, frozen
+contract generation/source inventory, pip consistency and diff checks pass.
+F1–F9/E05 bytes were compared directly to merged PR32 and are unchanged.
+No application code, API artifact, dependency, schema, migration, runtime setting
+or infrastructure change. No PostgreSQL workflow/full backend/browser/Flutter
+rerun claimed for this documentation/tooling-only delta. Existing PostgreSQL
+results in §11.10 are historical, not evidence for the unbuilt §12 workflow.
+The new lock tests run through the existing backend CI tooling-test discovery;
+a passed checksum or CI job must never be interpreted as accountable acceptance.

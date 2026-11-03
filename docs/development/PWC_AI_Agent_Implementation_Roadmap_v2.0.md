@@ -352,3 +352,10 @@ adds nonauthoritative command-shape validation, unsaved synthetic builders and
 PostgreSQL denial/locking/rollback harnesses. See [package §11.9](../reviews/PWC-04C-IMPLEMENTATION-AUTHORIZATION-PACKAGE-v1.0.md#119-bounded-implementation-started--3-november-2026).
 Protected execution remains unavailable pending D1/D2(abstract)/D3–D6/minimal D12;
 no new acceptance, migration, privileged writer or later-phase activation.
+
+**Version-locked review checkpoint (3 November, after merged PR32):**
+[Authorization package §12](../reviews/PWC-04C-IMPLEMENTATION-AUTHORIZATION-PACKAGE-v1.0.md#12-version-locked-fixture-implementation-contract)
+consolidates `C04C-FIXTURE-20261103.1`, affected owners/evidence/dependencies,
+coordinated checklist and post-acceptance plan. Its hash lock also pins F1–F9/E05;
+byte-integrity tooling is nonauthoritative. All affected technical acceptances
+remain pending; protected transitions and runtime availability remain unchanged.
