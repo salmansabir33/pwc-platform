@@ -30,7 +30,7 @@
   "apps/backend/config/settings.py": "afada4be4205b2ac22f7a65d596de7fd062b6c1013d71794ed73dff356658f45",
   "apps/backend/config/urls.py": "dfb409c2f5a8a9f16ad67c66d0b1a4b9fd5626562d1b23ba645d5835edca2648",
   "apps/backend/organizations/__init__.py": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
-  "apps/backend/organizations/controlled_command_shape.py": "7126d2d8eca5a7c37a24c2c8c220cc73b0f86801c5963de042893ba3b2964614",
+  "apps/backend/organizations/controlled_command_shape.py": "3c518dda24c996fae4458c0a00f03f5ce5831466ce02ba5c9e1d3a45bd574f42",
   "apps/backend/organizations/controlled_contract.py": "b2becd6b473e02b40b88e4a1a6ef9cf16cc0d65b582f7b2c8e032db00c2ef800",
   "apps/backend/organizations/controlled_onboarding.py": "2aa9c994cd03af60e3d3af149c71ec95169c4322484cdbea104f95b78c42817c",
   "apps/backend/organizations/controlled_preparation.py": "013f8e273ffacc30435cf6da2bfa40f5a492127feb73a9b26bc2e8010861332b",

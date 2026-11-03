@@ -207,3 +207,58 @@ class CommandShapeTests(SimpleTestCase):
         self.snapshot.record_id = other_record.pk
         with self.assertRaises(CommandShapeError):
             check_source_shape(self.parse(), record=self.record, snapshot=self.snapshot)
+
+    def test_missing_source_fields_have_only_redacted_shape_errors(self):
+        for target, fields in (
+            ("record", ("pk", "organization_id", "revision")),
+            ("snapshot", ("pk", "record_id", "revision")),
+        ):
+            for field in fields:
+                record = SimpleNamespace(**vars(self.record))
+                snapshot = SimpleNamespace(**vars(self.snapshot))
+                delattr(record if target == "record" else snapshot, field)
+                with self.subTest(target=target, field=field):
+                    with self.assertRaises(CommandShapeError) as error:
+                        check_source_shape(
+                            self.parse(), record=record, snapshot=snapshot
+                        )
+                    self.assertEqual(
+                        str(error.exception), "Invalid controlled command shape"
+                    )
+                    self.assertIsNone(error.exception.__cause__)
+        for record, snapshot in ((None, self.snapshot), (self.record, None)):
+            with self.assertRaises(CommandShapeError):
+                check_source_shape(self.parse(), record=record, snapshot=snapshot)
+
+    def test_source_uuid_fields_reject_equality_spoofing(self):
+        class EqualToAnything:
+            def __eq__(self, other):
+                return True
+
+        for target, fields in (
+            ("record", ("pk", "organization_id")),
+            ("snapshot", ("pk", "record_id")),
+        ):
+            for field in fields:
+                for invalid in (EqualToAnything(), "sensitive-canary", True, None):
+                    # Matching UUIDs for all other fields isolate each check.
+                    record = SimpleNamespace(**vars(self.record))
+                    snapshot = SimpleNamespace(**vars(self.snapshot))
+                    setattr(record if target == "record" else snapshot, field, invalid)
+                    with self.subTest(
+                        target=target, field=field, kind=type(invalid).__name__
+                    ):
+                        with self.assertRaises(CommandShapeError):
+                            check_source_shape(
+                                self.parse(), record=record, snapshot=snapshot
+                            )
+
+    def test_unassigned_organization_source_is_valid_but_not_authority(self):
+        self.record.organization_id = None
+        shape = self.parse(organization_id=None)
+        self.assertIsNone(
+            check_source_shape(shape, record=self.record, snapshot=self.snapshot)
+        )
+        self.assertFalse(shape.executable)
+        self.assertFalse(command_available(None, shape.command))
+        self.assertEqual((self.record.state, self.record.revision), ("draft", 1))
