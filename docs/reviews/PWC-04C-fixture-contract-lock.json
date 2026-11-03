@@ -1,0 +1,7 @@
+{
+  "contract_id": "C04C-FIXTURE-20261103.1",
+  "baseline_commit": "d7c5f977e0ca7c4f23d04a00ccb576fa1fb65a80",
+  "document": "docs/reviews/PWC-04C-IMPLEMENTATION-AUTHORIZATION-PACKAGE-v1.0.md",
+  "contract_sha256": "c265605ab21d929e0d40974cc20e964a4165e95d18e62c533bdd0f3b6cb042ff",
+  "fixed_constraints_sha256": "960144e414ad27ac7dec39a743bb4f6f4f6cebb1d817b08a5c5a6764ee13ac8d"
+}
