@@ -125,14 +125,25 @@ def check_source_shape(candidate, *, record, snapshot):
     """
     if type(candidate) is not CommandShape:
         invalid()
+    try:
+        # Reuse the same UUID/revision validation for supplied source fields;
+        # equality alone could accept a non-UUID object with permissive __eq__.
+        source = CommandShape(
+            command=candidate.command,
+            record_id=record.pk,
+            snapshot_id=snapshot.pk,
+            organization_id=record.organization_id,
+            expected_revision=record.revision,
+        )
+        snapshot_record_id = snapshot.record_id
+        snapshot_revision = snapshot.revision
+    except AttributeError:
+        invalid()
     if (
-        candidate.record_id != record.pk
-        or candidate.snapshot_id != snapshot.pk
-        or candidate.organization_id != record.organization_id
-        or snapshot.record_id != record.pk
-        or type(record.revision) is not int
-        or type(snapshot.revision) is not int
-        or candidate.expected_revision != record.revision
-        or candidate.expected_revision != snapshot.revision
+        candidate != source
+        or type(snapshot_record_id) is not UUID
+        or snapshot_record_id != source.record_id
+        or type(snapshot_revision) is not int
+        or snapshot_revision != source.expected_revision
     ):
         invalid()

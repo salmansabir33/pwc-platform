@@ -423,7 +423,8 @@ exact contracts and test obligations; it records no new human acceptance.
 
 This addendum implements the subsequently requested **independently safe** work;
 it does not amend §11.5's admission rule for executable protected components.
-PR #31 remains open; neither this code nor PR disposition signs D1–D12.
+At that implementation checkpoint PR #31 was open; neither code nor PR
+disposition signs D1–D12. It is now merged at `5118ad6`; see §11.10.
 Latest merged `main` checked at `64a51ea` before implementation.
 
 **Implemented without privileged transitions:**
@@ -448,15 +449,21 @@ Latest merged `main` checked at `64a51ea` before implementation.
 
 **Exact remaining executable checkpoint blockers** (proposals remain unsigned):
 
-| Decision | Required recorded disposition before affected implementation |
-|---|---|
-| D1 | These four exact atoms, issuer/target/confirmer and synthetic actor/source/conflict charter; no role-name authority fallback. |
-| D2 (unavoidable other-row dependency) | Abstract independently authenticated source/trust-anchor model, outside runtime/fixture control. Actual named appointments/bootstrap provisioning are not needed for safe local scaffolding. |
-| D3 | GM06 factor removal/replacement/recovery fencing and independently approved protected eligibility/reverification. |
-| D4 | Separate command-bound fresh password/new eligible TOTP intent, proof bindings, lifetime, failure/replay budgets; no personal recent-MFA reuse. |
-| D5 | Provenance model and separated restricted runtime, verifier and narrow writer trust; runtime cannot forge source/proof or promote fixtures. |
-| D6 | Reviewed lock graph including auth helpers, locked revalidation, atomic transition/event/notice/receipt and exact replay/duplicate-key semantics. |
-| D12 minimum | Minimized evidence/event/receipt/notice model, audiences and fixture tombstone lifetime. Production statutory periods are not prerequisites for disposable-fixture testing. |
+The following is the **current fixture-checkpoint decision queue**, reconciled
+against merged PR31 (`5118ad685740c06350c3d2e3f69336347d9a9950`). Each row is
+**PENDING accountable acceptance**; accept/amend/reject the exact referenced
+proposal using §8 (reviewer/role, immutable version/commit, date, fixture scope,
+evidence, conditions and exclusions). F1–F9 and E05 limits are not resubmitted.
+
+| Decision | Exact proposal to accept/amend for fixture submission/review | Accountable reviewers |
+|---|---|---|
+| D1 | §11.3/11.5: only `ngo.onboard.submit.v1` and `ngo.onboard.review.{approve,reject,return}.v1` (three literal review atoms, no wildcard); exact submitter/reviewer issuer→target/confirmer matrix and independently authenticated synthetic actor/source/conflict charter. No installed role-label fallback. | Product + NGO governance + security + DB/API + operations |
+| D2 (unavoidable trust dependency only) | §11.2 D2/11.5: accept abstract external trust-anchor and independently confirmed exact actor/source binding, outside runtime/fixture write control, including how synthetic authority is authenticated and cannot promote itself. No live bootstrap CLI, named appointments, provisioning or key custody implementation in this checkpoint. | Founding governance + security + operations + DB/API + legal/privacy |
+| D3 | GM06 **B**: ordinary factor removal remains possible, but removal/replacement, recovery or hold atomically fences protected eligibility/intents; no automatic restoration. Eligible initial factor and re-verification are independently recorded against exact factor ID/revision. Explicitly select B or amend/reject it. | Auth/security + product + operations + privacy |
+| D4 | §11.4: separate domain intents; canonical server-owned command/version/actor/session/generation/tenant/target/source/revision/key bindings; purpose-separated HMAC; 256-bit proof verifier; original-deadline-bounded ≤180s; fresh password then new eligible monotonic TOTP. Five failed credential attempts terminally invalidate; actor/IP 30/900s and existing factor 5/300s fences; no personal recent-MFA reuse. Accept serialization, failure/invalidation and budget commit semantics together. | Auth/security + DB/API + operations |
+| D5 | §11.2 D5/11.4: separate provenance plus restricted runtime/verifier/narrow writer; only isolated verifier seals proofs, actor derived from verified intent; runtime/fixtures cannot forge source/proof, DML protected tables or SET ROLE to owners. Accept principal authentication/membership, fixed-function privileges and trusted search_path model, not just function names. | DB/API + security + operations |
+| D6 | §11.4: reviewed User→auth→root→source→record→receipt lock graph against existing auth helpers; READ COMMITTED, primary DB clock after waits, 2s/5s bounds; separately committed assurance/anti-replay fence; atomic transition+revision+proof consumption+event+notice intent+receipt. Unique actor/command/tenant/target/key receipt; identical digest returns owned receipt after current authorization, changed digest conflicts; rollback/lost-response semantics as specified. | DB/API + auth/security |
+| D12 minimum | §11.2 D12/11.5: minimized external evidence references and event/receipt/notice fields; exact assigned-case/owned-receipt audiences, generic notices with server-resolved recipient, no broad audit reader or secrets/raw evidence. Keep fixture receipts/tombstones through replay/restore tests, destroy only with disposable DB. No production statutory-retention decision needed for this exercise. | Legal adviser **and** privacy specialist + NGO governance + security + DB/API + operations |
 
 Aligned AUTH/E/GM gates remain. D7–D11 invitation/grant decisions do not block this
 no-invite/no-grant work; neither O1/O2, Contabo nor live transport approval blocks
@@ -488,3 +495,33 @@ reproduced **3 moderate** package findings (`minimatch`, propagated through
 upgrade remains separate; audit gate is unchanged. New-head CI is separate from
 these local results and must be checked after push. None of these tests supplies
 the pending contract signatures or protected-workflow acceptance.
+
+
+### 11.10 Small source-validation follow-up from merged PR31 — 3 November 2026
+
+**Reconciliation/acceptance evidence:** PR31 merged at `5118ad6`; its GitHub review
+and comment lists are empty when checked for this task. Package §2/§8/§11.2,
+consolidated contract status, ADR-0002's approval scope/addendum and ADR-0004's
+status record **no accountable acceptance of the affected D contracts**. Existing
+core/synthetic technical approval is documented in ADR-0002 (24 October); product
+policy approvals are recorded in ADR-0004/E register (27 October). Neither extends
+to these new domain atoms, proofs, factor eligibility or provenance/writer/lock
+contracts. The decision table above is the action queue, not a new approval.
+
+**Working code delta:** `check_source_shape` now reuses `CommandShape` validation
+for supplied source UUID/revision fields and converts missing attributes into its
+existing redacted error. Equality-spoofing non-UUID objects no longer match. Three
+new database-free tests cover malformed/missing sources and legitimate pre-NGO
+(null organization) sources. A PostgreSQL test rechecks locked current metadata,
+rejects stale candidates, stale immutable evidence even after changing the request
+revision, and record/snapshot substitution. Test-owner revision edits exercise
+structural validation only, never a protected submit/review operation. The checker
+still trusts caller-supplied records, performs no lookup/locking/authorization and
+returns no executable command; callers must not treat this fix as source trust.
+
+**Evidence:** 36 targeted tests passed; full instrumented PostgreSQL 16.2/Python
+3.11 regression **492 passed**, **309** route/method/status combinations. Only the
+source-lock hash changes in API artifacts; no API operation/client/migration/model
+or personal auth changes. No privileged transition or D-dependent service/writer
+was added. D1–D6/minimum D12 remain blocked as listed; D7–D11, host acceptance,
+Contabo and production retention are not prerequisites for these safe tests.

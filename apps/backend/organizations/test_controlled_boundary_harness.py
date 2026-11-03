@@ -6,6 +6,7 @@ The test-only no-login role and its privileges are rolled back together.
 """
 
 from concurrent.futures import ThreadPoolExecutor
+import json
 from threading import Event
 from uuid import uuid4
 
@@ -14,7 +15,12 @@ from django.db import DatabaseError, close_old_connections, connection, transact
 from django.test import TransactionTestCase
 from psycopg import sql
 
-from .models import ControlledOnboardingRecord as Record
+from .controlled_command_shape import CommandShapeError, check_source_shape, parse_shape
+from .controlled_onboarding import command_available
+from .models import (
+    ControlledOnboardingRecord as Record,
+    ControlledOnboardingRevision as Revision,
+)
 
 
 class ControlledBoundaryHarnessTests(TransactionTestCase):
@@ -100,3 +106,50 @@ class ControlledBoundaryHarnessTests(TransactionTestCase):
                 future.result(timeout=15)
         self.record.refresh_from_db()
         self.assertEqual((self.record.state, self.record.revision), ("draft", 1))
+
+    def test_locked_source_recheck_rejects_stale_and_substituted_records(self):
+        # Test-owner metadata only; not a submit/review/authority writer.
+        snapshot = Revision.objects.create(
+            record=self.record,
+            revision=1,
+            organization_name="Synthetic",
+            city="City",
+            classification="unregistered",
+            nominee_reference="SYNTHETIC_PERSON",
+            nomination_reference="SYNTHETIC_NOMINATION",
+            recorded_by=self.actor,
+        )
+        value = dict(
+            command="ngo.onboard.submit.v1",
+            record_id=str(self.record.pk),
+            snapshot_id=str(snapshot.pk),
+            organization_id=None,
+            expected_revision=1,
+        )
+        shape = parse_shape(json.dumps(value).encode())
+        self.assertIsNone(
+            check_source_shape(shape, record=self.record, snapshot=snapshot)
+        )
+        Record.objects.filter(pk=self.record.pk).update(revision=2)
+        with transaction.atomic():
+            current = Record.objects.select_for_update().get(pk=self.record.pk)
+            with self.assertRaises(CommandShapeError):
+                check_source_shape(shape, record=current, snapshot=snapshot)
+            # Changing the requested revision cannot refresh immutable evidence.
+            refreshed = parse_shape(
+                json.dumps(dict(value, expected_revision=2)).encode()
+            )
+            with self.assertRaises(CommandShapeError):
+                check_source_shape(refreshed, record=current, snapshot=snapshot)
+        other = Record.objects.create(initiator=self.actor)
+        substituted = parse_shape(
+            json.dumps(dict(value, record_id=str(other.pk))).encode()
+        )
+        with self.assertRaises(CommandShapeError):
+            check_source_shape(substituted, record=other, snapshot=snapshot)
+        self.record.refresh_from_db()
+        snapshot.refresh_from_db()
+        self.assertEqual((self.record.state, self.record.revision), ("draft", 2))
+        self.assertEqual(snapshot.revision, 1)
+        self.assertFalse(shape.executable)
+        self.assertFalse(command_available(self.actor, shape.command))
