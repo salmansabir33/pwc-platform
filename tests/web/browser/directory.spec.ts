@@ -31,6 +31,34 @@ for (const port of [5173, 5174]) {
         exact: true,
       }),
     ).toHaveCount(0);
+    const beforeSummary = calls.length;
+    await page
+      .getByRole("button", {
+        name: "View public summary for Synthetic Directory NGO 00",
+        exact: true,
+      })
+      .click();
+    const summary = page.getByRole("region", { name: "NGO public summary" });
+    await expect(summary).toBeVisible();
+    await expect(
+      summary.getByText("Synthetic Directory NGO 00", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      summary.getByRole("button", { name: /edit|publish|approve/i }),
+    ).toHaveCount(0);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    expect(calls.length).toBe(beforeSummary);
+    await page.getByRole("button", { name: "Close public summary" }).click();
+    await expect(
+      page.getByRole("button", {
+        name: "View public summary for Synthetic Directory NGO 00",
+        exact: true,
+      }),
+    ).toBeFocused();
     await page.getByRole("button", { name: "Next page", exact: true }).click();
     await expect(page.getByRole("status")).toContainText("3 results");
     await expect(

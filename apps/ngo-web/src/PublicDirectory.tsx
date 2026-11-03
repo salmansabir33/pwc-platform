@@ -4,6 +4,8 @@ import type {
   DirectoryFilter,
   DirectoryPage,
 } from "@pwc/web-api";
+import { parseDirectory } from "@pwc/web-api";
+import { PublicSummary } from "./PublicSummary";
 import { useLocale } from "@pwc/web-i18n";
 import { Button, TextField, SelectField, Card, Badge } from "@pwc/web-ui";
 
@@ -15,12 +17,16 @@ export function Directory({ gateway }: { gateway: DirectoryGateway }) {
   const [page, setPage] = useState<DirectoryPage | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const origin = useRef<HTMLButtonElement | null>(null);
+  const selected = page?.results.find((row) => row.id === selectedId);
   const generation = useRef(0);
   const pending = useRef<AbortController | null>(null);
   const reset = () => {
     generation.current++;
     pending.current?.abort();
     pending.current = null;
+    setSelectedId(null);
     setPage(null);
     setBusy(false);
     setError(false);
@@ -37,13 +43,14 @@ export function Directory({ gateway }: { gateway: DirectoryGateway }) {
     const ticket = ++generation.current;
     const controller = new AbortController();
     pending.current = controller;
+    setSelectedId(null);
     setPage(null);
     setError(false);
     setBusy(true);
     try {
       const next = await gateway.search(filters, cursor, controller.signal);
       if (ticket === generation.current && !controller.signal.aborted)
-        setPage(next);
+        setPage(parseDirectory(next));
     } catch {
       if (ticket === generation.current && !controller.signal.aborted)
         setError(true);
@@ -137,6 +144,15 @@ export function Directory({ gateway }: { gateway: DirectoryGateway }) {
           )}
         </p>
       )}
+      {selected && (
+        <PublicSummary
+          organization={selected}
+          onClose={() => {
+            setSelectedId(null);
+            origin.current?.focus();
+          }}
+        />
+      )}
       {page?.results.map((row) => (
         <Card key={row.id} title={row.name}>
           <p>{row.city}</p>
@@ -145,6 +161,17 @@ export function Directory({ gateway }: { gateway: DirectoryGateway }) {
               ? t("Registered", "رجسٹرڈ")
               : t("Unregistered", "غیر رجسٹرڈ")}
           </Badge>
+          <Button
+            onClick={(event) => {
+              origin.current = event.currentTarget;
+              setSelectedId(row.id);
+            }}
+          >
+            {t(
+              `View public summary for ${row.name}`,
+              `${row.name} کا عوامی خلاصہ دیکھیں`,
+            )}
+          </Button>
         </Card>
       ))}
       {page?.next_cursor && (
