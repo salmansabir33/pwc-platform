@@ -22,8 +22,13 @@ class Command(BaseCommand):
             "duplicate": "MEMBER_A,Synthetic Person A,ORDINARY\nMEMBER_A,Synthetic Person B,ORDINARY\n",
             "invalid": "MEMBER_A,=FORMULA,UNKNOWN\n",
         }
+        # call_command(..., scenario=...) bypasses argparse's choices check.
+        # Enforce the same fixture-only boundary for programmatic callers.
+        scenario = options["scenario"]
+        if type(scenario) is not str or scenario not in cases:
+            raise CommandError("Unknown synthetic preview scenario")
         report = preview_csv(
-            (header + cases[options["scenario"]]).encode(),
+            (header + cases[scenario]).encode(),
             organization_id=organization,
             catalog=PreviewCatalog(organization, frozenset({"ORDINARY"})),
         )

@@ -154,6 +154,53 @@ class MemberImportPreviewTests(SimpleTestCase):
                 "preview_member_import_fixture", scenario="duplicate", stdout=StringIO()
             )
 
+    def test_all_cli_paths_remain_database_free_including_system_checks(self):
+        # SimpleTestCase forbids DB queries. Unlike call_command defaults, do
+        # not skip Django checks: exercise the CLI's ordinary execution path.
+        for scenario in ("valid", "duplicate", "invalid"):
+            output = StringIO()
+            with self.subTest(scenario=scenario):
+                if scenario == "valid":
+                    call_command(
+                        "preview_member_import_fixture",
+                        scenario=scenario,
+                        stdout=output,
+                        skip_checks=False,
+                    )
+                else:
+                    with self.assertRaises(CommandError):
+                        call_command(
+                            "preview_member_import_fixture",
+                            scenario=scenario,
+                            stdout=output,
+                            skip_checks=False,
+                        )
+                report = json.loads(output.getvalue())
+                self.assertEqual(
+                    set(report), {"synthetic_only", "commit_available", "rows"}
+                )
+                self.assertTrue(report["synthetic_only"])
+                self.assertIs(report["commit_available"], False)
+                for row in report["rows"]:
+                    self.assertEqual(set(row), {"record", "errors", "warnings"})
+                self.assertNotIn("Synthetic Person", output.getvalue())
+                self.assertNotIn("=FORMULA", output.getvalue())
+
+    def test_programmatic_scenario_validation_cannot_bypass_fixture_allowlist(self):
+        for scenario in ("private-canary.csv", "../private", "", None, []):
+            output = StringIO()
+            with self.subTest(kind=type(scenario).__name__):
+                with self.assertRaises(CommandError) as error:
+                    call_command(
+                        "preview_member_import_fixture",
+                        scenario=scenario,
+                        stdout=output,
+                    )
+                self.assertEqual(
+                    str(error.exception), "Unknown synthetic preview scenario"
+                )
+                self.assertEqual(output.getvalue(), "")
+
 
 class ImportPreviewPostgreSQLTests(TestCase):
     def test_reference_catalogs_remain_separate_and_preview_creates_no_identity_or_access(
