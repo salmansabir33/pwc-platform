@@ -18,7 +18,9 @@ export function Directory({ gateway }: { gateway: DirectoryGateway }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const origin = useRef<HTMLButtonElement | null>(null);
+  const resultButtons = useRef(new Map<string, HTMLButtonElement>());
+  const selectedIndex =
+    page?.results.findIndex((row) => row.id === selectedId) ?? -1;
   const selected = page?.results.find((row) => row.id === selectedId);
   const generation = useRef(0);
   const pending = useRef<AbortController | null>(null);
@@ -147,9 +149,21 @@ export function Directory({ gateway }: { gateway: DirectoryGateway }) {
       {selected && (
         <PublicSummary
           organization={selected}
+          navigation={{
+            position: selectedIndex + 1,
+            total: page!.results.length,
+            previous:
+              selectedIndex > 0
+                ? () => setSelectedId(page!.results[selectedIndex - 1]!.id)
+                : undefined,
+            next:
+              selectedIndex < page!.results.length - 1
+                ? () => setSelectedId(page!.results[selectedIndex + 1]!.id)
+                : undefined,
+          }}
           onClose={() => {
             setSelectedId(null);
-            origin.current?.focus();
+            resultButtons.current.get(selected.id)?.focus();
           }}
         />
       )}
@@ -162,10 +176,11 @@ export function Directory({ gateway }: { gateway: DirectoryGateway }) {
               : t("Unregistered", "غیر رجسٹرڈ")}
           </Badge>
           <Button
-            onClick={(event) => {
-              origin.current = event.currentTarget;
-              setSelectedId(row.id);
+            ref={(node) => {
+              if (node) resultButtons.current.set(row.id, node);
+              else resultButtons.current.delete(row.id);
             }}
+            onClick={() => setSelectedId(row.id)}
           >
             {t(
               `View public summary for ${row.name}`,
