@@ -52,7 +52,31 @@ for (const port of [5173, 5174]) {
       ),
     ).toBe(true);
     expect(calls.length).toBe(beforeSummary);
-    await page.getByRole("button", { name: "Close public summary" }).click();
+    await expect(
+      summary.getByRole("button", { name: "Previous NGO" }),
+    ).toBeDisabled();
+    await page.keyboard.press("Tab");
+    await expect(
+      summary.getByRole("button", { name: "Next NGO" }),
+    ).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(
+      summary.getByText("Synthetic Directory NGO 01", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      summary.getByRole("heading", { name: "NGO public summary", exact: true }),
+    ).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(
+      summary.getByRole("button", { name: "Previous NGO" }),
+    ).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(
+      summary.getByText("Synthetic Directory NGO 00", { exact: true }),
+    ).toBeVisible();
+    expect(calls.length).toBe(beforeSummary);
+    await page.keyboard.press("Escape");
+    await expect(summary).toHaveCount(0);
     await expect(
       page.getByRole("button", {
         name: "View public summary for Synthetic Directory NGO 00",

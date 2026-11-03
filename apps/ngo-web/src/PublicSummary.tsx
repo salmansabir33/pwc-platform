@@ -7,22 +7,77 @@ import { Button, Card } from "@pwc/web-ui";
 export function PublicSummary({
   organization,
   onClose,
+  navigation,
 }: {
   organization: ContractSchemas["PublicOrganization"];
   onClose: () => void;
+  navigation?: {
+    position: number;
+    total: number;
+    previous?: (() => void) | undefined;
+    next?: (() => void) | undefined;
+  };
 }) {
   const { locale } = useLocale();
   const t = (en: string, ur: string) => (locale === "ur" ? ur : en);
   const titleId = useId();
+  const positionId = useId();
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
     heading.current?.focus();
   }, [organization.id]);
   return (
-    <section aria-labelledby={titleId} className="stack public-summary">
-      <h2 id={titleId} tabIndex={-1} ref={heading}>
+    <section
+      aria-labelledby={titleId}
+      className="stack public-summary"
+      onKeyDown={(event) => {
+        if (event.key === "Escape" && !event.defaultPrevented) {
+          event.preventDefault();
+          event.stopPropagation();
+          onClose();
+        }
+      }}
+    >
+      <h2
+        id={titleId}
+        tabIndex={-1}
+        ref={heading}
+        aria-describedby={navigation ? positionId : undefined}
+      >
         {t("NGO public summary", "تنظیم کا عوامی خلاصہ")}
       </h2>
+      {navigation && (
+        <div className="stack">
+          <p id={positionId}>
+            {t(
+              `Public result ${navigation.position} of ${navigation.total} on this page`,
+              `اس صفحے پر ${navigation.total} میں سے عوامی نتیجہ ${navigation.position}`,
+            )}
+          </p>
+          <nav
+            aria-label={t(
+              "Public summary navigation",
+              "عوامی خلاصے کی سمت یابی",
+            )}
+            className="action-row"
+          >
+            <Button
+              variant="secondary"
+              disabled={!navigation.previous}
+              onClick={navigation.previous}
+            >
+              {t("Previous NGO", "پچھلی تنظیم")}
+            </Button>
+            <Button
+              variant="secondary"
+              disabled={!navigation.next}
+              onClick={navigation.next}
+            >
+              {t("Next NGO", "اگلی تنظیم")}
+            </Button>
+          </nav>
+        </div>
+      )}
       <Card title={organization.name}>
         <dl>
           <dt>{t("Registry reference", "فہرست کا حوالہ")}</dt>

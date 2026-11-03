@@ -359,3 +359,14 @@ consolidates `C04C-FIXTURE-20261103.1`, affected owners/evidence/dependencies,
 coordinated checklist and post-acceptance plan. Its hash lock also pins F1–F9/E05;
 byte-integrity tooling is nonauthoritative. All affected technical acceptances
 remain pending; protected transitions and runtime availability remain unchanged.
+
+### 11.9 PWC-04D public profile browsing — 3 November 2026
+
+After PR34's four-field public summary, the next bounded feature reuses that
+component for current-page Previous/Next browsing, bilingual result position,
+keyboard navigation, Escape/Close and focus return to the selected NGO. No new
+profile page, data field, API request, endpoint or disclosure/authority is added.
+Navigation never crosses the fetched public page or reports hidden totals; search,
+pagination, locale and gateway changes invalidate selection as before. This is not
+full PUB-04/ORG-04/ORG-05 completion or publication consent. New profile fields,
+editing, publishing, private overview and 04C authority gates remain excluded.

@@ -100,3 +100,33 @@ class PublicSummaryIsolationTests(TestCase):
         self.workspace.refresh_from_db()
         self.assertEqual(self.a.name, "Synthetic NGO A")
         self.assertEqual(self.workspace.state, "provisional")
+
+    def test_hidden_and_unknown_records_share_redacted_error_response(self):
+        hidden = self.detail(self.b.pk)
+        unknown = self.detail(uuid.uuid4())
+        self.assertEqual(hidden.status_code, 404)
+        self.assertEqual(hidden.json(), unknown.json())
+        for response in (hidden, unknown, self.detail("not-a-uuid")):
+            for canary in (
+                self.b.name,
+                self.b.city,
+                self.user.email,
+                self.user.username,
+            ):
+                self.assertNotIn(canary, response.content.decode())
+
+    def test_two_public_ngos_keep_exact_target_projection_separate(self):
+        self.workspace.state = "verified"
+        self.workspace.save()
+        for organization in (self.a, self.b):
+            response = self.detail(organization.pk)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(
+                response.json(),
+                {
+                    "id": str(organization.pk),
+                    "name": organization.name,
+                    "city": organization.city,
+                    "classification": organization.classification,
+                },
+            )

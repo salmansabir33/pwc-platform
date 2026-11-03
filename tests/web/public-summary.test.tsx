@@ -88,6 +88,10 @@ describe("04D public-only summary", () => {
   it.each([
     { ...a, id: "../private" },
     { ...a, private_notes: "unpublished-canary" },
+    { ...a, contact: "unpublished-canary" },
+    { ...a, history: "unpublished-canary" },
+    { ...a, verification: "unpublished-canary" },
+    { ...a, memberships: "unpublished-canary" },
   ])(
     "fails closed on malformed IDs or additional private fields",
     async (row) => {
@@ -176,6 +180,12 @@ it("clears selected data on language/gateway change and renders Urdu RTL", async
   expect(
     screen.getByRole("region", { name: "تنظیم کا عوامی خلاصہ" }),
   ).toBeVisible();
+  expect(
+    screen.getByRole("navigation", { name: "عوامی خلاصے کی سمت یابی" }),
+  ).toBeVisible();
+  expect(screen.getByRole("button", { name: "پچھلی تنظیم" })).toBeDisabled();
+  expect(screen.getByRole("button", { name: "اگلی تنظیم" })).toBeDisabled();
+  expect(screen.getByText("اس صفحے پر 1 میں سے عوامی نتیجہ 1")).toBeVisible();
   expect(document.documentElement).toHaveAttribute("dir", "rtl");
 });
 it("drops the old summary before fetching the next public page", async () => {
@@ -207,4 +217,84 @@ it("drops the old summary before fetching the next public page", async () => {
     "synthetic-cursor",
     expect.any(AbortSignal),
   );
+});
+
+it("browses only current-page NGOs with keyboard, announces position and closes to the current result", async () => {
+  const { user, search } = mount();
+  await searchAndSelect(user);
+  let region = screen.getByRole("region", { name: "NGO public summary" });
+  const title = within(region).getByRole("heading", {
+    name: "NGO public summary",
+  });
+  expect(title).toHaveAccessibleDescription(
+    "Public result 1 of 2 on this page",
+  );
+  expect(
+    within(region).getByRole("button", { name: "Previous NGO" }),
+  ).toBeDisabled();
+  // Heading is focused; disabled Previous is skipped by keyboard navigation.
+  await user.tab();
+  expect(
+    within(region).getByRole("button", { name: "Next NGO" }),
+  ).toHaveFocus();
+  await user.keyboard("{Enter}");
+  region = screen.getByRole("region", { name: "NGO public summary" });
+  expect(within(region).getByText("NGO B")).toBeVisible();
+  expect(within(region).queryByText("NGO A")).toBeNull();
+  expect(
+    within(region).getByRole("heading", { name: "NGO public summary" }),
+  ).toHaveFocus();
+  expect(
+    within(region).getByRole("heading", { name: "NGO public summary" }),
+  ).toHaveAccessibleDescription("Public result 2 of 2 on this page");
+  expect(
+    within(region).getByRole("button", { name: "Next NGO" }),
+  ).toBeDisabled();
+  await user.keyboard("{Escape}");
+  expect(
+    screen.queryByRole("region", { name: "NGO public summary" }),
+  ).toBeNull();
+  expect(
+    screen.getByRole("button", { name: "View public summary for NGO B" }),
+  ).toHaveFocus();
+  expect(search).toHaveBeenCalledTimes(1);
+});
+
+it("Previous returns to A and Close restores A, without moving between result pages", async () => {
+  const { user, search } = mount();
+  await searchAndSelect(user, "NGO B");
+  await user.click(screen.getByRole("button", { name: "Previous NGO" }));
+  expect(
+    within(
+      screen.getByRole("region", { name: "NGO public summary" }),
+    ).getByText("NGO A"),
+  ).toBeVisible();
+  await user.click(
+    screen.getByRole("button", { name: "Close public summary" }),
+  );
+  expect(
+    screen.getByRole("button", { name: "View public summary for NGO A" }),
+  ).toHaveFocus();
+  expect(search).toHaveBeenCalledTimes(1);
+});
+
+it("cannot navigate beyond a single visible result or expose an unpublished row", async () => {
+  const { user, search } = mount(
+    vi
+      .fn()
+      .mockResolvedValue({ results: [a], next_cursor: "next-public-page" }),
+  );
+  await searchAndSelect(user);
+  const region = screen.getByRole("region", { name: "NGO public summary" });
+  expect(
+    within(region).getByRole("button", { name: "Previous NGO" }),
+  ).toBeDisabled();
+  expect(
+    within(region).getByRole("button", { name: "Next NGO" }),
+  ).toBeDisabled();
+  expect(
+    within(region).getByText("Public result 1 of 1 on this page"),
+  ).toBeVisible();
+  expect(within(region).queryByText("NGO B")).toBeNull();
+  expect(search).toHaveBeenCalledTimes(1);
 });
