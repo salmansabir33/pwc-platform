@@ -370,3 +370,17 @@ Navigation never crosses the fetched public page or reports hidden totals; searc
 pagination, locale and gateway changes invalidate selection as before. This is not
 full PUB-04/ORG-04/ORG-05 completion or publication consent. New profile fields,
 editing, publishing, private overview and 04C authority gates remain excluded.
+
+### 11.10 PWC-05B nonwriting member-import preparation — 3 November 2026
+
+The next profile/membership writers remain approval-gated: public disclosures are
+still four fields, and synthetic v1 grants contain no member/import capability.
+The independently safe portion now implements a bounded in-memory CSV preview,
+per-row errors, all-occurrence duplicate references, name-only warnings (never
+identity linking), tenant-bound caller catalogs and a built-in synthetic CLI.
+Template columns are internal preparation vocabulary, not an approved API or
+membership policy. No upload endpoint, persistent staging, real roster read,
+User/member creation, claim, commit or UI transport is enabled. Actual 05A/05B
+services require accepted membership admission/category rules, explicit scoped
+member/import actions and issuer/source contracts, privacy/intake/retention,
+locked revision/audit/idempotency and claim/duplicate-resolution semantics.

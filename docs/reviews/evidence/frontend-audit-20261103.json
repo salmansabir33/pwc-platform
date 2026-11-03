@@ -1,0 +1,208 @@
+{
+  "baseline_commit": "e0cb68ad73cb2cdcb8eab907e56b898a4b867c53",
+  "node": "22.22.3",
+  "npm": "10.9.8",
+  "lock_sha256": "0a0a0fa84e26a34b141f02e199a5497bf2952b02cfc265b3403a4d2965425486",
+  "github_run": 41595290672,
+  "github_job": 125781106955,
+  "failed_step": "Run npm audit --audit-level=low",
+  "before": {
+    "exit_code": 1,
+    "counts": {
+      "info": 0,
+      "low": 0,
+      "moderate": 3,
+      "high": 0,
+      "critical": 0,
+      "total": 3
+    },
+    "findings": {
+      "@redocly/openapi-core": {
+        "name": "@redocly/openapi-core",
+        "severity": "moderate",
+        "isDirect": false,
+        "via": [
+          "minimatch"
+        ],
+        "effects": [
+          "openapi-typescript"
+        ],
+        "range": "<=2.6.0",
+        "nodes": [
+          "node_modules/@redocly/openapi-core"
+        ],
+        "fixAvailable": {
+          "name": "openapi-typescript",
+          "version": "6.7.6",
+          "isSemVerMajor": true
+        }
+      },
+      "minimatch": {
+        "name": "minimatch",
+        "severity": "moderate",
+        "isDirect": false,
+        "via": [
+          {
+            "source": 1244012,
+            "name": "minimatch",
+            "dependency": "minimatch",
+            "title": "minimatch has potential denial of service via globparts amplification",
+            "url": "https://github.com/advisories/GHSA-g3hv-75wg-m249",
+            "severity": "moderate",
+            "cwe": [
+              "CWE-405"
+            ],
+            "cvss": {
+              "score": 0,
+              "vectorString": null
+            },
+            "range": "<11.0.1"
+          }
+        ],
+        "effects": [
+          "@redocly/openapi-core"
+        ],
+        "range": "<11.0.1",
+        "nodes": [
+          "node_modules/minimatch"
+        ],
+        "fixAvailable": {
+          "name": "openapi-typescript",
+          "version": "6.7.6",
+          "isSemVerMajor": true
+        }
+      },
+      "openapi-typescript": {
+        "name": "openapi-typescript",
+        "severity": "moderate",
+        "isDirect": true,
+        "via": [
+          "@redocly/openapi-core"
+        ],
+        "effects": [],
+        "range": ">=7.0.0-next.0",
+        "nodes": [
+          "node_modules/openapi-typescript"
+        ],
+        "fixAvailable": {
+          "name": "openapi-typescript",
+          "version": "6.7.6",
+          "isSemVerMajor": true
+        }
+      }
+    }
+  },
+  "after": {
+    "exit_code": 1,
+    "counts": {
+      "info": 0,
+      "low": 0,
+      "moderate": 3,
+      "high": 0,
+      "critical": 0,
+      "total": 3
+    },
+    "findings": {
+      "@redocly/openapi-core": {
+        "name": "@redocly/openapi-core",
+        "severity": "moderate",
+        "isDirect": false,
+        "via": [
+          "minimatch"
+        ],
+        "effects": [
+          "openapi-typescript"
+        ],
+        "range": "<=2.6.0",
+        "nodes": [
+          "node_modules/@redocly/openapi-core"
+        ],
+        "fixAvailable": {
+          "name": "openapi-typescript",
+          "version": "6.7.6",
+          "isSemVerMajor": true
+        }
+      },
+      "minimatch": {
+        "name": "minimatch",
+        "severity": "moderate",
+        "isDirect": false,
+        "via": [
+          {
+            "source": 1244012,
+            "name": "minimatch",
+            "dependency": "minimatch",
+            "title": "minimatch has potential denial of service via globparts amplification",
+            "url": "https://github.com/advisories/GHSA-g3hv-75wg-m249",
+            "severity": "moderate",
+            "cwe": [
+              "CWE-405"
+            ],
+            "cvss": {
+              "score": 0,
+              "vectorString": null
+            },
+            "range": "<11.0.1"
+          }
+        ],
+        "effects": [
+          "@redocly/openapi-core"
+        ],
+        "range": "<11.0.1",
+        "nodes": [
+          "node_modules/minimatch"
+        ],
+        "fixAvailable": {
+          "name": "openapi-typescript",
+          "version": "6.7.6",
+          "isSemVerMajor": true
+        }
+      },
+      "openapi-typescript": {
+        "name": "openapi-typescript",
+        "severity": "moderate",
+        "isDirect": true,
+        "via": [
+          "@redocly/openapi-core"
+        ],
+        "effects": [],
+        "range": ">=7.0.0-next.0",
+        "nodes": [
+          "node_modules/openapi-typescript"
+        ],
+        "fixAvailable": {
+          "name": "openapi-typescript",
+          "version": "6.7.6",
+          "isSemVerMajor": true
+        }
+      }
+    }
+  },
+  "remediation_applied": false,
+  "root_dependencies_changed": false,
+  "validation": {
+    "react_tests_passed": 202,
+    "contract_and_preparation_tests_passed": 22,
+    "tooling_tests_passed": 15,
+    "typecheck": "passed",
+    "format_tokens_and_builds": "passed",
+    "api_contracts_and_types": "passed",
+    "pwc04c_byte_lock": "passed",
+    "browser_execution": "not run: Chromium unavailable",
+    "postgresql_integration": "not rerun: no application/API/backend changes"
+  },
+  "candidate_probes": [
+    {
+      "candidate": "@redocly/openapi-core 1.34.23",
+      "result": "Runtime files and dependencies identical to locked 1.34.22; still uses minimatch 5.1.9; no remediation."
+    },
+    {
+      "candidate": "@redocly/openapi-core 2.7.0 with openapi-typescript 7.13.0",
+      "result": "Isolated generation exited 1: ERR_PACKAGE_PATH_NOT_EXPORTED, ./lib/ref-utils.js."
+    },
+    {
+      "candidate": "minimatch 11.0.1",
+      "result": "CommonJS export is object, not callable as required by Redocly 1.34.22 utils.js."
+    }
+  ]
+}
