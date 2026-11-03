@@ -6,6 +6,8 @@
 **Baseline:** main after merged PR #24 (`9d2f5072`)  
 **Purpose:** Bring the eight critical implementation blockers in the PWC-04C readiness review to explicit accountable decisions in **one** package, without a string of separate product-choice PRs.
 
+**Current closure delta:** [§11](#11-implementation-contract-closure-delta--2-november-2026) supplies exact proposed rules, acceptance ownership and the smallest coding checkpoint. Earlier pending rows remain pending; authoritative product constraints are carried forward without reopening them.
+
 ## 1. Evidence hierarchy and boundaries
 
 The following **product decisions are already approved**: offline NGO/mandate examination; founding authority's separate signed initial platform appointments; manual restricted technical provisioning with independent confirmer; existing personal identity plus separate platform privilege; Super Admin submission distinct from Verification Officer approval; one-use exact-recipient invitation with at most 72-hour expiry and explicit acceptance; Primary versus scoped ordinary NGO Administrator nonfinance roles; fresh password **and** eligible current TOTP bound to sensitive command intent.
@@ -140,3 +142,349 @@ Separate **A/U/R** acceptance still controls real user/evidence intake and deplo
 - [PWC Design System v1.0](../design/PWC_DESIGN_SYSTEM_v1.0.md)
 
 **Release status:** No authorizations granted or real privileged code enabled by this document. The next step is real, independently evidenced review of AUTH-01–AUTH-09 and aligned E/GM/REAL gates.
+
+## 11. Implementation contract closure delta — 2 November 2026
+
+**Review version: `C04C-20261102.1`; status: PROPOSED where marked D below.**
+This is the actionable delta to §§2–9 and the existing consolidated contract,
+not a new readiness report or approval. Baseline: merged PR30, `64a51ea`;
+PR27–29 already implement permitted browsing/history/preparation and browser
+integration. Their code and tests must not be rebuilt. No signed technical
+acceptance has been added by this assignment. The AUTH-01–09 PENDING entries
+remain pending at their respective scopes; product choices below are not reopened.
+
+### 11.1 Settled constraints — carry forward without redundant product approval
+
+| Fixed rule | Authority and implemented reuse boundary |
+| --- | --- |
+| F1. Offline controlled onboarding only; organization eligibility and representative mandate are distinct findings. | ADR-0004 §7; `organizations/controlled_onboarding.py::preflight` and `controlled_preparation.py::prepare_submission`. These are nonwriting structural validators, not issuer authentication or decisions. |
+| F2. Chairman/President is the founding appointing function; separate signed appointments for two distinct natural persons; technical executor and independent confirmer; existing personal accounts and separate platform authority. | [Role arrangements](PWC-04C-GOVERNANCE-AND-REVIEWER-ROLE-ARRANGEMENTS.md) §§1–4; [manual provisioning decision](PWC-04C-MANUAL-PLATFORM-OFFICER-PROVISIONING-DECISION.md). Actual identities/instruments and executable trust-anchor protocol are not supplied by this product rule. |
+| F3. Sensitive platform actions need fresh password **and** eligible newly supplied TOTP bound to the exact action. No login-MFA/recovery-code/staff/superuser substitute. | [Password/TOTP decision](PWC-04C-OPERATION-BOUND-PASSWORD-AND-TOTP-DECISION.md); `accounts/mfa.py::verify_totp`, `sessions.py::authenticate_locked`. Personal `scope`, `step_up`, `consume` remain personal-only; do not add NGO operation strings to that allowlist. |
+| F4. No self-approval, cross-NGO authority, legacy-role promotion, synthetic-to-real promotion, finance/signatory/alliance/support inheritance or future wildcard capabilities. | ADR-0002; GM/REAL register; [admin matrix](PWC-04C-NGO-ADMINISTRATOR-PERMISSION-MATRIX.md). Keep `access/registry.py` v1 bundles and synthetic 24-hour ceiling unchanged. |
+| F5. Exact nominee, explicit versioned consent, one-use invitation, at most 72 hours; acceptance is not grant activation. | [Invitation decision](PWC-04C-REPRESENTATIVE-INVITATION-AND-ACTIVATION-DECISION.md). Token/protocol and account-resolution ordering still need D7–D9 acceptance. |
+| F6. Current authorization/source checks, exact revision, immediate committed revocation fence and atomic audited outcomes; no positive cache/replica authority or network delivery under locks. | ADR-0002; `access/services.py`, `access/security.py`; existing controlled history constraints. These settle invariants, not the new writer/lock implementation. |
+| F7. Primary may request—not self-approve—additional admins. Planned succession is distinct from compromise containment; the last compromised admin may be revoked without a successor. | Admin matrix §3; GM09. Exact quorum/cardinality/recovery decisions remain D11. |
+| F8. No raw verification uploads initially; no automatic publication; preserve all transport/runtime gates. | ADR-0004 §7; AUTH-08; `config/environment.py`, `infra/web-auth/README.md`, `infra/staging/README.md`. A reviewer decision alone cannot change the legacy public projection or enable credentialed transport. |
+| F9. E05 numeric **product upper bounds** are already adopted: eligibility 12 months, mandate at most evidenced term/12 months, real nonfinance grant 90 days/source cutoff, invitation 72h, activation authorization 24h; no grace or automatic renewal. | [E register §8](PWC-02E-VERIFICATION-AUTHORITY-DECISION-REGISTER.md#8-consolidated-product-owner-approval--27-october-2026), E05 and conflict resolution. Older “proposed bounds” wording in §§5 and earlier drafts is historical; only exact clock/calendar/renewal mechanics remain for review. None extends personal proof/session deadlines or synthetic 24h grants. |
+
+### 11.2 Decision register — exact questions and recommended dispositions
+
+**D = proposed technical/product rule, affected implementation blocked until accepted.**
+**O = actual operational evidence, blocking only the indicated activation/intake/release.**
+A row's owner is an accountable function, not an invented appointed person. The
+role arrangements document maps security to the designated Cybersecurity Specialist,
+DB/API to the Senior Backend/Database Architect, and privacy to legal adviser **and**
+data privacy specialist. Accept/reject/amend each D row using §8, on this version
+and immutable commit; no request to reapprove F1–F9. “I” never means merely a flag.
+
+| ID / unresolved question | Exact recommended rule and rationale | Existing source / code | Acceptance owner; gate |
+| --- | --- | --- | --- |
+| D1 / AUTH-02–03: Which commands/capabilities may each actor execute? | Adopt the closed matrix in §11.3, with one exact versioned atom per command/decision. No role-name fallback, implicit module rights or union of unrelated grants to manufacture issuer authority. Unknown command, bundle or version denies. This turns product functions into finite executable rights. | Package §3; consolidated contract §2; admin matrix §§2–4; GM01/02/04/09; `access/registry.py` is synthetic-only. | Product + NGO governance + security + DB/API + operations; **I**, then A. |
+| D2 / AUTH-01/05: What authenticates the first provisioning operation without circular platform grants? | Restricted nonpublic CLI, never Django Admin/public signup. Require independently verified founding appointment reference, exact pre-existing verified User/contact and scoped executor authorization outside application-role issuance. Recommend two-person approval manifest: executor and independent confirmer authenticate separately; confirmer signs a server-canonical manifest binding source digest/version, beneficiary, exact atoms, validity, nonce and expected root revision. Verification keys/allowed issuer identities are deployment-controlled, not writable by runtime/fixture roles; nonce is consumed by the narrow writer with its receipt. Recommend platform-grant expiry min(issued_at + 90 days, signed appointment end); renewal requires a fresh independently confirmed manifest, never an implicit extension. Recommend Ed25519 signature over §11.4 canonical bytes; no keys generated here. No pre-existing platform grant is required for bootstrap, but the accepted external trust anchor is mandatory. This avoids a self-issued root or a reference-string-as-proof loophole. | F2; manual provisioning decision; readiness review §§4.1–4.3/6.1; `access/db_roles.sql` is NOT a bootstrap writer. | Founding governance + security + operations + DB/API + legal/privacy; **I** for protocol/custody model; actual instruments/keys/people are O1. |
+| D3 / AUTH-04, GM06: What survives factor removal/replacement or account recovery? | Choose GM06 **B**: allow ordinary personal factor removal, but atomically fence protected eligibility/intents on removal/replacement, password/contact recovery or hold; no automatic reinstatement. A new factor becomes protected-eligible only through an independently approved re-verification tied to its ID/revision, not an arbitrary cooldown or recent-login flag. Initial eligible enrollment is independently recorded with the appointment. This preserves personal offboarding without restoring domain power through recovery. | Password/TOTP decision; readiness §5; `mfa.py::remove`, `clear_hold`, `sessions.py::revoke_all_locked`. | Security/auth primary + product + operations + privacy; **I**. Alternative A must be explicitly rejected or selected instead. |
+| D4 / AUTH-04: What exact intent, proof, TOTP and failure rules apply? | Adopt §11.4: 180-second bounded challenge/proof, fresh password followed by newly supplied TOTP, strict generation/session/factor/source binding and no cached observation. Reuse the existing ±1 30-second-step, strictly increasing accepted-step fence; two commands cannot reuse a step. Propose 5 failed credential submissions per intent, consuming password/TOTP failures together, plus existing shared abuse ceilings; no global limit is raised. Five failures terminally invalidate that intent. This bounds proof lifetime and replay without modifying personal contracts. | Readiness §5; `mfa.py::verify_totp`, `command_digest`, `step_up`; `registration.py::spend`. | Security/auth + DB/API + operations; **I** including UX/DoS acceptance of limits and step contention. |
+| D5 / AUTH-05: Which provenance and DB principals may mutate authority? | Separate real provenance/appointment/grant records from synthetic v1 and legacy `OrganizationAccess`; every edge binds tenant, subject, source kind, exact immutable revision and policy version. Runtime gets no authority-table DML, owner membership, schema CREATE, TRUNCATE or general writer. Fixed SECURITY DEFINER functions have nonlogin owners, explicit EXECUTE allowlists, trusted search_path, no dynamic SQL and no caller assertion of actor identity; functions derive actor/session/digest from an immutable verified-intent record plus its opaque proof, not a caller actor UUID. Only an isolated verifier principal may seal successful assurance records; ordinary runtime cannot insert/update/seal them or call an unverified sealing function. Actor/source checks must be repeated inside the transition function. Authentication of the verifier principal and separation from runtime/fixture role memberships are explicit DB/security acceptance obligations, not accomplished by function naming. Ordinary runtime must not be able to SET ROLE to the writer/verifier. Cross-row constraints/guarded functions—not cross-table CHECK fiction—enforce source/tenant/receipt consistency. | Readiness §6.1; GM03/05/11; `access/db_roles.sql`, existing migration guards; `controlled_preparation.py` only validates shape. | DB/API primary + security + operations; **I**. Deployed role inventory is O2. |
+| D6 / AUTH-05: What serializes auth, source changes and duplicate requests? | Adopt §11.4 lock order/atomic unit, reviewed against actual auth helper calls before coding. READ COMMITTED, primary DB, DB wall clock after waits and final locked validity decision. Preserve existing 2s lock/5s statement bounds initially; they are not a workload SLA. One receipt per actor + command/decision + tenant/target + client key, UNIQUE in DB; same key/different digest conflicts. This serializes revocation and prevents duplicate outcomes without claiming physical commit-time deadline guarantees. | Readiness §§6.2–6.3; ADR-0002; `access/security.py`, `accounts/sessions.py`, `mfa.py`. | DB/API + auth/security; **I**. Real load acceptance is O2. |
+| D7 / AUTH-06: May an invitation precede a resolved User/contact? | Require an independently resolved existing verified User and contact revision **before issuance**. A person may register first through already approved personal flows; no pre-account bearer invitation, email-only auto-link or first-login-wins. Contact/recipient changes revoke the offer and require fresh resolution/approval. This removes nullable-recipient ambiguity without removing personal signup. | Invitation decision; readiness §4.4; controlled snapshot nominee is currently nullable. | Product + NGO governance + security + API + privacy; **I** for issuance. |
+| D8 / AUTH-06: Which token/delivery/reissue rules apply? | Recommend 256 random bits (43-character unpadded base64url), purpose-separated keyed verifier at rest and one active slot per approved nomination/role revision. Token-free same-origin landing page plus separately entered secret; no token in URL, logs, storage or receipt. Pin issuance and expiry once; resend the **same** issued secret only from separately approved encrypted delivery custody. Never reconstruct it from its verifier. Reissue revokes old verifier, requires fresh authorized issue and source checks; no silent retry or grace. Initial delivery adapter may be a test sink only, with the same expiry/dedup semantics. This makes delivery distinct from consent. | Package §5; readiness §4.4; personal fragment-link flow is not invitation approval. | Security + API + privacy + operations; **I** for token/channel/custody semantics; actual provider credentials/production delivery acceptance O2. |
+| D9 / AUTH-06/07: When does acceptance expire and what does it authorize? | `expires_at = min(issued_at + 72 hours, all source deadlines)` using DB UTC instants; valid iff `effective_at <= now < expires_at`. Lock token/source/contact, require exact authenticated nominee and explicit offered version/scope/term consent. Recommend fresh password + newly supplied eligible TOTP on this consent intent using D4, without an officer capability; this is a proposed extra nominee safeguard, NOT an already accepted product requirement. Missing eligible enrollment blocks consent until the approved D3 eligibility procedure is satisfied. Consume once, append acceptance/receipt atomically. GET/preview never consumes. Acceptance records only `accepted_grant_pending`; no implicit role, profile publication or reuse after source change. Expired/revoked/declined offers cannot revive. | F5; invitation decision; readiness §§4.4/6.2. | NGO governance + security + API/DB + privacy; **I**. |
+| D10 / AUTH-03/06/07: Who activates, when does the 24h clock start, and what does the grant contain? | Adopt the exact activation/bundle/clock proposal in §11.4: distinct post-acceptance authorization and issue, finite initial real bundles, accepted E05 upper bounds with explicit UTC origins/arithmetic. Acceptance alone never activates. This prevents a 72h invitation or 24h authorization from stretching a short proof, and prevents future module rights appearing in issued grants. | E register §8/E05; consolidated §§3/5; package §5; readiness §4.4; admin matrix §2. | Product/NGO governance + security + DB/API + operations; **I** for new authorize/issue phases, exact bundles, clocks and term arithmetic. No first coding-slice dependency. |
+| D11 / AUTH-07: How do revocation, additional admins, last-admin and recovery work? | NGO eligibility/mandate/review-source invalidation fences dependent invitations, activation authorizations and grants immediately through root/source checks in the same lock protocol; asynchronous cleanup is not enforcement. Ordinary officer offboarding blocks that officer's future actions/unconsumed proofs and pending authorizations, not every already-issued NGO grant. Explicit invalidation of compromised/fraudulent review evidence instead fences its descendants; the incident approver must separately authorize that source invalidation. This avoids both stale authority and accidental platform-wide revocation on routine staff turnover. Replacements create new approved sources/grants, never mutate old grants back to active. Recommend at most one active Primary per NGO, no overlapping active Primaries; nominee can accept before predecessor departure, but successor activation/old grant termination are atomic. Additional-admin requester and beneficiary cannot approve; recommend one independently authorized NGO-governance confirmer distinct from both, but actual governance-form quorum must be accepted, not inferred from two platform officers. Compromise restriction can leave zero admins; recovery needs new independently corroborated nomination, approval and consent. | Admin matrix §3; GM07/09; REAL01/02; readiness §§4.3/6.2. | NGO governance + product + security + DB/API + operations; **I** for each affected branch, not unrelated local work. |
+| D12 / AUTH-08: What may be stored/read/notified, and for how long? | Initial record allows opaque custody reference, issuer/rubric/version, result/reason code, examined/expiry times and qualified examiner reference; no raw documents, IDs, narratives or arbitrary URLs. Command audit adds actor/session/source/target IDs, versions, outcome and receipt correlation; no password/OTP/seed/token/verifier/full payload. Executor and independent reviewer see only assigned case metadata; nominee sees own offer/consent/status, not reviewer dossier; no Board/staff/global audit entitlement. Separate dedicated audit-reader atom must be approved before any broad audit endpoint. Notifications contain generic status/reference only and resolve recipient from approved server bindings. Recommend receipt dedup tombstones for the lifetime of the retained immutable source (never recycle a used key); actual periods, legal basis, holds and restored-backup deletion propagation must be supplied per data class by joint privacy reviewers. No invented statutory period or indefinite retention authorization. | Package §6; AUTH-08; readiness §§4.3/5/6.3; REAL04; existing append-only history. | Legal adviser **and** privacy specialist + governance/security/API/operations; **I** for data/read/notice/tombstone design; actual custody/retention operations O1/O2. |
+| O1 / AUTH-01/09: Are actual appointments, identities and independent reviewers verified? | Obtain actual independently verified instruments, eligible persons, conflicts records and contract-specific signatures in access-controlled custody; publish only acceptance status/version/nonsecret reference. No names, keys or papers requested in Git/chat. These facts are necessary for real bootstrap, not for approved synthetic fixture tests. Abstract source/identity/conflict model D2/D12 must still be accepted first. | Role arrangements §§3–5; AUTH-01/09; REAL01. | Chairman/President + operations/confirmer + security + legal/privacy; **A/U** for actual bootstrap/intake, not a generic local-development blocker. |
+| O2 / AUTH-09, REAL02/04: Is actual operation/transport accepted? | Independently accept actual host TLS/peer/Host/cookie/CSRF/source-IP behavior, restricted DB role inventory, appointed staff, delivery adapter, secret custody, backup/restore, incident/load/UAT and legacy cutover evidence before corresponding live use. Infrastructure merge and host acceptance cannot authorize runtime AUTH/E/GM/REAL gates. No Contabo change belongs to this package. | `infra/web-auth/README.md`; `infra/staging/README.md`; AUTH-09; REAL02/04. | Operations + security + privacy/legal + product; **A/U/R**. Any new provider or cutover **design** still requires its own affected I acceptance. |
+
+### 11.3 Proposed finite issuer/action/target/confirmer matrix (D1)
+
+Names below reuse §3's command families; finer decision atoms are **proposed**, not
+installed permissions/routes. A platform capability permits only its listed case
+operation, never a member roster, private NGO workspace or arbitrary audit query.
+All actors must pass current identity/source/hold/conflict checks at execution.
+
+| Action / exact atom proposal | Issuer/executor and target | Required independent authorization |
+| --- | --- | --- |
+| `platform.appointment.bootstrap.v1` | Restricted executor; exact personal beneficiary + founding source + finite platform bundle/term | D2 confirmer manifest; confirmer differs from executor/beneficiary; founder cannot approve own beneficial grant. Two initial officers are different independently vetted humans. |
+| `platform.appointment.renew.v1`, `.revoke.v1` | Current designated appointment issuer/executor; exact appointment revision | Independent nonconflicted confirmer; no recipient/executor self-renewal. Urgent restrict-only authority needs its own explicit charter; no emergency issuer inferred. |
+| `ngo.onboard.submit.v1` | Current Super Admin; exact controlled record/snapshot and two purpose-specific findings | Source comes from accepted offline rubric; no extra final confirmer on submit, but independent review is mandatory before any approval effect. |
+| `ngo.onboard.review.approve.v1`, `.reject.v1`, `.return.v1` | Current Verification Officer; exact submitted revision | Reviewer differs from initiator and nominee as vetted natural persons and passes case-conflict policy. Recommend one such officer decision, not invented extra reviewer quorum. |
+| `ngo.nominee.invite.v1`, `.revoke.v1` | Current Super Admin; exact independently approved nomination/User/contact/offer revision | Existing independent approval suffices only while all bindings remain unchanged; changed recipient/scope returns to approval, not operator discretion. |
+| `ngo.nominee.accept.v1`, `.decline.v1` | Exact verified nominee; own immutable offer only | Explicit personal consent, never staff proxy. No officer capability required; D9 proposes fresh password/TOTP on the bound consent intent and must be accepted before this branch is coded. |
+| `ngo.primary.authorize.v1` (new phase proposed), `ngo.primary.issue.v1` | Independent Verification Officer authorizes exact accepted source/offer; Super Admin separately executes exact grant | D10, no beneficiary self-approval; both current appointments and the prior independent approval must still be valid. No worker-issued ambient authority. |
+| `ngo.admin.request.v1`, `.approve.v1`, `.revoke.v1` | Primary requests exact NGO/recipient/atoms/term; independently authorized NGO-governance approver decides | D11 quorum, requester/beneficiary exclusion and source constraints; no Primary self-issued bundle. |
+| `ngo.primary.replace_recover.v1` | New legitimate NGO nomination plus independently appointed reviewer; exact old/new source revisions | Fresh verification/consent and D11 recovery policy; old admin consent is not a compromise veto. |
+| `ngo.dispute.restrict.v1`, `.resolve.v1` | Specifically appointed restriction/review authority; exact source/root/restriction revision | Restricted emergency path only after explicit acceptance; resolution needs independent review, cannot create grants or private-read powers. |
+
+Abbreviated `.verb.v1` cells expand under the immediately preceding full family
+prefix, not a wildcard. Exact schema enum strings must be frozen before affected
+code. For example review has three distinct atoms and proof digests, not an
+unbounded caller-supplied decision. Matrix omissions mean denial. Later features
+must introduce new reviewed bundle versions, never broaden issued v1 bundles.
+
+### 11.4 Proposed shared protocol capsule (D4–D6)
+
+This specifies the new domain substrate for acceptance; it does not repurpose
+personal assurance or claim an existing secure writer exists.
+
+- **Activation/bundle/clock proposal (D10; outside first checkpoint):** Recommend an
+  explicit independent Verification Officer activation authorization **after
+  acceptance**, binding unchanged approval/source/acceptance and exact grant
+  bundle/term; authorized Super Admin executes a separate fresh intent-bound issue
+  operation. Neither actor may be beneficiary; distinct-person checks remain.
+  Authorization expires at min(authorized_at + 24h, source deadlines); it is not an
+  assurance proof and never extends the 180s proof. Each execution revalidates current
+  authority, mandate, acceptance, factor/contact/security generations and every
+  revision. No unattended queued proof or automatic grant on acceptance. Propose
+  separate real registry `ngo_authority_v1`: initial Primary bundle exactly
+  `{ngo.context.enter.v1, ngo.authority.self.read.v1, ngo.admin.request.v1}`; ordinary
+  Admin base exactly `{ngo.context.enter.v1, ngo.authority.self.read.v1}` plus only
+  separately approved implemented-feature atoms in a new explicit bundle version. Self-
+  read projects only the current actor's NGO grant/term/status, not roster, other admins
+  or private case evidence. These new real-context/self-read consumers require their own
+  accepted integration before issuance; they are not existing synthetic APIs. No
+  profile/member/finance/future-module power is implied. Apply accepted E05 ceilings
+  without reapproving their numbers: eligibility expiry min(approved end, eligibility
+  examined_at + 12 calendar months); mandate expiry min(written end, mandate examined_at
+  + 12 calendar months, eligibility expiry); grant expiry min(requested approved end,
+  activated_at + 90 elapsed 24h days, source/mandate cutoffs). Twelve-month addition
+  preserves UTC wall time and clamps Feb 29 to Feb 28 when necessary. `examined_at` must
+  not be future; issue/activation timestamps come from DB clock, not a caller. No
+  grace/auto-renewal; renewal needs new exact approval/acceptance. These clock
+  origins/arithmetic, not E05 numbers, require acceptance.
+- **Canonical intent:** strict per-command JSON schema, rejecting unknown/duplicate
+  keys, floats and malformed UUIDs/times. UUIDs use lowercase hyphenated form;
+  UTC timestamps use `YYYY-MM-DDTHH:mm:ss.ffffffZ`; strings are restricted by each
+  field's schema (no free-form Unicode evidence). Construct a server-owned object
+  containing contract/atom/version, actor/User, logical session **and current
+  credential generation**, tenant/target, source/root/case/approval/recipient/contact/
+  factor/grant revisions applicable to that command, exact bounded bundle/term,
+  policy version, proposed transition and client idempotency key. Serialize UTF-8
+  JSON with sorted keys, separators `(',', ':')`, no ASCII escaping and no NaN.
+  Purpose-separated HMAC-SHA256 under versioned external command keys binds these
+  bytes; clients never supply actor authority, canonical digest or secret payload.
+- **Challenge/proof:** 256-bit random secret with keyed verifier at rest; bind all
+  above fields plus auth epoch/recovery generation and approved factor ID/revision.
+  Expires at min(DB issued_at + 180s, original session/access/idle/source/command
+  deadlines); confirmation never restarts the clock. Validate fresh password then
+  a new eligible TOTP under the existing monotonic step fence; no `recent()` reuse.
+  Bad secret/credential consumes an attempt (D4); missing/wrong binding, changed
+  generation/source, expiry or stale revision terminally invalidates the intent.
+  Password/TOTP failure below the cap permits only a newly supplied credential on
+  the same unchanged intent; any failed password still spends shared abuse budget.
+  Propose fixed server route buckets `domain-intent` for issuance and
+  `domain-assurance` for credential submission: 30/900s per observed REMOTE_ADDR
+  and 30/900s per actor across all intents (use purpose-separated actor digest,
+  not a caller route/flow label). TOTP retains `mfa:300`, at most 5 attempts per
+  factor/5-minute bucket including other personal operations. Commit IP/actor
+  budgets independently **before User locks**. Factor attempts and
+  successful step updates commit in the verifier transaction, including normal
+  credential denials; an exceptional verifier rollback still leaves IP/actor cost
+  spent. Returned 429/Retry-After cannot be bypassed with a new intent.
+  Do not trust forwarded IP
+  or claim per-end-user budgets behind a proxy. Retain stricter existing limits.
+- **No credentials in commands:** only the dedicated assurance request receives
+  password/TOTP transiently. Domain mutation receives opaque intent/proof reference,
+  not raw credentials. Proof never appears in URL, storage, logs, audit or receipts.
+  A held/revoked/inactive actor cannot confirm, execute or read a private receipt.
+- **Lock graph:** resolve candidate IDs without disclosing data, then lock all
+  involved Users in ascending UUID order; contacts/factors, sessions, credentials/
+  intents in reviewed auth-helper order; platform roots ordered by UUID before NGO
+  roots ordered by UUID; appointments/grants; record/snapshot/approval; invitation/
+  acceptance; receipt slot. Rows within each class use ascending UUID order. Acquire
+  no late User/root locks. Every mutation/revocation helper must use this graph;
+  inventory actual helper lock acquisitions and reject any reverse edge before
+  acceptance. Initial proposal uses existing 2s/5s bounds and final DB wall clock
+  check, not a physical-commit-before-expiry promise.
+- **Code-backed helper inventory for D6 acceptance:**
+  `sessions.authenticate_locked`: User → contact → session → mobile credential;
+  `mfa_views.endpoint`: User → factor(s) → `authenticate_locked` → assurance intent;
+  `mfa.verify_totp`: caller-held factor → abuse bucket → step update;
+  `sessions.revoke_all_locked`: caller-held User → sessions in ID order → credential
+  updates. The new coordinator must prelock **all** Users, then contacts and factors
+  (contacts before factors for each class), before calling either auth helper;
+  repeated already-held locks do not permit discovery of a new late User. Do not
+  call `registration.spend`'s separate budget transaction while holding domain
+  roots, or wrap the HTTP MFA adapter as a domain helper. Verifier commits proof/
+  step state first; executor later locks intent and roots and rechecks versions.
+  Factor removal must serialize through User/eligibility generation, so a proof
+  minted before removal cannot execute afterward. New helper edges must be added
+  to the reviewed inventory; existing personal flows are not silently reordered.
+- **Atomic decision:** under those locks reauthenticate/revalidate current sources,
+  proof, versions and deadlines; consume proof/token, transition + increment revision,
+  insert immutable event and required notice intent/outbox + receipt in one durable
+  transaction. No external delivery or lazy protected queryset escapes the boundary.
+  Audit/outbox/receipt failure rolls back the domain outcome and provisional proof
+  consumption; independent abuse/failure accounting must still commit. A successful
+  TOTP step remains spent even if the later domain transaction rolls back: confirm
+  assurance separately before execution, and do not roll back its anti-replay fence.
+- **Receipt and retry:** key is 128 random client bits, scoped/unique as D6. Bind it
+  to one canonical digest before execution; after concurrent creation reread the
+  winner under locks. Fresh/current actor authorization and receipt-reader scope
+  are required even for retries. Identical committed digest returns the existing
+  minimized receipt, never reruns a write or rechecks a consumed proof as a new
+  mutation. Different digest gets 409. Owned missing version gets 428; stale version
+  412; invisible tenant/receipt 404; auth/CSRF denials retain existing semantics;
+  dependency/deadlock/audit failure 503. Lock timeout permits only explicit same-key
+  retry of an unchanged still-valid intent, never automatic resubmission/new key.
+  Lost response means **unknown**; status lookup uses the original key. A missing
+  receipt is not proof of noncommit or permission to manufacture another intent.
+  New DTOs/errors need OpenAPI/fixture review; existing unavailable endpoints and
+  personal error contracts remain unchanged until their own authorized integration.
+
+### 11.5 Smallest proposed coding work package and acceptance
+
+**One internal checkpoint of PWC-04C, not a new roadmap phase or completion of 04C:**
+protected domain assurance + restricted, receipt-backed controlled submission and
+independent decision in an **explicitly accepted synthetic-only exercise**.
+Only these four domain atoms are in the initial command registry:
+`ngo.onboard.submit.v1`, `ngo.onboard.review.approve.v1`,
+`ngo.onboard.review.reject.v1`, `ngo.onboard.review.return.v1`.
+
+**Admission to coding:** independent acceptance of D1 for these four atoms and the
+synthetic actor/source/conflict fixture charter, D2's abstract authority/trust model
+(not live bootstrap implementation), D3–D6 and the minimal D12 metadata/receipt/
+notice-retention model. For this checkpoint only, retain fixture receipts/tombstones
+  through all replay/restore tests and destroy them only with the disposable fixture
+  database; do not require a production statutory-duration decision to execute
+  accepted local synthetic tests. Real-data retention remains D12/O1/O2-gated.
+  Record relevant AUTH/E/GM acceptance per branch; synthetic
+fixtures alone do not waive the existing GM implementation gates. If any affected
+I rule remains unsigned, that component stays contract-only. D7–D11 decisions are
+prepared above but do not block this no-invitation/no-grant checkpoint. Actual
+appointments, provider, Contabo and real-host evidence O1/O2 do not block the
+accepted fixture-only test exercise. Synthetic source fixtures must be isolated
+  and bounded to no more than 24h; this adds no extension to existing v1 grants.
+
+**Code IN after admission:**
+
+1. Reuse current personal authentication, TOTP cryptography/step fence, exact-revision
+   structural preflight, controlled record/history and existing error conventions.
+   Add a distinct domain-intent/verifier/receipt boundary; do not extend personal
+   assurance operations or mutate synthetic authorization v1.
+2. In an isolated PostgreSQL fixture-only environment, add only needed additive
+   source/intent/receipt/event constraints and fixed least-privilege transition
+   functions. Use dedicated test source/appointment fixtures from the explicitly
+   approved charter, never public/client `actor_is_officer` inputs. No production
+   fixture role credentials/membership in runtime. Existing production command
+   availability remains false; fixture authorization is not a real-source fallback.
+3. Expose only internal tested service/DB functions in this checkpoint, not new
+   privileged HTTP endpoints, public readers, successful OpenAPI operations or
+   shipped client adapters. Review DTO candidates/test vectors without claiming
+   wire success. A later accepted integration checkpoint must add actual wire
+   contracts and client behavior together, not silently enable old unavailable URLs.
+4. Success creates only a controlled state revision, immutable decision event and
+   receipt/notice intent. Even `approved` creates **zero** `NGOGrant`, real grants,
+   `OrganizationAccess`, workspace verification/publication, invitation or platform
+   appointment. Failed/stale/cross-tenant operations create no successful mutation.
+
+**OUT:** executable officer provisioning, real data/authority sources, invitation/
+acceptance/activation, additional-admin/Primary recovery writers, raw evidence,
+public intake, 04D publication, private roster/audit/export APIs, finance/signatory/
+alliance/support, provider integration, native allowlist or credentialed browser
+transport changes, deployment or Contabo modifications. Complete 04C remains open.
+No outbox worker, provider or generalized file service is justified by this slice.
+
+**Required tests and acceptance criteria:**
+
+- PostgreSQL actual restricted principals cannot forge sources, promote fixtures,
+  DML authority/history tables, SET ROLE to owner, or invoke another command.
+  Same person under two accounts, staff/superuser/Board/recovery/MFA alone, wrong
+  actor/session/source kind and NGO A/B list/detail/status selectors all deny.
+- Known canonical bytes/digest vectors; duplicate/unknown JSON fields, alternate
+  representation, decision/recipient/tenant/bundle/version/key substitution deny.
+  Fresh password AND new eligible TOTP required; cached login MFA, repeated step,
+  old/new replacement factor, held account, fifth failure, boundary expiry,
+  session rotation/revoke and reset/contact/security generation changes tested.
+- Multi-connection barriers for approve-vs-reject, submit-vs-withdraw, duplicate key,
+  same-key/different-body, source-revoke-vs-execute, factor-change-vs-confirm and
+  timeout after lock wait. Exactly one valid revision/event/receipt per command;
+  rollback/fault injection at proof/domain/event/notice/receipt stages leaves no
+  partial domain result. Already spent TOTP cannot be reused after rollback.
+- Lost response recovered only through owned receipt; replay/new key cannot create
+  a second effect. Revoked actor cannot use retry/status as a private-data oracle.
+  No secrets/payloads/raw evidence in rows, logs or test artifacts; delivery intent
+  remains synthetic, deduplicated and has no network side effect.
+- Run Django checks, migration plan/application/drift/check and restricted-role
+  tests on PostgreSQL, full backend/contract regression, existing web checks and
+  direct-TLS tests; run Flutter contracts/analyzer/tests when shared/mobile inputs
+  change. Preserve all currently shipped unavailable behavior, personal auth,
+  native/public allowlists, four-field public projection and synthetic ceiling.
+- Done means accepted affected contracts referenced by immutable version/commit,
+  coherent additive migrations and tested forward-fix/rollback rehearsal, negative
+  and concurrency evidence, updated roadmap, clean scoped diff and one reviewed PR.
+  It does **not** mean actual deployment, live authority or completion of P3/G1b.
+
+**Next decision action:** accountable reviewers disposition D1–D12 (accept/amend/
+reject/defer), stating per-command scope and residual exclusions. For the minimal
+checkpoint, accept only its admission subset if appropriate; do not request a
+production transport signature as a substitute. This assignment prepares those
+exact contracts and test obligations; it records no new human acceptance.
+
+### 11.9 Bounded implementation started — 3 November 2026
+
+This addendum implements the subsequently requested **independently safe** work;
+it does not amend §11.5's admission rule for executable protected components.
+PR #31 remains open; neither this code nor PR disposition signs D1–D12.
+Latest merged `main` checked at `64a51ea` before implementation.
+
+**Implemented without privileged transitions:**
+
+- `organizations/controlled_command_shape.py`: closed **proposed** four-name
+  vocabulary, immutable/redacted syntax objects, bounded strict UTF-8 JSON,
+  duplicate/unknown-key rejection, canonical nonzero UUIDs, integer-only bounded
+  source revisions and structural source/tenant matching. This is not canonical
+  proof serialization, authenticated source binding, an authorization registry,
+  assurance or an executable command. No route/adapter calls it; its success
+  result confers no authority. Existing `command_available` remains false.
+- `test_controlled_command_shape.py`: unsaved synthetic source builder and
+  database-free negative tests, reusing existing `prepare_submission` and
+  `preflight` rather than creating a second state machine or auth system.
+- `test_controlled_boundary_harness.py`: actual PostgreSQL multi-connection
+  NOWAIT contention, structural rollback fault and ephemeral nonlogin role
+  read/lock/DML/DDL denials. Role creation is rolled back, requires the same
+  isolated test-cluster role-administration privilege as existing kernel tests,
+  and ships **no production principal, writer, migration or privileged service**.
+  This no-table-privilege probe is not the future runtime/verifier/writer policy,
+  nor evidence of its SET ROLE isolation or cross-NGO query enforcement.
+
+**Exact remaining executable checkpoint blockers** (proposals remain unsigned):
+
+| Decision | Required recorded disposition before affected implementation |
+|---|---|
+| D1 | These four exact atoms, issuer/target/confirmer and synthetic actor/source/conflict charter; no role-name authority fallback. |
+| D2 (unavoidable other-row dependency) | Abstract independently authenticated source/trust-anchor model, outside runtime/fixture control. Actual named appointments/bootstrap provisioning are not needed for safe local scaffolding. |
+| D3 | GM06 factor removal/replacement/recovery fencing and independently approved protected eligibility/reverification. |
+| D4 | Separate command-bound fresh password/new eligible TOTP intent, proof bindings, lifetime, failure/replay budgets; no personal recent-MFA reuse. |
+| D5 | Provenance model and separated restricted runtime, verifier and narrow writer trust; runtime cannot forge source/proof or promote fixtures. |
+| D6 | Reviewed lock graph including auth helpers, locked revalidation, atomic transition/event/notice/receipt and exact replay/duplicate-key semantics. |
+| D12 minimum | Minimized evidence/event/receipt/notice model, audiences and fixture tombstone lifetime. Production statutory periods are not prerequisites for disposable-fixture testing. |
+
+Aligned AUTH/E/GM gates remain. D7–D11 invitation/grant decisions do not block this
+no-invite/no-grant work; neither O1/O2, Contabo nor live transport approval blocks
+unrelated local code. Disposable fixture data is destroyed with its test database.
+
+**Not built or claimed tested:** protected submission; independent exact-revision
+approve/reject/return; domain password/TOTP verification or sealed proofs; real
+source authorization; atomic audit/idempotent receipt; receipt replay/revocation,
+NGO-isolated protected queries, full auth/source lock graph or decision races.
+Those tests require the affected contracts and actual implementation, not fake
+successful fixture authorities. No endpoint, client, native allowlist, deployment,
+credentialed transport, invitation, grant, publication or finance changes.
+
+**Validation for this bounded code:** PostgreSQL 16.2, Python 3.11; locked CI Python
+requirements installed without changes. `manage.py test` for command-shape,
+boundary-harness, controlled-onboarding and controlled-preparation modules: **32
+passed**. Full `coverage run manage.py test --testrunner
+contracts.testing.ContractRunner --noinput`: **488 passed**, **309** observed
+route/method/status combinations. Initial full run caught the expected new-module
+source-lock drift; standard `contracts.generate` added only its SHA-256 entry;
+rerun passed. Frozen API compatibility, OpenAPI and generated clients unchanged.
+Django check, migration drift/plan/application/check, pip check, focused Ruff and
+contract generation/type checks passed. `npm run check`: **187 passed**, typecheck,
+format/token checks and both builds passed. No browser/Flutter rerun or independent
+host acceptance claimed. Existing PR31 head before this update had Django 3.11/3.12
+and compose green, foundation red at `npm audit --audit-level=low`. Local audit
+reproduced **3 moderate** package findings (`minimatch`, propagated through
+`@redocly/openapi-core` and `openapi-typescript`; GHSA-g3hv-75wg-m249). Dependency
+upgrade remains separate; audit gate is unchanged. New-head CI is separate from
+these local results and must be checked after push. None of these tests supplies
+the pending contract signatures or protected-workflow acceptance.
