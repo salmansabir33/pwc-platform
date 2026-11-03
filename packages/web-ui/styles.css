@@ -793,3 +793,12 @@ main > a {
 .field-label label {
   margin-block-end: 0;
 }
+
+/* Public registry summary: bounded long references, logical spacing for RTL. */
+.public-summary {
+  overflow-wrap: anywhere;
+}
+.public-summary dd {
+  margin-inline-start: 0;
+  margin-block-end: var(--space-4);
+}
