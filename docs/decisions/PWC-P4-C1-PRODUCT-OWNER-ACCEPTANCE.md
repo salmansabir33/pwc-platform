@@ -85,3 +85,47 @@ needs P4-02 eligibility/actor/event decisions, P4-05 authoritative person/source
 revision/conflict rules, P4-04 minimized person/intake/retention acceptance and the
 applicable P4-03/06/09 contracts. No name/contact match may link accounts. C1 value
 validation can be reused; live C2 admission is not authorized by this decision.
+
+## Founder direction — coordinated C1 continuation
+
+Source: the explicit instruction in this Arena conversation titled **“PWC —
+Finalize C1 Governance, Authorization and Technical Contracts”**. This records
+Founder-level product/governance direction, not an authenticated technical issuer,
+verified appointment instrument or independent execution sign-off. No legal name,
+signature, decision timestamp or private evidence reference was supplied or inferred.
+
+The Founder approves permanent Founder oversight and protected emergency authority;
+separate Governance, Technical, Membership, Finance and Operations roles; one
+personal identity with compatible roles; compatible interim Founder assignments;
+future elected-official reassignment without password sharing; explicit NGO scope
+and departmental separation; secure PostgreSQL/audit/revision controls; restricted
+private data; authenticated Django/React/Flutter communication; and unchanged
+C1-R01–R08. Authenticated communication is direction, not acceptance of a new
+credential transport or permission boundary.
+
+**Scoped interpretation:** permanent oversight is an enduring governance function,
+not an immortal credential, nonrevocable grant or universal NGO reader. Individual
+sessions, role assignments and proofs remain scoped, expiring/revocable and audited.
+Emergency authority does not imply private-data disclosure, impersonation, grant
+issuance or bypass of independent verification. Pending its exact accepted responder
+contract it confers no executable power; recommend restrict-only incident containment.
+Elected successors receive their own verified personal assignments and explicit
+scope; revoke superseded assignments and rotate/revoke affected sessions/intents,
+not transfer passwords. None of these directions appoints an actual human to a
+technical/security/privacy charter.
+
+**Existing independence requirements preserved:** the 04C governance/reviewer
+arrangements require two distinct natural persons for Super Admin and Verification
+Officer and an independent provisioning confirmer separate from executor and
+beneficiary. Founding authority cannot independently approve its own beneficial
+grant. Compatible interim roles cannot collapse these specific separations.
+Locked F1–F9/E05 and the §12 D3–D6/minimum-D12 pending acceptance are not amended.
+A change to genuinely independent-person requirements needs an explicit change
+request; it is not implied by compatible-role approval.
+
+The five existing requests in issue #42 carry the coordinated executable proposals
+and acceptance conditions. Product/governance directions above are recorded as
+communicated; technical proposals remain proposals until the actual accountable
+reviewers accept their exact immutable version with scope, evidence and exclusions.
+No privilege-bearing schema, writer, endpoint, grant or native adapter follows
+from this record. Do not open another product approval cycle for R01–R08.
