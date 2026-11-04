@@ -1,8 +1,8 @@
 # PWC P4 membership — consolidated executable-contract acceptance package
 
-**Review identity:** `P4-MEMBERSHIP-20261104.1`  
-**Date:** 4 November 2026, Asia/Karachi  
-**Status:** PROPOSED — all P4 decision rows below await accountable acceptance.  
+**Review identity:** `P4-MEMBERSHIP-20261104.1`
+**Date:** 4 November 2026, Asia/Karachi
+**Status:** PROPOSED — all P4 decision rows below await accountable acceptance.
 **Baseline:** main `6aea981b951afb4916397fc197efff0905f0ce9f` (merged PR38), plus
 unmerged PR39 functional implementation `ec8573f743e1fca5c2a5237bb1f6a22887989054`
 and read-only CI diagnostics `1d48be06a5ef8dc24b7d13d277629cc1a36f2d01`.
