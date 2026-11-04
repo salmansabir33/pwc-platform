@@ -7,6 +7,7 @@ import '../design/theme.dart';
 import '../design/tokens.g.dart';
 import 'strings.dart';
 import '../features/identity.dart';
+import '../features/membership_preparation.dart';
 import '../features/personal.dart';
 import '../features/security.dart';
 import '../features/registry.dart';
@@ -51,6 +52,16 @@ class _PwcAppState extends ConsumerState<PwcApp> with WidgetsBindingObserver {
                 gateway: ref.watch(directoryProvider),
                 urdu: ref.watch(urduProvider),
               ),
+            ),
+          ),
+        ),
+        GoRoute(
+          path: '/membership-preparation',
+          builder: (c, s) => _Frame(
+            index: 2,
+            child: Consumer(
+              builder: (context, ref, child) =>
+                  MembershipPreparationScreen(urdu: ref.watch(urduProvider)),
             ),
           ),
         ),
