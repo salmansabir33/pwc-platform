@@ -66,7 +66,8 @@ def _invalid(code="INVALID_INPUT", *, record=None, column=None):
     raise ImportPreviewError(code, record=record, column=column) from None
 
 
-def _reference(value):
+def valid_reference(value):
+    """Shared internal handle syntax only; never identity or source authority."""
     return type(value) is str and REFERENCE.fullmatch(value) is not None
 
 
@@ -127,11 +128,11 @@ class CsvTemplate:
                 type(row) is not tuple
                 or len(row) != 3
                 or any(type(v) is not str for v in row)
-                or not _reference(row[0])
+                or not valid_reference(row[0])
                 or not _valid_name(row[1])
                 or row[1] != unicodedata.normalize("NFC", row[1].strip())
                 or row[1].startswith(("=", "+", "-", "@"))
-                or not _reference(row[2])
+                or not valid_reference(row[2])
             ):
                 _invalid()
         if (
@@ -222,7 +223,9 @@ class PreviewCatalog:
         if type(self.organization_id) is not UUID or not self.organization_id.int:
             _invalid()
         for values in (self.categories, self.existing_references):
-            if type(values) is not frozenset or any(not _reference(v) for v in values):
+            if type(values) is not frozenset or any(
+                not valid_reference(v) for v in values
+            ):
                 _invalid()
 
 
@@ -379,11 +382,11 @@ def preview_csv(raw, *, organization_id, catalog):
                 if value.startswith(("=", "+", "-", "@")):
                     issue("FORMULA_CELL", column)
             reference, name, category = values
-            if not _reference(reference):
+            if not valid_reference(reference):
                 issue("INVALID_REFERENCE", 1)
             if not _valid_name(name):
                 issue("INVALID_NAME", 2)
-            if not _reference(category) or category not in catalog.categories:
+            if not valid_reference(category) or category not in catalog.categories:
                 issue("UNKNOWN_CATEGORY", 3)
             if reference in catalog.existing_references:
                 issue("EXISTING_REFERENCE", 1)

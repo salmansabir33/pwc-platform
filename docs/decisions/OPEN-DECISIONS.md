@@ -34,3 +34,12 @@ E10/GM command assurance; exact invitation/recipient binding, identity activatio
 nonfinance acceptance and subsequent 04C/03B.3 grant contracts. No independent
 security/legal/privacy/operations acceptance is recorded. Until accepted, all
 controlled private readers/commands and invitation adapters remain unavailable.
+
+## PWC-05A membership foundation boundary — 4 November 2026
+
+The synthetic nonwriting category/admission evaluator does not approve live
+membership semantics. Exact remaining category/mode/transition/duplicate rules,
+scoped action/issuer/source matrix, privacy/intake/retention/invitation binding,
+atomic revision/audit/idempotency/storage contracts and separate verified 05C
+account linking are listed in the [05A implementation report](../runbooks/PWC-05A-MEMBERSHIP-FOUNDATIONS.md#exact-contracts-still-required-before-live-implementation).
+Existing accepted 04C boundaries are not reopened; no new authority is recorded.
