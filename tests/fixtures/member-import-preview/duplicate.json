@@ -1,0 +1,52 @@
+{
+  "accepted_count": 0,
+  "commit_available": false,
+  "format": "pwc.member-import-preview.internal.v1",
+  "non_authoritative": true,
+  "organization_id": "00000000-0000-4000-8000-000000000001",
+  "rejected_count": 2,
+  "row_count": 2,
+  "rows": [
+    {
+      "diagnostics": [
+        {
+          "code": "DUPLICATE_REFERENCE",
+          "column": 1,
+          "column_name": "record_reference",
+          "record": 2,
+          "related_records": [
+            3
+          ],
+          "severity": "error"
+        }
+      ],
+      "errors": [
+        "DUPLICATE_REFERENCE"
+      ],
+      "record": 2,
+      "warnings": []
+    },
+    {
+      "diagnostics": [
+        {
+          "code": "DUPLICATE_REFERENCE",
+          "column": 1,
+          "column_name": "record_reference",
+          "record": 3,
+          "related_records": [
+            2
+          ],
+          "severity": "error"
+        }
+      ],
+      "errors": [
+        "DUPLICATE_REFERENCE"
+      ],
+      "record": 3,
+      "warnings": []
+    }
+  ],
+  "synthetic_only": true,
+  "template": "pwc.member-import.csv.internal.v1",
+  "warning_count": 0
+}
