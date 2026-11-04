@@ -4,6 +4,16 @@ import { Banner, Button, Card, PageHeader } from "@pwc/web-ui";
 import examples from "../../../packages/api-contracts/fixtures/membership-demonstrations.json";
 
 type Step = {
+  policy_revision?: number;
+  category_count?: number;
+  active_category_count?: number;
+  pending_review_count?: number;
+  policy_history?: {
+    revision: number;
+    operation: string;
+    mode: string;
+    active_category_count: number;
+  }[];
   revision?: number;
   member_count?: number;
   row_count?: number;
@@ -20,6 +30,10 @@ type Step = {
 };
 const scenarios: { id: string; steps: Step[] }[] = examples.scenarios;
 const titles: Record<string, [string, string]> = {
+  "category-policy": [
+    "Category and policy versions",
+    "زمرے اور پالیسی کی ترامیم",
+  ],
   admission: ["Admission requests", "رکنیت کی درخواستیں"],
   category: ["Category assignment", "زمرے کی تبدیلی"],
   status: ["Member status and history", "رکن کی حالت اور تاریخ"],
@@ -27,6 +41,14 @@ const titles: Record<string, [string, string]> = {
   import: ["Import preparation", "درآمد کی تیاری"],
 };
 const words: Record<string, [string, string]> = {
+  initial: ["Initial policy", "ابتدائی پالیسی"],
+  category_created: ["Category created", "زمرہ بنایا گیا"],
+  category_updated: ["Category renamed", "زمرے کا نام بدلا گیا"],
+  category_deactivated: ["Category deactivated", "زمرہ غیر فعال کیا گیا"],
+  mode_changed: ["Admission mode changed", "داخلے کا طریقہ بدلا گیا"],
+  open: ["Open", "کھلا"],
+  approval: ["Approval", "منظوری"],
+  invitation: ["Invitation", "دعوت"],
   draft: ["Draft", "مسودہ"],
   pending: ["Pending", "زیر التوا"],
   accepted: ["Proposed acceptance", "قبولیت کی تجویز"],
@@ -90,6 +112,39 @@ export function MembershipWorkbench() {
             <h3>
               {t("Proposed step", "مجوزہ مرحلہ")} {index + 1}
             </h3>
+            {step.policy_revision !== undefined && (
+              <>
+                <p>
+                  {t("Policy revision", "پالیسی کی ترمیم")}:{" "}
+                  {step.policy_revision} · {t("Categories", "زمرے")}:{" "}
+                  {step.category_count} · {t("Active categories", "فعال زمرے")}:{" "}
+                  {step.active_category_count}
+                </p>
+                <p>
+                  {t(
+                    "Pending fixtures requiring explicit re-review",
+                    "دوبارہ جائزے کے منتظر فرضی اندراجات",
+                  )}
+                  : {step.pending_review_count}
+                </p>
+              </>
+            )}
+            {step.policy_history && (
+              <ol
+                aria-label={t(
+                  "Proposed policy history",
+                  "پالیسی کی مجوزہ تاریخ",
+                )}
+              >
+                {step.policy_history.map((h) => (
+                  <li key={h.revision}>
+                    {h.revision}: {label(h.operation)} · {label(h.mode)} ·{" "}
+                    {t("Active categories", "فعال زمرے")}:{" "}
+                    {h.active_category_count}
+                  </li>
+                ))}
+              </ol>
+            )}
             {step.revision !== undefined && (
               <p>
                 {t("Fixture revision", "فرضی ترمیم")}: {step.revision} ·{" "}

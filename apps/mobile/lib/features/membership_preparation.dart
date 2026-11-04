@@ -8,8 +8,8 @@ class MembershipDemoState extends ChangeNotifier {
   int _selected = 0;
   int get selected => _selected;
   void select(int index) {
-    if (index < 0 || index >= 5) {
-      throw RangeError.index(index, const [0, 1, 2, 3, 4]);
+    if (index < 0 || index >= 6) {
+      throw RangeError.index(index, const [0, 1, 2, 3, 4, 5]);
     }
     _selected = index;
     notifyListeners();
@@ -35,6 +35,17 @@ class _MembershipPreparationState extends State<MembershipPreparationScreen> {
           as List<dynamic>;
   String t(String en, String ur) => widget.urdu ? ur : en;
   String word(String state) => switch (state) {
+    'initial' => t('Initial policy', 'ابتدائی پالیسی'),
+    'category_created' => t('Category created', 'زمرہ بنایا گیا'),
+    'category_updated' => t('Category renamed', 'زمرے کا نام بدلا گیا'),
+    'category_deactivated' => t(
+      'Category deactivated',
+      'زمرہ غیر فعال کیا گیا',
+    ),
+    'mode_changed' => t('Admission mode changed', 'داخلے کا طریقہ بدلا گیا'),
+    'open' => t('Open', 'کھلا'),
+    'approval' => t('Approval', 'منظوری'),
+    'invitation' => t('Invitation', 'دعوت'),
     'draft' => t('Draft', 'مسودہ'),
     'pending' => t('Pending', 'زیر التوا'),
     'accepted' => t('Proposed acceptance', 'قبولیت کی تجویز'),
@@ -57,6 +68,7 @@ class _MembershipPreparationState extends State<MembershipPreparationScreen> {
       t('Member status and history', 'رکن کی حالت اور تاریخ'),
       t('Source revision conflict', 'ماخذ کی ترمیم میں تضاد'),
       t('Import preparation', 'درآمد کی تیاری'),
+      t('Category and policy versions', 'زمرے اور پالیسی کی ترامیم'),
     ];
     return ListenableBuilder(
       listenable: model,
@@ -134,6 +146,21 @@ class _MembershipPreparationState extends State<MembershipPreparationScreen> {
   }
 
   List<Widget> _step(Map<String, dynamic> step) => [
+    if (step.containsKey('policy_revision')) ...[
+      Text(
+        '${t('Policy revision', 'پالیسی کی ترمیم')}: ${step['policy_revision']}',
+      ),
+      Text(
+        '${t('Categories', 'زمرے')}: ${step['category_count']} · ${t('Active categories', 'فعال زمرے')}: ${step['active_category_count']}',
+      ),
+      Text(
+        '${t('Pending fixtures requiring explicit re-review', 'دوبارہ جائزے کے منتظر فرضی اندراجات')}: ${step['pending_review_count']}',
+      ),
+      for (final raw in step['policy_history'] as List<dynamic>)
+        Text(
+          '${raw['revision']}: ${word(raw['operation'] as String)} · ${word(raw['mode'] as String)} · ${t('Active categories', 'فعال زمرے')}: ${raw['active_category_count']}',
+        ),
+    ],
     if (step.containsKey('revision'))
       Text(
         '${t('Fixture revision', 'فرضی ترمیم')}: ${step['revision']} · ${t('Fictional members', 'فرضی ارکان')}: ${step['member_count']}',

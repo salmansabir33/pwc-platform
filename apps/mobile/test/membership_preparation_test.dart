@@ -11,9 +11,9 @@ void main() {
     () {
       final state = MembershipDemoState();
       expect(state.selected, 0);
-      state.select(4);
-      expect(state.selected, 4);
-      expect(() => state.select(5), throwsRangeError);
+      state.select(5);
+      expect(state.selected, 5);
+      expect(() => state.select(6), throwsRangeError);
       state.reset();
       expect(state.selected, 0);
       state.dispose();
@@ -21,7 +21,7 @@ void main() {
           jsonDecode(membershipDemonstrationsJson) as Map<String, dynamic>;
       expect(fixture['synthetic_only'], true);
       expect(fixture['commit_available'], false);
-      expect((fixture['scenarios'] as List<dynamic>).length, 5);
+      expect((fixture['scenarios'] as List<dynamic>).length, 6);
       expect(membershipDemonstrationsJson.contains('MEMBER_A'), false);
     },
   );
@@ -73,6 +73,30 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.textContaining('SOURCE_REVISION_CONFLICT'), findsOneWidget);
         expect(find.textContaining('MEMBER_A'), findsNothing);
+        await tester.tap(find.byType(DropdownButtonFormField<int>));
+        await tester.pumpAndSettle();
+        await tester.tap(
+          find
+              .text(
+                urdu
+                    ? 'زمرے اور پالیسی کی ترامیم'
+                    : 'Category and policy versions',
+              )
+              .last,
+        );
+        await tester.pumpAndSettle();
+        expect(
+          find.textContaining(
+            urdu ? 'پالیسی کی ترمیم: 3' : 'Policy revision: 3',
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.textContaining(
+            urdu ? 'زمرہ غیر فعال کیا گیا' : 'Category deactivated',
+          ),
+          findsOneWidget,
+        );
         expect(tester.takeException(), isNull);
       },
     );

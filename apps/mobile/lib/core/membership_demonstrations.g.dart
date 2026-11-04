@@ -236,6 +236,57 @@ const membershipDemonstrationsJson = r'''
           ]
         }
       ]
+    },
+    {
+      "id": "category-policy",
+      "steps": [
+        {
+          "active_category_count": 1,
+          "category_count": 1,
+          "commit_available": false,
+          "format": "pwc.category-policy-preview.internal.v1",
+          "non_authoritative": true,
+          "pending_review_count": 0,
+          "policy_history": [
+            {
+              "active_category_count": 1,
+              "mode": "approval",
+              "operation": "initial",
+              "revision": 1
+            }
+          ],
+          "policy_revision": 1
+        },
+        {
+          "active_category_count": 0,
+          "category_count": 1,
+          "commit_available": false,
+          "format": "pwc.category-policy-preview.internal.v1",
+          "non_authoritative": true,
+          "pending_review_count": 1,
+          "policy_history": [
+            {
+              "active_category_count": 1,
+              "mode": "approval",
+              "operation": "initial",
+              "revision": 1
+            },
+            {
+              "active_category_count": 1,
+              "mode": "invitation",
+              "operation": "mode_changed",
+              "revision": 2
+            },
+            {
+              "active_category_count": 0,
+              "mode": "invitation",
+              "operation": "category_deactivated",
+              "revision": 3
+            }
+          ],
+          "policy_revision": 3
+        }
+      ]
     }
   ],
   "synthetic_only": true,

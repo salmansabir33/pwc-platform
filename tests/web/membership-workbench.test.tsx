@@ -39,6 +39,7 @@ describe("P4 fixed synthetic workbench", () => {
         expect(button).toBeDisabled();
       }
     }
+    await user.selectOptions(selector, "import");
     expect(screen.getByText("EXISTING_REFERENCE")).toBeVisible();
     expect(
       screen.getByText(/Candidate only; no import or admission/),
@@ -48,6 +49,25 @@ describe("P4 fixed synthetic workbench", () => {
     expect(fetch).not.toHaveBeenCalled();
     expect(document.body).not.toHaveTextContent("MEMBER_A");
     expect(document.body).not.toHaveTextContent("Synthetic Person");
+  });
+  it("shows C1 policy history and stale pending bindings without adding writers", async () => {
+    const user = mount();
+    await user.selectOptions(screen.getByRole("combobox"), "category-policy");
+    expect(screen.getByText(/Policy revision: 3/)).toBeVisible();
+    expect(
+      screen.getByText(/Pending fixtures requiring explicit re-review: 1/),
+    ).toBeVisible();
+    const histories = screen.getAllByRole("list", {
+      name: "Proposed policy history",
+    });
+    expect(within(histories[1]!).getAllByRole("listitem")).toHaveLength(3);
+    expect(
+      within(histories[1]!).getByText(/Category deactivated/),
+    ).toBeVisible();
+    expect(screen.queryByRole("textbox")).toBeNull();
+    expect(
+      screen.getByRole("button", { name: "Save category" }),
+    ).toBeDisabled();
   });
   it("presents revisions, preserved history and an actionable stale validation explanation", async () => {
     const user = mount();

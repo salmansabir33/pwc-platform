@@ -1,6 +1,16 @@
 """Export ONLY these built-in redacted examples to client fixture bundles."""
 
 from dataclasses import replace
+from datetime import datetime, timezone
+from uuid import UUID
+from .category_policy_preview import (
+    CategoryPolicyFixture,
+    CategoryVersionFixture,
+    PolicyVersionFixture,
+    PendingPolicyFixture,
+    preview_change_category,
+    preview_change_mode,
+)
 from .member_import_fixtures import ORGANIZATION_ID
 from .member_import_preview import TEMPLATE
 from .membership_fixtures import CATEGORY, APPLICATION
@@ -48,6 +58,32 @@ def demonstrations():
         stale = error.to_diagnostic()
     else:
         raise AssertionError("Stale fixture unexpectedly accepted")
+    category_id = UUID(int=9001)
+    at = datetime(2026, 11, 4, tzinfo=timezone.utc)
+    policy = CategoryPolicyFixture(
+        (
+            PolicyVersionFixture(
+                ORGANIZATION_ID,
+                1,
+                "approval",
+                (CategoryVersionFixture(category_id, CATEGORY),),
+                at,
+            ),
+        ),
+        (PendingPolicyFixture(category_id, 1),),
+    )
+    changed_policy = preview_change_mode(
+        policy, policy.source_revision(), 1, "invitation", at=at
+    )
+    deactivated = preview_change_category(
+        changed_policy,
+        changed_policy.source_revision(),
+        2,
+        category_id,
+        1,
+        at=at,
+        deactivate=True,
+    )
     return {
         "version": "pwc.membership-demonstrations.internal.v1",
         "synthetic_only": True,
@@ -64,6 +100,10 @@ def demonstrations():
                         accepted, accepted.source_revision(), TEMPLATE.sample_csv()
                     ).to_summary()
                 ],
+            },
+            {
+                "id": "category-policy",
+                "steps": [policy.to_summary(), deactivated.to_summary()],
             },
         ],
     }

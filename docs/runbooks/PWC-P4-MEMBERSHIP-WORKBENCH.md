@@ -117,3 +117,13 @@ releasable C1–C5 dependency slices. All affected acceptances remain pending. I
 not convert this workbench into live membership, create an enable switch, install
 migrations, waive the npm audit failure or reopen settled 04C decisions. Refer to
 that single queue for the next coordinated product/security/privacy review.
+
+## C1 category/policy proposal example
+
+Select **Category and policy versions** in the existing React/Flutter fixture
+viewer to inspect a fixed initial policy, mode change and deactivation. It shows
+immutable revision history, active counts and pending bindings needing re-review;
+it never fetches or edits real categories. Generated fixtures remain shared.
+Exact proposed rules and implementation boundaries are in
+`docs/reviews/PWC-P4-C1-CATEGORY-POLICY-DISPOSITIONS-v1.0.md`.
+No acceptance is implied by this example or its tests.

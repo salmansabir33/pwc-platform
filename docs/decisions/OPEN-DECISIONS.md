@@ -54,3 +54,10 @@ Every row remains pending accountable acceptance; no live code, migration, grant
 or private projection is authorized by the document. Settled 04C product decisions
 and version-locked contracts are preserved, not resubmitted. PR39 is still open
 with a failing npm audit gate; this package supplies no merge waiver.
+
+### P4 C1 exact dispositions (pending; independent of C3/C4)
+
+`docs/reviews/PWC-P4-C1-CATEGORY-POLICY-DISPOSITIONS-v1.0.md`
+(`P4-C1-20261104.1`) supplies eight individually reviewable P4-01 dispositions,
+including explicit fee/renewal deferral. The immutable parent remains unchanged.
+Its executable coverage is fixture-only; no authority, migrations or live APIs.
