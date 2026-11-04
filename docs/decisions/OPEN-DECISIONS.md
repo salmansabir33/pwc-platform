@@ -43,3 +43,14 @@ scoped action/issuer/source matrix, privacy/intake/retention/invitation binding,
 atomic revision/audit/idempotency/storage contracts and separate verified 05C
 account linking are listed in the [05A implementation report](../runbooks/PWC-05A-MEMBERSHIP-FOUNDATIONS.md#exact-contracts-still-required-before-live-implementation).
 Existing accepted 04C boundaries are not reopened; no new authority is recorded.
+
+## Consolidated P4 executable-contract review — 4 November 2026
+
+Use [P4-MEMBERSHIP-20261104.1](../reviews/PWC-P4-MEMBERSHIP-EXECUTABLE-CONTRACT-v1.0.md)
+as the single current acceptance queue for P4-01–09, not repeated generic requests
+against the earlier runbook lists. It proposes exact category/admission/action/
+privacy/source/writer/import/claim/client boundaries and independent C1–C5 slices.
+Every row remains pending accountable acceptance; no live code, migration, grant
+or private projection is authorized by the document. Settled 04C product decisions
+and version-locked contracts are preserved, not resubmitted. PR39 is still open
+with a failing npm audit gate; this package supplies no merge waiver.

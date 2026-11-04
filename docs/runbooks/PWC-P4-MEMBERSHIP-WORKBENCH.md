@@ -108,3 +108,12 @@ GM/REAL gates, four-field public disclosure and prior audit evidence stay unchan
 Contabo/Oracle and deployment are outside this checkpoint. Autonomous merge is
 conditional on required checks and branch policy; the unresolved unsuppressed npm
 audit failure is not waived by this assignment.
+
+## Phase A executable-contract acceptance queue
+
+The [consolidated P4 acceptance package](../reviews/PWC-P4-MEMBERSHIP-EXECUTABLE-CONTRACT-v1.0.md)
+now provides concrete P4-01–09 proposals, owner response fields and independently
+releasable C1–C5 dependency slices. All affected acceptances remain pending. It does
+not convert this workbench into live membership, create an enable switch, install
+migrations, waive the npm audit failure or reopen settled 04C decisions. Refer to
+that single queue for the next coordinated product/security/privacy review.
