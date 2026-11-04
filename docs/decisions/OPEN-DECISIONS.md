@@ -61,3 +61,14 @@ with a failing npm audit gate; this package supplies no merge waiver.
 (`P4-C1-20261104.1`) supplies eight individually reviewable P4-01 dispositions,
 including explicit fee/renewal deferral. The immutable parent remains unchanged.
 Its executable coverage is fixture-only; no authority, migrations or live APIs.
+
+## Current C1 product disposition after merged PR39
+
+PR39 is merged at `27d445824f7f62114cd592e119250b3f92e14c21`; earlier open-PR
+and all-pending statements above are historical, not the current product status.
+The product owner's explicit continuation instruction accepts **C1-R01–R08
+exactly as proposed**. See [the scoped decision and provenance record](PWC-P4-C1-PRODUCT-OWNER-ACCEPTANCE.md).
+Product choices are closed unless explicitly changed. Non-product P4-01 charters,
+P4-03/trusted authority/04C, P4-06, category disclosure and P4-09 remain open as
+specified there. No live reader/writer or privileged migration is authorized by
+product acceptance alone. Issue #40 remains open; no security-gate waiver.

@@ -6,12 +6,15 @@ DB access, executable commands or persistence adapters belong in this module.
 """
 
 from dataclasses import dataclass
-import unicodedata
 from uuid import UUID
 from types import MappingProxyType
 from .member_import_preview import MAX_ROWS, PreviewCatalog, valid_reference
 
-MODES = ("open", "approval", "invitation")
+from .membership_category_rules import (
+    ADMISSION_MODES as MODES,
+    valid_category_label,
+    category_label_key,
+)
 ROUTES = ("application", "invitation")
 STATES = ("draft", "pending", "accepted", "declined", "cancelled")
 EVENTS = ("apply", "invite", "approve", "accept", "decline", "cancel")
@@ -85,17 +88,14 @@ class CategoryFixture:
         if (
             not _uuid(self.organization_id)
             or not valid_reference(self.reference)
-            or type(self.label) is not str
-            or not self.label.strip()
-            or len(self.label) > 250
-            or any(unicodedata.category(c).startswith("C") for c in self.label)
+            or not valid_category_label(self.label)
             or type(self.active) is not bool
         ):
             _invalid()
 
     @property
     def normalized_label(self):
-        return " ".join(unicodedata.normalize("NFKC", self.label).split()).casefold()
+        return category_label_key(self.label)
 
 
 @dataclass(frozen=True, slots=True, repr=False)

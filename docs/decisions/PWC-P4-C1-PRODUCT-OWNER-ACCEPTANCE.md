@@ -1,0 +1,87 @@
+# C1 product-owner decision — P4-C1-20261104.1
+
+**Status: PRODUCT ACCEPTED — C1-R01 through C1-R08 exactly as proposed.**
+**Not an implementation/security/privacy/transport approval.**
+
+## Decision and provenance
+
+Source: the explicit product-owner instruction in this Arena conversation titled
+**“PWC — C1 Product Decision Accepted; Proceed Toward Live Membership Category
+Management”**, against merged baseline `27d445824f7f62114cd592e119250b3f92e14c21`.
+The instruction states:
+
+> The product owner has accepted **C1-R01 through C1-R08 exactly as proposed** in:
+>
+> `docs/reviews/PWC-P4-C1-CATEGORY-POLICY-DISPOSITIONS-v1.0.md`
+>
+> Proposal identity: `P4-C1-20261104.1`.
+
+This record attributes the decision to the product owner **as explicitly
+communicated in that instruction**. It does not infer a person's legal identity
+from the repository account or from agent-authored GitHub comments. No reviewer
+name, signature, signing timestamp or external approval URL was supplied; none
+is manufactured here. An accountable identity/charter, actual decision date and
+immutable evidence link remain to be attached by the owner/review custodian for
+the formal evidence worksheet. This evidence gap does not reopen or erase the
+explicit product decision already communicated.
+
+Accepted artifact at the baseline above:
+
+- Path: `docs/reviews/PWC-P4-C1-CATEGORY-POLICY-DISPOSITIONS-v1.0.md`
+- SHA256: `f59bcf944ac040375632a35a7850e3206ec56719e77f9b481959ab67ad8c1537`
+- [Immutable source](https://github.com/salmansabir33/pwc-platform/blob/27d445824f7f62114cd592e119250b3f92e14c21/docs/reviews/PWC-P4-C1-CATEGORY-POLICY-DISPOSITIONS-v1.0.md)
+
+The historical proposal is unchanged, including its then-PENDING review statuses.
+This later scoped record is the current product disposition; it is not a rewrite
+or blanket closure of the proposal's other accountable charters.
+
+## Scope locked by the decision
+
+All eight rows are accepted without amendments. In particular:
+
+- **R04:** one current category per same-NGO membership in the initial member
+  slice; its person/identity/member constraints still belong to the affected C2
+  implementation contract, not to C1 category storage alone.
+- **R05:** every new aggregate policy version requires explicit re-review of all
+  older pending applications, including unrelated additions and display-only
+  changes. No exception is inferred for “harmless” changes.
+- **R08:** ALL fee and renewal configuration is deferred from C1; not configured
+  does not mean zero/free/permanent membership.
+
+R01–R03 and R06–R07 retain their exact identity, normalization, lifecycle,
+revision, deactivation and history/effective-time choices. Do not reopen these
+product choices without an explicit change request. C3/C4 are not C1 dependencies.
+
+## Exact remaining accountable acceptance / operation boundaries
+
+| Contract / accountable charter | Outstanding concrete acceptance | Operations blocked |
+| --- | --- | --- |
+| P4-03 + trusted issuer owners, IAM/security and NGO governance; underlying 04C/GM/root owners | Actual trusted issuer/root and authenticated source; versioned action/bundle/subject/tenant/target bindings for the five C1 literal actions in parent §4; assurance class, single-actor/independent review and conflict rules per command; current expiry/revocation | Private reads, policy changes, create/rename/deactivate; installing any membership grant |
+| P4-06 DB/API + auth/security | Full lock order against existing auth helpers, deadlines/isolation/primary DB clock, revocation linearization; restricted runtime/writer/verifier principals and signatures; create-slot/replay/rollback/unknown-outcome contract; atomic business/history/audit/receipt rules | Persistent model/writer/migration installation under the assignment's implementation gate; transactional writes and receipts |
+| Category-only disclosure, privacy/legal + NGO governance + DB/API | Exact fields/audiences for current definitions and historical policy values; actor representation, history/audit/receipt minimization, retention/access and legal hold where applicable | All private projections and retained audit/receipt disclosure; no roster or person data implied |
+| P4-09 API/auth/security + web/mobile owners + privacy | Exact endpoint/request/response/error/pagination/revision/receipt contract; CSRF browser transport; approved native transport/permissions/privacy and revocation/cache handling | Actual React management and Flutter networking/actions |
+| Remaining non-product P4-01 charters | NGO governance/DB/API and affected history privacy acceptance in the original row scopes | No assertion that the entire cross-owner P4-01 gate is closed |
+
+PR39 has no accountable reviews; its agent-authored reconciliation comments are
+explicitly technical evidence only. No authorized technical reviewer designation
+or independent sign-off was supplied in the current instruction. The agent may
+verify implementation, but cannot self-appoint to these charters or impersonate
+reviewers. The implementation PR requests those exact reviews; no activation
+switch, dormant privileged migration or grant is installed while they are absent.
+
+## Permitted engineering in this change
+
+Extract R02 label validation/comparison and R05 mode vocabulary into an
+independent authority-free domain module, reused by the existing 05A foundation.
+Tests cover Unicode/code-point limits, compatibility/case/whitespace collisions,
+invalid input and display preservation. This is reusable value validation, not
+another demonstration, database uniqueness, a privileged service or a management
+UI. No new demo, schema, endpoint, permission or client transport is added.
+
+## C2 dependency boundary
+
+R04 and R05 product direction is settled, but C2 unclaimed admission additionally
+needs P4-02 eligibility/actor/event decisions, P4-05 authoritative person/source/
+revision/conflict rules, P4-04 minimized person/intake/retention acceptance and the
+applicable P4-03/06/09 contracts. No name/contact match may link accounts. C1 value
+validation can be reused; live C2 admission is not authorized by this decision.

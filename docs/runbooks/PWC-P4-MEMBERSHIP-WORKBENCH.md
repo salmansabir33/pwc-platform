@@ -127,3 +127,13 @@ it never fetches or edits real categories. Generated fixtures remain shared.
 Exact proposed rules and implementation boundaries are in
 `docs/reviews/PWC-P4-C1-CATEGORY-POLICY-DISPOSITIONS-v1.0.md`.
 No acceptance is implied by this example or its tests.
+
+## Product decision recorded after PR39
+
+C1-R01–R08 are now product-accepted exactly as proposed; see
+[the decision/provenance record](../decisions/PWC-P4-C1-PRODUCT-OWNER-ACCEPTANCE.md).
+Earlier all-pending statements describe the historical proposal review state.
+The existing examples remain non-authoritative and no networking is enabled.
+R02 validation and R05 mode vocabulary now live in the shared
+`organizations/membership_category_rules.py` value module; callers must still
+supply accepted tenant, permission, storage and transport boundaries.
