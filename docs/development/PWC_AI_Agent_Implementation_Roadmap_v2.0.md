@@ -394,3 +394,17 @@ negatives and database-free projection. This is preparation for future clients,
 not a new accepted wire API, import permission, intake surface or member writer.
 The exact 05A/05B dependencies above and locked 04C acceptance remain unchanged.
 See [structured contract runbook](../runbooks/PWC-05B-MEMBER-IMPORT-PREVIEW.md#structured-template-and-report-contracts-internal-v1).
+
+### 11.11 PWC-05A membership foundations — 4 November 2026
+
+After merged PR37, the smallest independently safe domain increment validates
+immutable same-NGO category/policy/request snapshots and evaluates hypothetical
+open/approval/invitation admission paths, duplicate references and invalid/stale
+transitions. It reuses 05B handle syntax/catalog/parser contracts without treating
+CSV acceptance as admission. A fixed synthetic CLI demonstrates proposed outcomes;
+there is no membership writer, live intake, actor authorization, account link,
+financial operation, privileged endpoint or public-field expansion. Transition
+vocabulary and conservative conflict rules are internal synthetic proposals,
+not approval of live policy. See the [implementation report and exact remaining
+contracts](../runbooks/PWC-05A-MEMBERSHIP-FOUNDATIONS.md). Locked 04C acceptance and
+the separate 05A/05B/05C authority, privacy and persistence dependencies remain.
