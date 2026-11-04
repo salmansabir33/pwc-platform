@@ -1,0 +1,241 @@
+{
+  "commit_available": false,
+  "scenarios": [
+    {
+      "id": "admission",
+      "steps": [
+        {
+          "commit_available": false,
+          "format": "pwc.membership-preparation.internal.v1",
+          "history": [
+            {
+              "category_changed": false,
+              "from_state": "draft",
+              "kind": "admission",
+              "revision": 1,
+              "to_state": "pending"
+            }
+          ],
+          "member_count": 0,
+          "non_authoritative": true,
+          "revision": 1,
+          "states": {
+            "active": 0,
+            "ended": 0,
+            "suspended": 0
+          }
+        },
+        {
+          "commit_available": false,
+          "format": "pwc.membership-preparation.internal.v1",
+          "history": [
+            {
+              "category_changed": false,
+              "from_state": "draft",
+              "kind": "admission",
+              "revision": 1,
+              "to_state": "pending"
+            },
+            {
+              "category_changed": false,
+              "from_state": "pending",
+              "kind": "admission",
+              "revision": 2,
+              "to_state": "accepted"
+            }
+          ],
+          "member_count": 1,
+          "non_authoritative": true,
+          "revision": 2,
+          "states": {
+            "active": 1,
+            "ended": 0,
+            "suspended": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "category",
+      "steps": [
+        {
+          "commit_available": false,
+          "format": "pwc.membership-preparation.internal.v1",
+          "history": [
+            {
+              "category_changed": false,
+              "from_state": "draft",
+              "kind": "admission",
+              "revision": 1,
+              "to_state": "pending"
+            },
+            {
+              "category_changed": false,
+              "from_state": "pending",
+              "kind": "admission",
+              "revision": 2,
+              "to_state": "accepted"
+            },
+            {
+              "category_changed": true,
+              "from_state": "active",
+              "kind": "category",
+              "revision": 3,
+              "to_state": "active"
+            }
+          ],
+          "member_count": 1,
+          "non_authoritative": true,
+          "revision": 3,
+          "states": {
+            "active": 1,
+            "ended": 0,
+            "suspended": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "status",
+      "steps": [
+        {
+          "commit_available": false,
+          "format": "pwc.membership-preparation.internal.v1",
+          "history": [
+            {
+              "category_changed": false,
+              "from_state": "draft",
+              "kind": "admission",
+              "revision": 1,
+              "to_state": "pending"
+            },
+            {
+              "category_changed": false,
+              "from_state": "pending",
+              "kind": "admission",
+              "revision": 2,
+              "to_state": "accepted"
+            },
+            {
+              "category_changed": true,
+              "from_state": "active",
+              "kind": "category",
+              "revision": 3,
+              "to_state": "active"
+            },
+            {
+              "category_changed": false,
+              "from_state": "active",
+              "kind": "status",
+              "revision": 4,
+              "to_state": "suspended"
+            }
+          ],
+          "member_count": 1,
+          "non_authoritative": true,
+          "revision": 4,
+          "states": {
+            "active": 0,
+            "ended": 0,
+            "suspended": 1
+          }
+        },
+        {
+          "commit_available": false,
+          "format": "pwc.membership-preparation.internal.v1",
+          "history": [
+            {
+              "category_changed": false,
+              "from_state": "draft",
+              "kind": "admission",
+              "revision": 1,
+              "to_state": "pending"
+            },
+            {
+              "category_changed": false,
+              "from_state": "pending",
+              "kind": "admission",
+              "revision": 2,
+              "to_state": "accepted"
+            },
+            {
+              "category_changed": true,
+              "from_state": "active",
+              "kind": "category",
+              "revision": 3,
+              "to_state": "active"
+            },
+            {
+              "category_changed": false,
+              "from_state": "active",
+              "kind": "status",
+              "revision": 4,
+              "to_state": "suspended"
+            },
+            {
+              "category_changed": false,
+              "from_state": "suspended",
+              "kind": "status",
+              "revision": 5,
+              "to_state": "ended"
+            }
+          ],
+          "member_count": 1,
+          "non_authoritative": true,
+          "revision": 5,
+          "states": {
+            "active": 0,
+            "ended": 1,
+            "suspended": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "stale",
+      "steps": [
+        {
+          "code": "SOURCE_REVISION_CONFLICT"
+        }
+      ]
+    },
+    {
+      "id": "import",
+      "steps": [
+        {
+          "candidate_count": 1,
+          "commit_available": false,
+          "non_authoritative": true,
+          "row_count": 2,
+          "rows": [
+            {
+              "csv_diagnostics": [
+                {
+                  "code": "EXISTING_REFERENCE",
+                  "column": 1,
+                  "column_name": "record_reference",
+                  "record": 2,
+                  "related_records": [],
+                  "severity": "error"
+                }
+              ],
+              "errors": [
+                "EXISTING_REFERENCE"
+              ],
+              "record": 2,
+              "warnings": []
+            },
+            {
+              "csv_diagnostics": [],
+              "errors": [],
+              "record": 3,
+              "warnings": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "synthetic_only": true,
+  "version": "pwc.membership-demonstrations.internal.v1"
+}
