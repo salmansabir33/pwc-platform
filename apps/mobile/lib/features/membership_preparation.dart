@@ -8,8 +8,9 @@ class MembershipDemoState extends ChangeNotifier {
   int _selected = 0;
   int get selected => _selected;
   void select(int index) {
-    if (index < 0 || index >= 5)
+    if (index < 0 || index >= 5) {
       throw RangeError.index(index, const [0, 1, 2, 3, 4]);
+    }
     _selected = index;
     notifyListeners();
   }
@@ -81,14 +82,22 @@ class _MembershipPreparationState extends State<MembershipPreparationScreen> {
               ),
             ),
             DropdownButtonFormField<int>(
-              value: model.selected,
+              key: ValueKey(model.selected),
+              initialValue: model.selected,
               isExpanded: true,
               decoration: InputDecoration(
                 labelText: t('Read-only example', 'صرف مطالعے کا نمونہ'),
               ),
               items: [
                 for (var i = 0; i < titles.length; i++)
-                  DropdownMenuItem(value: i, child: Text(titles[i])),
+                  DropdownMenuItem(
+                    value: i,
+                    child: Text(
+                      titles[i],
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
               ],
               onChanged: (value) {
                 if (value != null) model.select(value);
