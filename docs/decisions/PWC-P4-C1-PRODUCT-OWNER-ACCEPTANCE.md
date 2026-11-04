@@ -129,3 +129,60 @@ communicated; technical proposals remain proposals until the actual accountable
 reviewers accept their exact immutable version with scope, evidence and exclusions.
 No privilege-bearing schema, writer, endpoint, grant or native adapter follows
 from this record. Do not open another product approval cycle for R01–R08.
+
+## Founder trust establishment — AbuBakr nomination
+
+**Recorded direction:** in the explicit Arena instruction **“PWC — Founder Trust
+Establishment and Independent Verification”**, the Founder nominates **AbuBakr**
+as independent verifier. This is a nomination, not completed identity proofing,
+verified natural-person independence, acceptance of the role, appointment as the
+04C Verification Officer, technical/legal qualification or an activated grant.
+No account UUID/email, legal identity, signature, timestamp or external evidence
+was supplied; none is inferred from the name or a GitHub account. No lookup,
+account creation or privilege assignment by display name is authorized.
+
+**Precisely limited proposed responsibility:** inspect the Founder's identity and
+claimed founding governance instrument using the independently accepted evidence
+rubric; confirm the exact personal account-to-person binding via approved channels;
+declare actual-person independence/conflicts; record accept/reject/needs-information
+against the immutable evidence/case revision and scope. The Founder cannot submit
+and approve their own verification. AbuBakr cannot self-certify the authority of
+his own nomination or the trust root. A distinct account alone is not independence.
+This review is not an NGO verification, departmental appointment, database/security/
+legal sign-off or grant issuer. It grants no NGO-private data, finance, membership,
+impersonation, password reset or emergency disclosure power. Restrict any future
+case reader to this assigned case's minimized evidence under an accepted scope.
+
+**AbuBakr's steps:** use his own existing PWC personal identity, or the ordinary
+approved registration flow when legitimately available; retain sole control of his
+password/MFA. Accept the bounded responsibility, independently establish identity
+and conflicts through the appointed trust custodian, then review the exact Founder
+case only after authenticated assignment and accepted evidence/reader/command
+contracts exist. Return a revision-bound decision with real provenance through the
+accepted channel. Never receive the Founder's password, TOTP seed or recovery codes.
+
+**Founder's steps:** use the Founder's own personal account and MFA; provide the
+actual founding instrument and identity/account-binding evidence to the approved
+custodian, not public GitHub/chat; establish the lawful appointing source and the
+separate authorized executor/confirmer arrangements. Nomination does not supply
+that chain. Do not approve the Founder's own case or activate either participant's
+authority by a role label. Elected successors receive individual scoped assignments;
+permanent Founder governance oversight remains separate from revocable credentials
+and departmental/private-data permissions.
+
+**Execution boundary and dependencies:** issue #42 tracks AUTH-01/02 real trust
+anchor and issuer/executor/confirmer/source evidence; AUTH-04/GM06 and §12 D3/D4
+operation-bound assurance; AUTH-05 and §12 D5/D6 restricted reader/writer, lock,
+revocation, audit and receipts; AUTH-08/minimum-D12 case evidence/privacy/custody
+and retention. No new production actor, source key, personal evidence store,
+verification endpoint or provisioning command is installed. Existing personal
+identity/MFA/session flows may be used only in their accepted environment/transport;
+04B case preparation is not a Founder trust or approval workflow.
+
+**Can verification begin?** Nomination acknowledgement and offline coordination can
+begin without transferring private evidence. Authenticated authoritative Founder
+verification cannot begin in the application yet: accepted actual trust source,
+verified reviewer binding/independence, case evidence policy and protected execution
+contracts are not evidenced. Nomination narrows the reviewer candidate; it does not
+close those gates. Locked F1–F9/E05 and distinct-person appointment rules remain
+unchanged. No new generic governance report or demonstration is introduced.
