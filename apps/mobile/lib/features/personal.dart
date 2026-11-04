@@ -61,6 +61,10 @@ class PersonalScreen extends ConsumerWidget {
           ),
         ),
         TextButton(
+          onPressed: () => context.push('/membership-preparation'),
+          child: Text(ur ? 'رکنیت کا فرضی نمونہ' : 'Membership demonstration'),
+        ),
+        TextButton(
           onPressed: () => context.push('/administration'),
           child: Text(
             ur

@@ -87,6 +87,10 @@ jobs:
               for pattern in (r'Ran [0-9]+ tests in [0-9.]+s', r'Contract runner checked [0-9]+ distinct route/method/status combinations'):
                   for value in re.findall(pattern, text):
                       print('::notice title=Backend execution evidence::' + value)
+              # Identifiers only: never assertion values, trace locals, bodies or secrets.
+              failures = re.findall(r'(?:FAIL|ERROR): ([A-Za-z0-9_.]{1,300}) \(([A-Za-z0-9_.]{1,500})\)', text)
+              for method, case in failures[:20]:
+                  print('::notice title=Backend failed test identifier::' + case + ' / ' + method)
           PYTHON
       - name: Backend coverage evidence
         if: always() && hashFiles('apps/backend/.coverage') != ''

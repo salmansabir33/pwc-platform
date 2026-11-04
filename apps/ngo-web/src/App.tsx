@@ -1,3 +1,4 @@
+import { MembershipWorkbench } from "./MembershipWorkbench";
 import { AdministrationBoundary } from "./AdministrationBoundary";
 import { Directory } from "./PublicDirectory";
 import { useEffect, useState } from "react";
@@ -45,6 +46,9 @@ export function App() {
           element={
             <>
               <Overview portal={config.appId} />
+              <Link to="/foundation/membership">
+                P4 · Membership demonstration / رکنیت کا فرضی نمونہ
+              </Link>
               <Link to="/administration">NGO administration (unavailable)</Link>
               <Link to="/application-history">My application history</Link>
               <Link to="/ngo-registry">NGO registry · public read-only</Link>
@@ -62,6 +66,10 @@ export function App() {
           element={<AccessibilitySpecimen />}
         />
         <Route path="/foundation/states" element={<StateSpecimens />} />
+        <Route
+          path="/foundation/membership"
+          element={<MembershipWorkbench />}
+        />
         <Route path="/administration" element={<AdministrationBoundary />} />
         <Route path="/verification" element={<Verification />} />
         <Route path="/registry" element={<Registry />} />
