@@ -2,9 +2,13 @@ from django.urls import path
 from . import registration_views as views
 from . import session_views as session_views
 
-from . import mfa_views
+from . import mfa_views, invitation_views
 
 urlpatterns = [
+    *[
+        path("web/invitations/" + operation + "/", invitation_views.endpoint(operation))
+        for operation in ("request-proof", "confirm-email", "password", "activate")
+    ],
     path("web/mfa/confirm/", mfa_views.endpoint("web_confirm")),
     path("mobile/mfa/confirm/", mfa_views.endpoint("mobile_confirm")),
     path("mfa/status/", mfa_views.endpoint("status")),

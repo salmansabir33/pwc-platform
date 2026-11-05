@@ -42,6 +42,13 @@ def schemas():
     base = {"user": obj({"id": UUID, "preferred_language": S}),
             "session": session, "recovery_hold_state": hold}
     result = {
+        "InvitationProofRequest": obj({"invitation_id": UUID, "token": SECRET, "recipient": S}),
+        "InvitationEmailConfirm": obj({"invitation_id": UUID, "token": SECRET, "recipient": S, "proof": SECRET}),
+        "InvitationPassword": obj({"invitation_id": UUID, "token": SECRET, "recipient": S, "enrollment_control": SECRET, "password": SECRET}),
+        "InvitationActivate": obj({"invitation_id": UUID, "token": SECRET, "recipient": S, "enrollment_control": SECRET, "code": SECRET}),
+        "InvitationEmailVerified": obj({"status": enum("email_verified"), "enrollment_control": SECRET, "expires_at": DATE}),
+        "InvitationSetup": obj({"status": enum("mfa_required"), "secret": SECRET, "otpauth_uri": SECRET, "expires_at": DATE}),
+        "InvitationComplete": obj({"status": enum("complete"), "recovery_codes": arr(SECRET)}),
         "Empty": obj({}),
         "Health": obj({"status": enum("ok"), "service": enum("pwc-api")}),
         "AuthError": obj({"error": obj({"code": S, "message": S,
@@ -110,6 +117,10 @@ def schemas():
 
 # id, suffix, method, transport, request schema, success status/schema, gate
 AUTH = [
+    ("invitationRequestProof", "web/invitations/request-proof/", "post", "browser-invitation", "InvitationProofRequest", 202, "ResendAccepted", "invitations"),
+    ("invitationConfirmEmail", "web/invitations/confirm-email/", "post", "browser-invitation", "InvitationEmailConfirm", 200, "InvitationEmailVerified", "invitations"),
+    ("invitationPassword", "web/invitations/password/", "post", "browser-invitation", "InvitationPassword", 200, "InvitationSetup", "invitations"),
+    ("invitationActivate", "web/invitations/activate/", "post", "browser-invitation", "InvitationActivate", 201, "InvitationComplete", "invitations"),
     ("csrf", "csrf/", "get", "bootstrap", None, 200, "Csrf", None),
     ("registrationRequest", "registration/request/", "post", "public-proof", "FlowRequest", 202, "FlowAccepted", "flows"),
     ("registrationConfirm", "registration/confirm/", "post", "public-proof", "RegistrationConfirm", 201, "Verified", "flows"),
@@ -137,6 +148,7 @@ AUTH = [
     ("clearHold", "recovery-hold/clear/", "post", "personal", "ClearHold", 204, None, "mfa"),
 ]
 GATES = {
+    "invitations": ["test-profile-only", "accepted-issuer-source-required", "PWC_AUTH_FLOWS_ENABLED", "PWC_AUTH_SESSIONS_ENABLED", "PWC_AUTH_MFA_ENABLED"],
     "verification": ["PWC_REGISTRY_ENABLED", "PWC_VERIFICATION_ENABLED", "PWC_AUTH_SESSIONS_ENABLED"],
     "registry": ["PWC_REGISTRY_ENABLED", "PWC_AUTH_SESSIONS_ENABLED"],
     "flows": ["PWC_AUTH_FLOWS_ENABLED"],

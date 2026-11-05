@@ -32,3 +32,6 @@ test-results/
 *.pfx
 *.jks
 *.keystore
+
+# Disposable build/test harness artifacts
+.cache/

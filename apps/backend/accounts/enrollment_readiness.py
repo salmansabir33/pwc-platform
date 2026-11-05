@@ -18,8 +18,8 @@ def readiness():
         "policy": "invitation_only",
         "ready_for_real_enrollment": False,
         "public_registration": "test_profile_only",
-        "invitation_issue_and_accept": "not_implemented_pending_contract",
-        "mail_dispatcher": "synthetic_only",
+        "invitation_issue_and_accept": "implemented_test_profile_only_live_source_unavailable",
+        "mail_dispatcher": "synthetic_default_prepared_smtp_compatible_live_closed",
         "deployment_authorized": False,
         "gates": [
             {
@@ -30,7 +30,7 @@ def readiness():
             {
                 "id": "PE-CONTRACT",
                 "status": "unaccepted",
-                "required": "Recipient binding, invitation lifetime/digest/consumption/lock/audit/storage/API contract and purpose-separated email proof. No invitations, tables or privilege-bearing endpoints before acceptance.",
+                "required": "Bounded full enrollment implemented; live source/writer/locking/audit/API contract remains unaccepted. All steps, including MFA, must commit within 24 hours. No live invitations or privilege-bearing endpoints.",
             },
             {
                 "id": "O1-O2",

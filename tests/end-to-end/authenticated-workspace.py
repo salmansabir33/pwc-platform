@@ -15,6 +15,7 @@ import tempfile
 from threading import Thread
 from socketserver import ThreadingMixIn
 import unittest
+from unittest.mock import patch
 from wsgiref.simple_server import WSGIServer, WSGIRequestHandler, make_server
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -37,6 +38,7 @@ from accounts.test_sessions import NGO, OPS  # noqa: E402
 from organizations.test_verification import CONFIG, VerificationFixtures  # noqa: E402
 from organizations.models import RegistryEvent, OrganizationAccess  # noqa: E402
 from access.models import NGOGrant  # noqa: E402
+from invitation_browser import seed_invitations, capture_mail, assert_completed
 
 
 class TLSHandler(WSGIRequestHandler):
@@ -118,7 +120,10 @@ def run():
 
             def app(env, start):
                 if env["PATH_INFO"].startswith("/api/"):
-                    return handler(env, start)
+                    response = handler(env, start)
+                    if env["PATH_INFO"].endswith("/web/invitations/request-proof/"):
+                        capture_mail(Path(temporary) / "invitation-mailbox.json")
+                    return response
                 path = (build / env["PATH_INFO"].lstrip("/")).resolve()
                 if not path.is_relative_to(build.resolve()) or not path.is_file():
                     path = build / "index.html"
@@ -196,7 +201,11 @@ def run():
                         }
                         for m in client.cookies.values()
                     ]
+                mailbox = Path(temporary) / "invitation-mailbox.json"
+                invitations = seed_invitations(f.user, mailbox)
                 fixture = {
+                    "invitations": invitations,
+                    "invitationMailbox": str(mailbox),
                     "port": port,
                     "certificate": str(cert),
                     "source": source,
@@ -212,7 +221,10 @@ def run():
                     "negatives": negatives,
                 }
                 # Historical fixtures only; actual browser workload has intake closed.
-                with override_settings(PWC_LEGACY_ONBOARDING_TEST_EXERCISE=False):
+                with (
+                    override_settings(PWC_LEGACY_ONBOARDING_TEST_EXERCISE=False),
+                    patch("accounts.personal_invitations.authorize_source", return_value=True),
+                ):
                     thread = Thread(target=server.serve_forever, daemon=True)
                     thread.start()
                     try:
@@ -229,6 +241,7 @@ def run():
                         server.shutdown()
                         server.server_close()
                         thread.join()
+                assert_completed(invitations)
                 assert (
                     RegistryEvent.objects.filter(
                         draft_id=source, action="withdraw"

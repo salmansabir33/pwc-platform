@@ -5,8 +5,10 @@
 The owner's current initial policy is **invitation-only**. This is product
 scope, not authentication of an issuer or approval of a privacy/issuer contract.
 Existing email/password/CSRF/session/MFA/recovery/audit and EN/UR React/Flutter
-journeys are reused. No new invitation issuer, endpoint, token table, account,
-grant, native networking permission or activation setting is introduced.
+journeys are reused. Bounded invitation storage and issuance/email-proof services
+are now permitted by the [explicit development decision](../decisions/PWC-PERSONAL-INVITATION-BOUNDED-DEVELOPMENT.md).
+No actual issuer, issuer HTTP endpoint, live account writer, grant, native networking permission
+or activation setting is introduced. Non-test invitation execution is hard-closed.
 
 Public registration request/resend/confirmation now reject every non-`test`
 profile before database or delivery I/O, even if flow flags are accidentally
@@ -15,7 +17,9 @@ explicit `test` profile. Reset remains the existing purpose-separated flow;
 reset never removes MFA, clears a recovery hold or grants authority. The shipped
 browser remains network-disabled. Staging still rejects every auth-enable flag.
 
-**Invitation issuance/acceptance is not executable.** Exact personal-invitation
+**Real invitation enrollment is not executable.** The [complete bounded workflow](PWC-INVITATION-ENROLLMENT.md)
+now includes email/password/MFA and an adapter-compatible worker, but actual
+issuer resolution and non-test execution/delivery stay closed. The 24-hour deadline includes MFA. Exact live personal-invitation
 issuer and recipient/state/privacy contracts are not accepted in this baseline.
 Reusing public registration as an invitation or a manually delivered database
 proof would be a bootstrap shortcut, not completion. The read-only preflight:
@@ -29,12 +33,12 @@ prints bounded JSON and exits nonzero. There is no `--approve`, issuer boolean,
 email/name/GitHub ownership shortcut or staff/superuser bypass. It does not probe
 a provider, inspect secrets, create accounts, send mail or query private data.
 
-## Exact contract disposition needed before invitation implementation
+## Exact remaining live contract dispositions
 
 | Gate        | Required bounded acceptance                                                                                                                                                                                                                                                                                                                | Current status                                                    |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------- |
 | PE-ISSUER   | Actual accountable personal-enrollment issuer, authenticated person/account binding, charter/source/version, narrowly scoped invitation power and recipient bounds, expiry/revocation and review/conflict rules. No NGO/Founder/verifier privilege.                                                                                        | Unaccepted; no issuer installed                                   |
-| PE-CONTRACT | Canonical recipient binding; single-use invitation digest and purpose separation; exact lifetime/reissue/revoke semantics; verified-email proof binding; transactional lock/consume/replay/rate-limit/audit/storage/API contract; duplicate-account behavior; account-creation versus MFA completion checkpoint and allowed pending state. | Unaccepted; no speculative table/writer/route                     |
+| PE-CONTRACT | Canonical recipient binding; single-use invitation digest and purpose separation; exact lifetime/reissue/revoke semantics; verified-email proof binding; transactional lock/consume/replay/rate-limit/audit/storage/API contract; duplicate-account behavior; account-creation versus MFA completion checkpoint and allowed pending state. | Full bounded implementation; live contract/source/activation still outstanding                     |
 | O1/O2       | Provider, region/terms, sender/domain authentication, deliverability trial, budgets/global spend cap, scheduling/alerts, queue ownership, abuse/shared-NAT limits and approved worker egress.                                                                                                                                              | Unaccepted; no real mail                                          |
 | O4          | Eligibility and age rules; lawful basis including holding an invitee's address before acceptance; notice text/version and acknowledgement rule; enumerated fields/audiences; exact retention/start/hold/erasure for invites, contacts, security/IP/session/audit and backups.                                                              | Unaccepted; no invented legal conclusion or production TTL        |
 | O3/W2       | Exact portal/link origins, independently checked actual-host HTTPS/cookie/CSRF/CSP/ingress; aggregate-proxy rate behavior/edge controls; reviewed browser/native composition and minimal authentication DB writer privileges.                                                                                                              | Disabled-service infrastructure only; live transport not accepted |
@@ -49,10 +53,11 @@ issuer/GM/04C authority. No identity evidence upload is added.
 The future implementation must reuse PostgreSQL constraints/transactions,
 existing canonical email/proof hashing/encrypted outbox, server-side ownership,
 CSRF, TOTP, recovery restrictions and generation invalidation. Reuse does not
-settle the currently missing invitation lifetime, consume checkpoint or issuer
-source. Invitation expiry/replay tests cannot truthfully be reported as passed
-until this contract is accepted and an actual invitation service exists. Existing
-registration proof expiry/replay tests are not invitation acceptance evidence.
+settle the account-creation/MFA consume checkpoint or actual issuer source.
+The product lifetime is accepted: all steps, including MFA, within 24 hours.
+New PostgreSQL tests cover invitation issuance/email-proof expiry/replay only,
+not complete enrollment. Existing registration proof tests are not invitation
+acceptance evidence.
 
 ## Prepared SMTP adapter — intentionally unwired
 

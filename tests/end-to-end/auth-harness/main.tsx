@@ -1,11 +1,14 @@
 // NONSHIPPED synthetic test entry. Never imported by either application build.
+import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import { LocaleProvider, useLocale } from "@pwc/web-i18n";
 import {
   PersonalWorkspaceSession,
   OperationsPolicyClient,
   PublicDirectoryClient,
+  InvitationEnrollmentClient,
 } from "@pwc/web-api";
+import { InvitationEnrollment } from "../../../apps/ngo-web/src/InvitationEnrollment";
 import { PersonalWorkspace } from "../../../apps/ngo-web/src/PersonalWorkspace";
 import { OperationsWorkspace } from "../../../apps/pwc-ops/src/OperationsWorkspace";
 import { OperationsStatus } from "../../../apps/pwc-ops/src/OperationsStatus";
@@ -37,6 +40,17 @@ const session = new PersonalWorkspaceSession(
 );
 const policy = new OperationsPolicyClient(session.state, transport);
 const directory = new PublicDirectoryClient(transport);
+const invitation = new InvitationEnrollmentClient(session.state, transport);
+function InvitationHarness() {
+  const [started, setStarted] = useState(false);
+  return started ? (
+    <InvitationEnrollment client={invitation} />
+  ) : (
+    <button onClick={() => setStarted(true)}>
+      Begin invitation (test only)
+    </button>
+  );
+}
 function Harness() {
   const { locale, setLocale } = useLocale();
   return (
@@ -59,7 +73,9 @@ function Harness() {
       >
         Corrupt next CSRF (test only)
       </button>
-      {location.hostname.startsWith("ops.") ? (
+      {location.pathname === "/account/invite" ? (
+        <InvitationHarness />
+      ) : location.hostname.startsWith("ops.") ? (
         <OperationsWorkspace session={session} policy={policy} />
       ) : (
         <>

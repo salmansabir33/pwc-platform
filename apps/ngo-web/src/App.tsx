@@ -16,6 +16,7 @@ import {
   NotFound,
 } from "@pwc/web-ui";
 import { Verification } from "./Verification";
+import { InvitationEnrollment } from "./InvitationEnrollment";
 import { PersonalWorkspace } from "./PersonalWorkspace";
 import { Registry } from "./Registry";
 import { config } from "./config";
@@ -74,6 +75,7 @@ export function App() {
         <Route path="/administration" element={<AdministrationBoundary />} />
         <Route path="/verification" element={<Verification />} />
         <Route path="/registry" element={<Registry />} />
+        <Route path="/account/invite" element={<InvitationEnrollment />} />
         <Route path="/account" element={<PersonalWorkspace />} />
         <Route path="/account/confirm" element={<PersonalWorkspace />} />
         <Route path="/application-history" element={<PersonalWorkspace />} />

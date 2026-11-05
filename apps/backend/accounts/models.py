@@ -110,3 +110,5 @@ from .security_models import (  # noqa: E402,F401
     SecurityEvent,
     UserContact,
 )
+
+from .invitation_models import PersonalInvitation  # noqa: E402,F401

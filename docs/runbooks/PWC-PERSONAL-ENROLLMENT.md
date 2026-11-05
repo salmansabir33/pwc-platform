@@ -2,6 +2,13 @@
 
 ## Current delivery boundary
 
+Implementation update: [complete bounded invitation workflow](PWC-INVITATION-ENROLLMENT.md).
+Password and MFA activation now create the ordinary account and consume its
+invitation atomically; no partial User exists beforehand. All steps must finish
+within 24 hours. Live source resolution, non-test execution, SMTP composition and
+shipped browser transport remain closed. Historical public-registration/MFA
+instructions below are regression context, not the invitation activation path.
+
 **Policy update (5 November 2026): initial enrollment is invitation-only.** Public
 registration is now test-profile-only. No accepted personal-invitation issuer or
 recipient/state/privacy contract exists, so issuance/acceptance stays unavailable.

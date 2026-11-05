@@ -24,6 +24,12 @@ The two portals use a shared npm workspace, design primitives and network-disabl
 
 ## Separate personal enrollment
 
+[Invitation enrollment](docs/runbooks/PWC-INVITATION-ENROLLMENT.md) now implements
+the complete bounded email/password/TOTP journey, with atomic account creation
+and invitation consumption strictly within 24 hours. Live issuer, delivery and
+transport activation remain closed; no real invitations or accounts are created.
+
+
 The [personal enrollment runbook](docs/runbooks/PWC-PERSONAL-ENROLLMENT.md) describes the implemented, default-disabled React enrollment/MFA journey, existing Flutter/Django reuse, separate Founder/AbuBakr instructions and exact real-delivery/transport blockers. Personal accounts confer no institutional authority.
 
 See [controlled enrollment and staging readiness](docs/runbooks/PWC-CONTROLLED-ENROLLMENT-READINESS.md) for invitation-only policy, the unwired TLS SMTP adapter, exact acceptance blockers and offline server-coexistence checks. No real invitation or deployment is enabled.
