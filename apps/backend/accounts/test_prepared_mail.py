@@ -17,7 +17,7 @@ from .delivery import deliver_message
 from .prepared_mail import MailConfiguration, PreparedMailError, PreparedSmtpAdapter
 
 
-class PreparedMailTests(SimpleTestCase):
+class PreparedMailFixtures:
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -161,6 +161,8 @@ class PreparedMailTests(SimpleTestCase):
         self.addCleanup(server.shutdown)
         return server
 
+
+class PreparedMailTests(PreparedMailFixtures, SimpleTestCase):
     def test_real_starttls_and_implicit_tls_single_delivery(self):
         for mode in ("tls", "starttls"):
             with self.subTest(mode=mode):

@@ -7,7 +7,7 @@ scope, not authentication of an issuer or approval of a privacy/issuer contract.
 Existing email/password/CSRF/session/MFA/recovery/audit and EN/UR React/Flutter
 journeys are reused. Bounded invitation storage and issuance/email-proof services
 are now permitted by the [explicit development decision](../decisions/PWC-PERSONAL-INVITATION-BOUNDED-DEVELOPMENT.md).
-No actual issuer, HTTP endpoint, account writer, grant, native networking permission
+No actual issuer, issuer HTTP endpoint, live account writer, grant, native networking permission
 or activation setting is introduced. Non-test invitation execution is hard-closed.
 
 Public registration request/resend/confirmation now reject every non-`test`
@@ -17,9 +17,9 @@ explicit `test` profile. Reset remains the existing purpose-separated flow;
 reset never removes MFA, clears a recovery hold or grants authority. The shipped
 browser remains network-disabled. Staging still rejects every auth-enable flag.
 
-**Real invitation enrollment is not executable.** Bounded test-profile issuance
-and email confirmation exist, but account/password/MFA completion and delivery
-are unfinished. The 24-hour deadline includes MFA. Exact live personal-invitation
+**Real invitation enrollment is not executable.** The [complete bounded workflow](PWC-INVITATION-ENROLLMENT.md)
+now includes email/password/MFA and an adapter-compatible worker, but actual
+issuer resolution and non-test execution/delivery stay closed. The 24-hour deadline includes MFA. Exact live personal-invitation
 issuer and recipient/state/privacy contracts are not accepted in this baseline.
 Reusing public registration as an invitation or a manually delivered database
 proof would be a bootstrap shortcut, not completion. The read-only preflight:
@@ -38,7 +38,7 @@ a provider, inspect secrets, create accounts, send mail or query private data.
 | Gate        | Required bounded acceptance                                                                                                                                                                                                                                                                                                                | Current status                                                    |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------- |
 | PE-ISSUER   | Actual accountable personal-enrollment issuer, authenticated person/account binding, charter/source/version, narrowly scoped invitation power and recipient bounds, expiry/revocation and review/conflict rules. No NGO/Founder/verifier privilege.                                                                                        | Unaccepted; no issuer installed                                   |
-| PE-CONTRACT | Canonical recipient binding; single-use invitation digest and purpose separation; exact lifetime/reissue/revoke semantics; verified-email proof binding; transactional lock/consume/replay/rate-limit/audit/storage/API contract; duplicate-account behavior; account-creation versus MFA completion checkpoint and allowed pending state. | Bounded development authorized; live contract and complete writer still outstanding                     |
+| PE-CONTRACT | Canonical recipient binding; single-use invitation digest and purpose separation; exact lifetime/reissue/revoke semantics; verified-email proof binding; transactional lock/consume/replay/rate-limit/audit/storage/API contract; duplicate-account behavior; account-creation versus MFA completion checkpoint and allowed pending state. | Full bounded implementation; live contract/source/activation still outstanding                     |
 | O1/O2       | Provider, region/terms, sender/domain authentication, deliverability trial, budgets/global spend cap, scheduling/alerts, queue ownership, abuse/shared-NAT limits and approved worker egress.                                                                                                                                              | Unaccepted; no real mail                                          |
 | O4          | Eligibility and age rules; lawful basis including holding an invitee's address before acceptance; notice text/version and acknowledgement rule; enumerated fields/audiences; exact retention/start/hold/erasure for invites, contacts, security/IP/session/audit and backups.                                                              | Unaccepted; no invented legal conclusion or production TTL        |
 | O3/W2       | Exact portal/link origins, independently checked actual-host HTTPS/cookie/CSRF/CSP/ingress; aggregate-proxy rate behavior/edge controls; reviewed browser/native composition and minimal authentication DB writer privileges.                                                                                                              | Disabled-service infrastructure only; live transport not accepted |

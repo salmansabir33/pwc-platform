@@ -29,10 +29,10 @@ async function portal(name, host = "ngo.pwc.invalid") {
   await signIn(page, name);
   return page;
 }
-function totp(secret) {
+function totp(secret, offset = 1) {
   const bits = [...secret].map(c => "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567".indexOf(c).toString(2).padStart(5, "0")).join("");
   const key = Buffer.from((bits.match(/.{8}/g) || []).map(b => parseInt(b, 2)));
-  const counter = Buffer.alloc(8); counter.writeBigUInt64BE(BigInt(Math.floor(Date.now() / 30000) + 1));
+  const counter = Buffer.alloc(8); counter.writeBigUInt64BE(BigInt(Math.floor(Date.now() / 30000) + offset));
   const hash = createHmac("sha1", key).update(counter).digest(); const offset = hash[19] & 15;
   return String((hash.readUInt32BE(offset) & 0x7fffffff) % 1000000).padStart(6, "0");
 }
@@ -66,7 +66,50 @@ async function tlsRequest(page, path, headers, method = "GET") {
     request.end();
   });
 }
+async function invitationCeremony(item, locale) {
+  const context = await browser.newContext({ignoreHTTPSErrors: true}); contexts.push(context);
+  const page = await context.newPage();
+  await page.setViewportSize({width: 390, height: 844});
+  await page.goto(`https://ngo.pwc.invalid:${fixture.port}/account/invite#invitation_id=${item.id}&token=${item.token}`);
+  if (locale === "ur") await page.getByRole("button", {name: "Toggle locale"}).click();
+  await page.getByRole("button", {name: "Begin invitation (test only)"}).click();
+  const label = (en, ur) => locale === "ur" ? ur : en;
+  assert.equal(new URL(page.url()).hash, "");
+  await page.getByLabel(label("Your invitation email", "آپ کی دعوتی ای میل"), {exact: true}).fill(item.recipient);
+  await page.getByRole("button", {name: label("Request email proof", "ای میل کوڈ کی درخواست"), exact: true}).click();
+  await page.getByLabel(label("Email confirmation proof", "ای میل تصدیقی کوڈ"), {exact: true}).waitFor();
+  const proof = JSON.parse(readFileSync(fixture.invitationMailbox, "utf8"))[item.recipient];
+  assert.ok(proof);
+  await page.getByLabel(label("Email confirmation proof", "ای میل تصدیقی کوڈ"), {exact: true}).fill(proof);
+  await page.getByRole("button", {name: label("Confirm email", "ای میل کی تصدیق"), exact: true}).click();
+  await page.getByLabel(label("Choose your password", "اپنا پاس ورڈ منتخب کریں"), {exact: true}).fill(fixture.password);
+  await page.getByLabel(label("Repeat your password", "پاس ورڈ دوبارہ درج کریں"), {exact: true}).fill(fixture.password);
+  await page.getByRole("button", {name: label("Set up authenticator", "آتھنٹیکیٹر ترتیب دیں"), exact: true}).click();
+  const key = await page.getByLabel(label("Authenticator setup key", "آتھنٹیکیٹر کی کلید"), {exact: true}).inputValue();
+  await page.addScriptTag({content: axe.source});
+  assert.deepEqual(await page.evaluate(async () => (await window.axe.run(document, {runOnly: {type: "tag", values: ["wcag2a", "wcag2aa", "wcag21aa"]}})).violations.map(v => v.id)), []);
+  await page.getByLabel(label("Authenticator code", "آتھنٹیکیٹر کوڈ"), {exact: true}).fill(totp(key, 0));
+  await page.getByRole("button", {name: label("Activate and complete enrollment", "فعال کریں اور اندراج مکمل کریں"), exact: true}).click();
+  await page.getByText(label("Personal account and MFA are ready", "ذاتی اکاؤنٹ اور ایم ایف اے تیار ہیں"), {exact: true}).waitFor();
+  assert.equal(await page.locator("code").count(), 10);
+  assert.equal((await context.cookies()).some(c => c.name === "__Host-pwc_session"), false);
+  assert.deepEqual(await page.evaluate(() => ({local: Object.keys(localStorage), session: Object.keys(sessionStorage)})), {local: [], session: []});
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+  await page.getByRole("button", {name: label("Clear recovery codes", "بحالی کوڈ ہٹا دیں"), exact: true}).click();
+  assert.equal(await page.locator("code").count(), 0);
+  await page.goto(`https://ngo.pwc.invalid:${fixture.port}/`);
+  await page.getByLabel("Email", {exact: true}).fill(item.recipient);
+  await page.getByLabel("Password", {exact: true}).fill(fixture.password);
+  await page.getByRole("button", {name: "Sign in", exact: true}).click();
+  await page.getByText("Second factor required. This is not an authenticated session.", {exact: true}).waitFor();
+  await page.getByLabel("Second factor code", {exact: true}).fill(totp(key));
+  await page.getByRole("button", {name: "Confirm second factor", exact: true}).click();
+  await page.getByText("Personal session checked. No active NGO authority.", {exact: true}).waitFor();
+  await page.getByRole("button", {name: "Sign out", exact: true}).click();
+  await page.getByText("Signed out on the server. Private data cleared.", {exact: true}).waitFor();
+}
 try {
+  for (const [index, item] of fixture.invitations.entries()) await invitationCeremony(item, index ? "ur" : "en");
   const foreign = await portal("foreign");
   const owner = await portal("owner");
   const ops = await portal("ops", "ops.pwc.invalid");
@@ -160,7 +203,7 @@ try {
   assert.equal(crossOrigin, 403);
   const mixed = await foreign.evaluate(async () => (await fetch("/api/v1/auth/me/", {headers: {Authorization: "Bearer synthetic-not-a-token"}})).status);
   assert.equal(mixed, 400);
-  console.log("Actual direct-TLS browser assertions passed: real password/TOTP/recovery login, cookie/storage controls, anonymous/revoked/expired/inactive, Host/Origin/forwarded-header negatives, both public portals, policy, owner/foreign, filtered lost-response reconciliation, revision/stale, duplicate conflict, CSRF denial. Synthetic certificates/identities only.");
+  console.log("Actual direct-TLS browser assertions passed: EN/UR invitation email/password/TOTP completion and once-only recovery codes, real password/TOTP/recovery login, cookie/storage controls, anonymous/revoked/expired/inactive, Host/Origin/forwarded-header negatives, both public portals, policy, owner/foreign, filtered lost-response reconciliation, revision/stale, duplicate conflict, CSRF denial. Synthetic certificates/identities only.");
 } finally {
   for (const context of contexts) await context.close();
   await browser.close();

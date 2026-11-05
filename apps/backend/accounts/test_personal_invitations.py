@@ -120,7 +120,7 @@ class PersonalInvitationTests(Fixtures, TestCase):
             "CHALLENGE_INVALID",
         )
         self.assertEqual(
-            self.confirm(invitation, token, proof), {"status": "email_verified"}
+            self.confirm(invitation, token, proof)["status"], "email_verified"
         )
         self.assertEqual(
             self.confirm(invitation, token, proof).code, "CHALLENGE_INVALID"
@@ -243,13 +243,13 @@ class PersonalInvitationRaceTests(Fixtures, TransactionTestCase):
             try:
                 barrier.wait(timeout=10)
                 result = self.confirm(invitation, token, proof)
-                return result if isinstance(result, dict) else result.code
+                return result["status"] if isinstance(result, dict) else result.code
             finally:
                 close_old_connections()
 
         with ThreadPoolExecutor(max_workers=2) as pool:
             results = list(pool.map(lambda _: attempt(), range(2)))
-        self.assertEqual(results.count({"status": "email_verified"}), 1)
+        self.assertEqual(results.count("email_verified"), 1)
         self.assertEqual(results.count("CHALLENGE_INVALID"), 1)
         self.assertEqual(
             SecurityEvent.objects.filter(
@@ -276,7 +276,7 @@ class AdditionalInvitationTests(Fixtures, TestCase):
         self.assertNotEqual(old, new)
         self.assertEqual(self.confirm(invitation, token, old).code, "CHALLENGE_INVALID")
         self.assertEqual(
-            self.confirm(invitation, token, new), {"status": "email_verified"}
+            self.confirm(invitation, token, new)["status"], "email_verified"
         )
         invitation.refresh_from_db()
         self.assertEqual(invitation.failures, 1)

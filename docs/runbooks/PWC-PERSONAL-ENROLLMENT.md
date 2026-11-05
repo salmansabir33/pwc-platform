@@ -2,12 +2,12 @@
 
 ## Current delivery boundary
 
-Bounded development update: [recorded permission and exact implemented slice](../decisions/PWC-PERSONAL-INVITATION-BOUNDED-DEVELOPMENT.md).
-Additive storage and issuance/email-proof services now exist, hard-closed outside
-tests and with the real source resolver always denying. Account/password/MFA
-completion and delivery are not implemented for invitations. The accepted 24-hour
-deadline covers **all steps including MFA**, not just token acceptance.
-
+Implementation update: [complete bounded invitation workflow](PWC-INVITATION-ENROLLMENT.md).
+Password and MFA activation now create the ordinary account and consume its
+invitation atomically; no partial User exists beforehand. All steps must finish
+within 24 hours. Live source resolution, non-test execution, SMTP composition and
+shipped browser transport remain closed. Historical public-registration/MFA
+instructions below are regression context, not the invitation activation path.
 
 **Policy update (5 November 2026): initial enrollment is invitation-only.** Public
 registration is now test-profile-only. No accepted personal-invitation issuer or

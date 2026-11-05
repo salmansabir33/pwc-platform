@@ -433,3 +433,9 @@ export {
   consumeEnrollmentLink,
 } from "./personal-enrollment";
 export type { EnrollmentSecret } from "./personal-enrollment";
+
+export {
+  InvitationEnrollmentClient,
+  consumeInvitationLink,
+} from "./invitation-enrollment";
+export type { InvitationSetup } from "./invitation-enrollment";

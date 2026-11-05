@@ -27,7 +27,7 @@ be interpreted as only the token-consumption deadline. Handling of an expired
 partially created account needs an explicit safe contract before that writer is
 implemented; no automatic account deletion, linking or privileged recovery follows.
 
-## Implemented slice (not the completed enrollment service)
+## Historical first slice (commit 9f8bdc5; extended below)
 
 `PersonalInvitation` and `personal_invitations.py` implement bounded storage,
 24-hour expiry, authorized-source seam, recipient normalization, encrypted pending
@@ -67,3 +67,15 @@ No retention period for invitation/audit metadata is invented or activated.
 
 No accountable review, real invitation, real account, mail send or deployment is
 represented by this development permission or implementation.
+
+## End-to-end implementation update
+
+The subsequent explicit “Complete PR #46 End-to-End Invitation Enrollment”
+instruction authorizes finishing the bounded workflow without live activation.
+The [current runbook](../runbooks/PWC-INVITATION-ENROLLMENT.md) replaces the
+historical unfinished-implementation inventory above. Full password/MFA account
+creation now happens only at final successful confirmation; an abandoned setup
+has no partial User to delete or activate. All steps commit within 24 hours.
+The original product and narrow development permissions are preserved. Real
+source/privacy/mail/transport/deployment and independent review remain separate;
+no agent or merge supplies those approvals.

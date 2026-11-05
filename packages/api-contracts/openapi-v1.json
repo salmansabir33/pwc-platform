@@ -699,6 +699,210 @@
           }
         ]
       },
+      "InvitationActivate": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "minLength": 1,
+            "type": "string",
+            "x-sensitive": true
+          },
+          "enrollment_control": {
+            "minLength": 1,
+            "type": "string",
+            "x-sensitive": true
+          },
+          "invitation_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "recipient": {
+            "type": "string"
+          },
+          "token": {
+            "minLength": 1,
+            "type": "string",
+            "x-sensitive": true
+          }
+        },
+        "required": [
+          "invitation_id",
+          "token",
+          "recipient",
+          "enrollment_control",
+          "code"
+        ],
+        "type": "object"
+      },
+      "InvitationComplete": {
+        "additionalProperties": false,
+        "properties": {
+          "recovery_codes": {
+            "items": {
+              "minLength": 1,
+              "type": "string",
+              "x-sensitive": true
+            },
+            "type": "array"
+          },
+          "status": {
+            "enum": [
+              "complete"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "recovery_codes"
+        ],
+        "type": "object"
+      },
+      "InvitationEmailConfirm": {
+        "additionalProperties": false,
+        "properties": {
+          "invitation_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "proof": {
+            "minLength": 1,
+            "type": "string",
+            "x-sensitive": true
+          },
+          "recipient": {
+            "type": "string"
+          },
+          "token": {
+            "minLength": 1,
+            "type": "string",
+            "x-sensitive": true
+          }
+        },
+        "required": [
+          "invitation_id",
+          "token",
+          "recipient",
+          "proof"
+        ],
+        "type": "object"
+      },
+      "InvitationEmailVerified": {
+        "additionalProperties": false,
+        "properties": {
+          "enrollment_control": {
+            "minLength": 1,
+            "type": "string",
+            "x-sensitive": true
+          },
+          "expires_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "email_verified"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "enrollment_control",
+          "expires_at"
+        ],
+        "type": "object"
+      },
+      "InvitationPassword": {
+        "additionalProperties": false,
+        "properties": {
+          "enrollment_control": {
+            "minLength": 1,
+            "type": "string",
+            "x-sensitive": true
+          },
+          "invitation_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "password": {
+            "minLength": 1,
+            "type": "string",
+            "x-sensitive": true
+          },
+          "recipient": {
+            "type": "string"
+          },
+          "token": {
+            "minLength": 1,
+            "type": "string",
+            "x-sensitive": true
+          }
+        },
+        "required": [
+          "invitation_id",
+          "token",
+          "recipient",
+          "enrollment_control",
+          "password"
+        ],
+        "type": "object"
+      },
+      "InvitationProofRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "invitation_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "recipient": {
+            "type": "string"
+          },
+          "token": {
+            "minLength": 1,
+            "type": "string",
+            "x-sensitive": true
+          }
+        },
+        "required": [
+          "invitation_id",
+          "token",
+          "recipient"
+        ],
+        "type": "object"
+      },
+      "InvitationSetup": {
+        "additionalProperties": false,
+        "properties": {
+          "expires_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "otpauth_uri": {
+            "minLength": 1,
+            "type": "string",
+            "x-sensitive": true
+          },
+          "secret": {
+            "minLength": 1,
+            "type": "string",
+            "x-sensitive": true
+          },
+          "status": {
+            "enum": [
+              "mfa_required"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "secret",
+          "otpauth_uri",
+          "expires_at"
+        ],
+        "type": "object"
+      },
       "Login": {
         "additionalProperties": false,
         "properties": {
@@ -8541,6 +8745,1110 @@
             "PWC_AUTH_MFA_ENABLED"
           ],
           "transport": "personal"
+        }
+      }
+    },
+    "/api/v1/auth/web/invitations/activate/": {
+      "post": {
+        "description": "Implemented, not a promise of deployment or authority. Default-disabled; configuration, direct HTTPS and operational acceptance remain required.",
+        "operationId": "invitationActivate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvitationActivate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvitationComplete"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              },
+              "Retry-After": {
+                "description": "Optional retry hint, never automatic command replay",
+                "schema": {
+                  "pattern": "^[0-9]+$",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Framework/proxy failures can be non-JSON; clients must fail closed without rendering raw bodies"
+          }
+        },
+        "security": [
+          {
+            "csrfHeader": []
+          }
+        ],
+        "summary": "invitationActivate",
+        "x-pwc": {
+          "authorization": "backend-only; no role/MFA escalation or NGO/finance inheritance",
+          "availability": "default-disabled",
+          "csrf": "required",
+          "direct_https": true,
+          "disabled": {
+            "code": "AUTH_UNAVAILABLE",
+            "status": 503
+          },
+          "error_precedence": "transport, method, parsing and configuration guards can precede the nominal disabled response; synthetic HTTP gate hides unsupported methods too",
+          "gates": [
+            "test-profile-only",
+            "accepted-issuer-source-required",
+            "PWC_AUTH_FLOWS_ENABLED",
+            "PWC_AUTH_SESSIONS_ENABLED",
+            "PWC_AUTH_MFA_ENABLED"
+          ],
+          "transport": "browser-invitation"
+        }
+      }
+    },
+    "/api/v1/auth/web/invitations/confirm-email/": {
+      "post": {
+        "description": "Implemented, not a promise of deployment or authority. Default-disabled; configuration, direct HTTPS and operational acceptance remain required.",
+        "operationId": "invitationConfirmEmail",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvitationEmailConfirm"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvitationEmailVerified"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              },
+              "Retry-After": {
+                "description": "Optional retry hint, never automatic command replay",
+                "schema": {
+                  "pattern": "^[0-9]+$",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Framework/proxy failures can be non-JSON; clients must fail closed without rendering raw bodies"
+          }
+        },
+        "security": [
+          {
+            "csrfHeader": []
+          }
+        ],
+        "summary": "invitationConfirmEmail",
+        "x-pwc": {
+          "authorization": "backend-only; no role/MFA escalation or NGO/finance inheritance",
+          "availability": "default-disabled",
+          "csrf": "required",
+          "direct_https": true,
+          "disabled": {
+            "code": "AUTH_UNAVAILABLE",
+            "status": 503
+          },
+          "error_precedence": "transport, method, parsing and configuration guards can precede the nominal disabled response; synthetic HTTP gate hides unsupported methods too",
+          "gates": [
+            "test-profile-only",
+            "accepted-issuer-source-required",
+            "PWC_AUTH_FLOWS_ENABLED",
+            "PWC_AUTH_SESSIONS_ENABLED",
+            "PWC_AUTH_MFA_ENABLED"
+          ],
+          "transport": "browser-invitation"
+        }
+      }
+    },
+    "/api/v1/auth/web/invitations/password/": {
+      "post": {
+        "description": "Implemented, not a promise of deployment or authority. Default-disabled; configuration, direct HTTPS and operational acceptance remain required.",
+        "operationId": "invitationPassword",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvitationPassword"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvitationSetup"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              },
+              "Retry-After": {
+                "description": "Optional retry hint, never automatic command replay",
+                "schema": {
+                  "pattern": "^[0-9]+$",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Framework/proxy failures can be non-JSON; clients must fail closed without rendering raw bodies"
+          }
+        },
+        "security": [
+          {
+            "csrfHeader": []
+          }
+        ],
+        "summary": "invitationPassword",
+        "x-pwc": {
+          "authorization": "backend-only; no role/MFA escalation or NGO/finance inheritance",
+          "availability": "default-disabled",
+          "csrf": "required",
+          "direct_https": true,
+          "disabled": {
+            "code": "AUTH_UNAVAILABLE",
+            "status": 503
+          },
+          "error_precedence": "transport, method, parsing and configuration guards can precede the nominal disabled response; synthetic HTTP gate hides unsupported methods too",
+          "gates": [
+            "test-profile-only",
+            "accepted-issuer-source-required",
+            "PWC_AUTH_FLOWS_ENABLED",
+            "PWC_AUTH_SESSIONS_ENABLED",
+            "PWC_AUTH_MFA_ENABLED"
+          ],
+          "transport": "browser-invitation"
+        }
+      }
+    },
+    "/api/v1/auth/web/invitations/request-proof/": {
+      "post": {
+        "description": "Implemented, not a promise of deployment or authority. Default-disabled; configuration, direct HTTPS and operational acceptance remain required.",
+        "operationId": "invitationRequestProof",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvitationProofRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResendAccepted"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              },
+              "Retry-After": {
+                "description": "Optional retry hint, never automatic command replay",
+                "schema": {
+                  "pattern": "^[0-9]+$",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthError"
+                }
+              }
+            },
+            "description": "Implemented response",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Framework/proxy failures can be non-JSON; clients must fail closed without rendering raw bodies"
+          }
+        },
+        "security": [
+          {
+            "csrfHeader": []
+          }
+        ],
+        "summary": "invitationRequestProof",
+        "x-pwc": {
+          "authorization": "backend-only; no role/MFA escalation or NGO/finance inheritance",
+          "availability": "default-disabled",
+          "csrf": "required",
+          "direct_https": true,
+          "disabled": {
+            "code": "AUTH_UNAVAILABLE",
+            "status": 503
+          },
+          "error_precedence": "transport, method, parsing and configuration guards can precede the nominal disabled response; synthetic HTTP gate hides unsupported methods too",
+          "gates": [
+            "test-profile-only",
+            "accepted-issuer-source-required",
+            "PWC_AUTH_FLOWS_ENABLED",
+            "PWC_AUTH_SESSIONS_ENABLED",
+            "PWC_AUTH_MFA_ENABLED"
+          ],
+          "transport": "browser-invitation"
         }
       }
     },

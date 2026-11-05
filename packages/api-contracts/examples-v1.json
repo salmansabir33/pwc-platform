@@ -1608,13 +1608,8 @@
       "status": 200
     },
     {
-      "operationId": "registryWorkspaceDraft",
-      "kind": "response",
-      "status": 200,
       "body": {
         "administration_available": false,
-        "intake_available": false,
-        "verification_available": true,
         "application": {
           "can_withdraw": true,
           "city": "Faisalabad",
@@ -1635,17 +1630,17 @@
               "state": "submitted"
             }
           ]
-        }
-      }
+        },
+        "intake_available": false,
+        "verification_available": true
+      },
+      "kind": "response",
+      "operationId": "registryWorkspaceDraft",
+      "status": 200
     },
     {
-      "operationId": "registryWorkspaceClaim",
-      "kind": "response",
-      "status": 200,
       "body": {
         "administration_available": false,
-        "intake_available": false,
-        "verification_available": true,
         "application": {
           "can_withdraw": true,
           "city": null,
@@ -1666,8 +1661,94 @@
               "state": "submitted"
             }
           ]
-        }
-      }
+        },
+        "intake_available": false,
+        "verification_available": true
+      },
+      "kind": "response",
+      "operationId": "registryWorkspaceClaim",
+      "status": 200
+    },
+    {
+      "body": {
+        "invitation_id": "00000000-0000-4000-8000-000000000001",
+        "recipient": "person@example.invalid",
+        "token": "<synthetic-only-not-a-credential>"
+      },
+      "kind": "request",
+      "operationId": "invitationRequestProof"
+    },
+    {
+      "body": {
+        "status": "accepted"
+      },
+      "kind": "response",
+      "operationId": "invitationRequestProof",
+      "status": 202
+    },
+    {
+      "body": {
+        "invitation_id": "00000000-0000-4000-8000-000000000001",
+        "proof": "<synthetic-only-not-a-credential>",
+        "recipient": "person@example.invalid",
+        "token": "<synthetic-only-not-a-credential>"
+      },
+      "kind": "request",
+      "operationId": "invitationConfirmEmail"
+    },
+    {
+      "body": {
+        "enrollment_control": "<synthetic-only-not-a-credential>",
+        "expires_at": "2099-01-01T00:00:00Z",
+        "status": "email_verified"
+      },
+      "kind": "response",
+      "operationId": "invitationConfirmEmail",
+      "status": 200
+    },
+    {
+      "body": {
+        "enrollment_control": "<synthetic-only-not-a-credential>",
+        "invitation_id": "00000000-0000-4000-8000-000000000001",
+        "password": "<synthetic-only-not-a-credential>",
+        "recipient": "person@example.invalid",
+        "token": "<synthetic-only-not-a-credential>"
+      },
+      "kind": "request",
+      "operationId": "invitationPassword"
+    },
+    {
+      "body": {
+        "expires_at": "2099-01-01T00:00:00Z",
+        "otpauth_uri": "<synthetic-only-not-a-credential>",
+        "secret": "<synthetic-only-not-a-credential>",
+        "status": "mfa_required"
+      },
+      "kind": "response",
+      "operationId": "invitationPassword",
+      "status": 200
+    },
+    {
+      "body": {
+        "code": "<synthetic-only-not-a-credential>",
+        "enrollment_control": "<synthetic-only-not-a-credential>",
+        "invitation_id": "00000000-0000-4000-8000-000000000001",
+        "recipient": "person@example.invalid",
+        "token": "<synthetic-only-not-a-credential>"
+      },
+      "kind": "request",
+      "operationId": "invitationActivate"
+    },
+    {
+      "body": {
+        "recovery_codes": [
+          "<synthetic-only-not-a-credential>"
+        ],
+        "status": "complete"
+      },
+      "kind": "response",
+      "operationId": "invitationActivate",
+      "status": 201
     }
   ],
   "contract_version": "1.0.0",

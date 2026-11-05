@@ -81,7 +81,7 @@ class InvitationPolicyTests(SessionFixtures, TestCase):
         self.assertEqual(report["policy"], "invitation_only")
         self.assertFalse(report["ready_for_real_enrollment"])
         self.assertEqual(
-            report["invitation_issue_and_accept"], "bounded_issue_email_proof_only_no_account_writer"
+            report["invitation_issue_and_accept"], "implemented_test_profile_only_live_source_unavailable"
         )
 
     def test_read_only_preflight_returns_failure_and_exact_dependencies(self):
