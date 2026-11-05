@@ -160,3 +160,10 @@ fixed GET and no private/authentication proxy. It reads the existing four public
 fields, not NGO authority or additional publication data. The owner-history screen's
 private gateway stays default-disabled. See
 [04C implementation setup and validation](PWC-04C-PERMITTED-APPLICATION-IMPLEMENTATION.md).
+
+## Personal enrollment consumer update (2026-11-04)
+
+See [Separate personal enrollment](PWC-PERSONAL-ENROLLMENT.md) for the new
+injected-only React registration/reset/first-MFA consumer and individual
+Founder/AbuBakr instructions. Existing backend, synthetic delivery and default-off
+live browser gates remain unchanged; this is not real-user enrollment acceptance.

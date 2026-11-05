@@ -277,3 +277,10 @@ existing test and its assertions; the direct deep-JSON regression likewise uses
 HTTPS so it continues to exercise the parser, not just the transport gate.
 See `../reviews/PWC-03A-AUTHENTICATION-INTEGRATION-REVIEW.md` for current combined
 acceptance; earlier counts in this runbook remain historical slice evidence.
+
+## Personal enrollment consumer update (2026-11-04)
+
+See [Separate personal enrollment](PWC-PERSONAL-ENROLLMENT.md) for the new
+injected-only React registration/reset/first-MFA consumer and individual
+Founder/AbuBakr instructions. Existing backend, synthetic delivery and default-off
+live browser gates remain unchanged; this is not real-user enrollment acceptance.

@@ -427,3 +427,9 @@ export type {
 
 export { PersonalWorkspaceSession } from "./personal-session";
 export { OperationsPolicyClient } from "./operations-policy";
+
+export {
+  PersonalEnrollmentClient,
+  consumeEnrollmentLink,
+} from "./personal-enrollment";
+export type { EnrollmentSecret } from "./personal-enrollment";

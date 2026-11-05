@@ -12,6 +12,7 @@ import type {
   SyntheticTransport,
 } from "./index";
 import { HistoricalWorkspaceClient } from "./workspace";
+import { PersonalEnrollmentClient } from "./personal-enrollment";
 import { WebAuthenticationClient } from "./web-authentication";
 
 type SignIn =
@@ -22,6 +23,7 @@ export class PersonalWorkspaceSession {
   readonly state: ScopeState;
   readonly api: ApiClient;
   readonly history: HistoricalWorkspaceClient;
+  readonly enrollment: PersonalEnrollmentClient;
   private readonly authentication: WebAuthenticationClient;
   private csrf: string | null = null;
   private pending = false;
@@ -35,6 +37,7 @@ export class PersonalWorkspaceSession {
       this.state,
       transport ? { mode: "synthetic-test", transport } : { mode: "disabled" },
     );
+    this.enrollment = new PersonalEnrollmentClient(this.state, transport);
     this.authentication = new WebAuthenticationClient(this.state, transport);
     this.history = new HistoricalWorkspaceClient(
       this.state,

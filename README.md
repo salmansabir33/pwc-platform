@@ -22,6 +22,10 @@ The [04A runbook](docs/runbooks/PWC-04A-NGO-REGISTRY-AND-CLAIMS.md) describes de
 
 The two portals use a shared npm workspace, design primitives and network-disabled API infrastructure. See [the web foundation runbook](docs/runbooks/PWC-W1-WEB-FOUNDATION.md) for Node installation, independent dev/build commands, tests and W2/W3 security gates. No production deployment or live login is enabled.
 
+## Separate personal enrollment
+
+The [personal enrollment runbook](docs/runbooks/PWC-PERSONAL-ENROLLMENT.md) describes the implemented, default-disabled React enrollment/MFA journey, existing Flutter/Django reuse, separate Founder/AbuBakr instructions and exact real-delivery/transport blockers. Personal accounts confer no institutional authority.
+
 ## Environment and security tooling
 
 See [PWC-02F environment/tooling](docs/runbooks/PWC-02F-ENVIRONMENT-AND-SECURITY-TOOLING.md) for strict configuration profiles, Python hash locks, CI/security/quality commands and deployment gates. Staging/production readiness profiles keep synthetic/auth features disabled; configuration validation is not rollout approval.

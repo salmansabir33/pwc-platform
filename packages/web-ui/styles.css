@@ -802,3 +802,12 @@ main > a {
   margin-inline-start: 0;
   margin-block-end: var(--space-4);
 }
+
+/* Ephemeral personal-factor secrets must remain readable at narrow RTL widths. */
+.personal-secret {
+  display: inline-block;
+  max-inline-size: 100%;
+  direction: ltr;
+  unicode-bidi: isolate;
+  overflow-wrap: anywhere;
+}
