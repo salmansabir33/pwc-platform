@@ -38,16 +38,30 @@ def rows(directory):
 
 def main(directory):
     evidence = rows(directory)
-    # GitHub retains only ten notices per step. Group by image so every public
-    # HIGH/CRITICAL package row survives the annotations API, including unfixed.
-    for image in IMAGES:
-        group = sorted(
-            {json.dumps(r, sort_keys=True) for r in evidence if r["image"] == image}
+    # GitHub limits notices per step and truncates individual messages. Compact
+    # tuples preserve all unique image/CVE/package/version/fix/severity rows.
+    compact = sorted(
+        {
+            json.dumps([r["image"], *(r[k] for k in FIELDS)], separators=(",", ":"))
+            for r in evidence
+        }
+    )
+    chunks, chunk = [], []
+    for row in compact:
+        if len("[" + ",".join([*chunk, row]) + "]") > 3500:
+            chunks.append(chunk)
+            chunk = []
+        chunk.append(row)
+    if chunk:
+        chunks.append(chunk)
+    if len(chunks) > 10:
+        raise ValueError("Use retained JSON: annotation capacity exceeded")
+    for chunk in chunks:
+        print(
+            "::notice title=Package advisory::["
+            + ",".join(chunk).replace("%", "%25")
+            + "]"
         )
-        payload = "[" + ",".join(group) + "]"
-        if len(payload) > 60000:
-            raise ValueError("Advisory annotation too large; use retained JSON")
-        print("::notice title=Package advisory::" + payload.replace("%", "%25"))
     return evidence
 
 
