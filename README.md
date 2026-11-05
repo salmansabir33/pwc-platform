@@ -26,6 +26,8 @@ The two portals use a shared npm workspace, design primitives and network-disabl
 
 The [personal enrollment runbook](docs/runbooks/PWC-PERSONAL-ENROLLMENT.md) describes the implemented, default-disabled React enrollment/MFA journey, existing Flutter/Django reuse, separate Founder/AbuBakr instructions and exact real-delivery/transport blockers. Personal accounts confer no institutional authority.
 
+See [controlled enrollment and staging readiness](docs/runbooks/PWC-CONTROLLED-ENROLLMENT-READINESS.md) for invitation-only policy, the unwired TLS SMTP adapter, exact acceptance blockers and offline server-coexistence checks. No real invitation or deployment is enabled.
+
 ## Environment and security tooling
 
 See [PWC-02F environment/tooling](docs/runbooks/PWC-02F-ENVIRONMENT-AND-SECURITY-TOOLING.md) for strict configuration profiles, Python hash locks, CI/security/quality commands and deployment gates. Staging/production readiness profiles keep synthetic/auth features disabled; configuration validation is not rollout approval.

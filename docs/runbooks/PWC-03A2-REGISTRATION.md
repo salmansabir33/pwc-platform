@@ -284,3 +284,11 @@ See [Separate personal enrollment](PWC-PERSONAL-ENROLLMENT.md) for the new
 injected-only React registration/reset/first-MFA consumer and individual
 Founder/AbuBakr instructions. Existing backend, synthetic delivery and default-off
 live browser gates remain unchanged; this is not real-user enrollment acceptance.
+
+## Invitation-only rollout boundary (5 November 2026)
+
+Current initial policy is invitation-only. Public registration request/resend/
+confirmation now require the explicit `test` profile; development/staging/
+production cannot use these as a bootstrap even with flow flags set. Existing
+synthetic proof tests remain valid, not invitation acceptance. See
+[PWC-CONTROLLED-ENROLLMENT-READINESS.md](PWC-CONTROLLED-ENROLLMENT-READINESS.md).

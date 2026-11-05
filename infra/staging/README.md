@@ -303,3 +303,19 @@ volume and retains only sanitized A evidence and vulnerability reports. Runtime
 image scanning uses a resolved scanner digest and records it. Existing backend,
 frontend/direct-TLS browser and Flutter regressions remain independent gates.
 A failed or unexecuted CI check is not acceptance. Never upload traces/HARs/cookies.
+
+## 5 November 2026 security/enrollment preparation update
+
+All five final runtime images now upgrade only Debian apt/libapt for
+CVE-2026-109518 and assert Bookworm >=2.6.2 / Trixie >=3.0.4. Gateway is a derived
+patched image built by the same Compose wrapper. Original scanner/gate remains
+unchanged; all unfixed findings are retained, not declared safe. See the
+[actual advisory matrix](../../docs/reviews/PWC-IMAGE-REMEDIATION-20261105.md).
+
+[Controlled enrollment readiness](../../docs/runbooks/PWC-CONTROLLED-ENROLLMENT-READINESS.md)
+adds a read-only offline host-inventory check. An occupied 443 or existing project
+fails without stopping or overwriting another service. Existing PKI, separate
+maintenance credentials, private DB, restore/rollback and disabled runtime flags
+remain mandatory. The prepared SMTP adapter is not wired to this stack; SMTP
+credentials/worker egress and authentication table privileges are not installed.
+No real-user or Contabo activation follows from image-scan success.

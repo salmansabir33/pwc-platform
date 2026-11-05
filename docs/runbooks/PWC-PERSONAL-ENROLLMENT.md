@@ -2,6 +2,13 @@
 
 ## Current delivery boundary
 
+**Policy update (5 November 2026): initial enrollment is invitation-only.** Public
+registration is now test-profile-only. No accepted personal-invitation issuer or
+recipient/state/privacy contract exists, so issuance/acceptance stays unavailable.
+See [controlled enrollment readiness](PWC-CONTROLLED-ENROLLMENT-READINESS.md) for
+exact gates, the unwired SMTP adapter and staging preparation. Registration form
+instructions describe synthetic regression only, not a public real-user path.
+
 The React `/account` and `/account/confirm` screens now implement registration,
 password reset, explicit proof/password confirmation and first-factor MFA setup.
 They reuse the existing personal login, MFA challenge and session/history panel.
@@ -39,13 +46,14 @@ To reach real enrollment requires these exact implementation/acceptance items:
 These are personal-account delivery/transport gates, **not** a demand to complete
 Founder/independence verification before an ordinary personal account can exist.
 
-## Founder — when the approved enrollment environment is available
+## Founder — future invitation recipient (not yet available)
 
-1. Use your own inbox and your own browser/device at the reviewed HTTPS origin.
-   Open Personal enrollment (`/account`), choose registration and request email
-   verification. Generic acceptance does not establish that a new account exists.
-2. Open your own received link. Opening only scrubs/loads its fragment; it never
-   confirms an account or logs you in. Choose your own unique password and confirm
+1. Use your own inbox and browser/device. Wait for a recipient-bound invitation
+   from an accepted issuer after the invitation contract is implemented/reviewed.
+   Do not use public registration, an operator-supplied database proof or a shared
+   invitation. The invitation recipient journey is not yet executable.
+2. In the future accepted recipient flow, open only your own received link.
+   Opening must not confirm an account or log you in. Choose your own unique password and confirm
    explicitly. Never send the password/proof to AbuBakr, an operator or an agent.
 3. Sign in explicitly with the existing personal login form; then follow the MFA
    procedure below. Check your personal sessions and sign out on shared devices.
@@ -53,10 +61,10 @@ Founder/independence verification before an ordinary personal account can exist.
    appointment-binding process. Do not put private identity evidence in Git/chat.
    The account has no Founder, staff, superuser, issuer, NGO or private-data grant.
 
-## AbuBakr — separately, when the same environment is available
+## AbuBakr — separately, future invitation recipient
 
-1. Use **your own** inbox, browser/device, unique password and separate enrollment
-   request. Do not reuse the Founder's flow, credentials or authenticator seed.
+1. Use **your own** inbox, browser/device, unique password and separate invitation
+   from the accepted issuer. Do not reuse the Founder's flow, credentials or seed.
 2. Confirm only your own received proof and personally chosen password; sign in
    explicitly and enroll your own MFA as below. Check only your own sessions.
 3. Your ordinary personal account is not independent-verifier activation. The
@@ -91,7 +99,9 @@ not a distinct-human check and never confers institutional authority.
 
 - Django `registration.py`/views, `delivery.py`, `mfa.py`/views, personal intents,
   step-up, CSRF/session/epoch handling, recovery holds and security audit are reused
-  unchanged. No backend runtime handler, provider setting or migration changes.
+  for credential/session/recovery semantics. A non-test public-registration guard
+  now enforces invitation-only rollout; no invitation writer, provider wiring or
+  migration is added.
 - `PersonalEnrollmentClient` is explicitly injected, fixed-path, no-store,
   fresh-CSRF-per-POST and generation-fenced. It does not widen the foundational
   API allowlist. Proof links are scrubbed before parsing; no query-string proof,

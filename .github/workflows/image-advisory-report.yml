@@ -6,10 +6,6 @@ on:
         description: Staging workflow run containing retained synthetic scanner reports
         required: true
         type: string
-  push:
-    paths:
-      - .github/workflows/image-advisory-report.yml
-      - infra/staging/advisory_report.py
 permissions:
   contents: read
   actions: read

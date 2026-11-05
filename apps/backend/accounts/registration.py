@@ -19,6 +19,7 @@ from django.utils import timezone
 from django.views.decorators.debug import sensitive_variables
 
 from .email_identity import normalize_email
+from .enrollment_readiness import require_registration_policy
 from .flow_security import (
     FlowProblem,
     abuse_digest,
@@ -181,6 +182,7 @@ def queue_proof(challenge, proof):
 
 @sensitive_variables()
 def request_flow(purpose, email, ip):
+    require_registration_policy(purpose)
     configured()
     if purpose not in LIFETIMES:
         return FlowProblem("VALIDATION_ERROR")
@@ -300,6 +302,7 @@ def usable(challenge, purpose, proof, now):
 
 @sensitive_variables()
 def resend_flow(purpose, flow_id, flow_control, ip):
+    require_registration_policy(purpose)
     configured()
     problem = spend(ip, "resend")
     if problem:
@@ -360,6 +363,7 @@ def resend_flow(purpose, flow_id, flow_control, ip):
 
 @sensitive_variables()
 def confirm_flow(purpose, flow_id, proof, password, ip):
+    require_registration_policy(purpose)
     configured()
     flow_id = flow_uuid(flow_id)
     problem = spend(ip, "confirm", flow=flow_id or "invalid")
