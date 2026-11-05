@@ -12,18 +12,23 @@ FIELDS = ("VulnerabilityID", "PkgName", "InstalledVersion", "FixedVersion", "Sev
 def rows(directory):
     result = []
     for index, image in enumerate(IMAGES, 1):
-        value = json.loads((Path(directory) / f"image-{index}.json").read_text())
-        if value.get("SchemaVersion") != 2 or not isinstance(value.get("Results"), list):
+        paths = list(Path(directory).rglob(f"image-{index}.json"))
+        if len(paths) != 1:
+            raise ValueError("Missing or duplicate advisory report")
+        value = json.loads(paths[0].read_text())
+        if value.get("SchemaVersion") != 2 or not isinstance(
+            value.get("Results"), list
+        ):
             raise ValueError("Invalid advisory report")
         for target in value["Results"]:
-            for item in target.get("Vulnerabilities", []):
+            for item in target.get("Vulnerabilities") or []:
                 if item.get("Severity") not in {"HIGH", "CRITICAL"}:
                     continue
-                row = {key: item.get(key, "") for key in FIELDS}
+                row = {key: item.get(key) or "" for key in FIELDS}
                 if any(
                     not isinstance(v, str)
                     or len(v) > 300
-                    or re.search(r"[^a-zA-Z0-9_.:+,~ /()><=*-]", v)
+                    or re.search(r"[^\x20-\x7e]", v)
                     for v in row.values()
                 ):
                     raise ValueError("Invalid public advisory field")
@@ -36,7 +41,7 @@ def main(directory):
     # One annotation per unique package/version/CVE; repeated binary packages may
     # be identical. Do not truncate or discard unfixed findings from the JSON.
     for row in sorted({json.dumps(r, sort_keys=True) for r in evidence}):
-        print("::notice title=Package advisory::" + row)
+        print("::notice title=Package advisory::" + row.replace("%", "%25"))
     return evidence
 
 
