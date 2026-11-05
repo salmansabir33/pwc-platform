@@ -4,6 +4,8 @@ on:
     branches: [main, "arena/**"]
     paths:
       - .github/workflows/flutter-environment.yml
+      # Staging releases must verify the unchanged native client too.
+      - infra/staging/**
       - scripts/flutter_environment_probe.py
       - scripts/mobile_*.py
       - packages/api-contracts/**
@@ -14,6 +16,8 @@ on:
     branches: [main]
     paths:
       - .github/workflows/flutter-environment.yml
+      # Staging releases must verify the unchanged native client too.
+      - infra/staging/**
       - scripts/flutter_environment_probe.py
       - scripts/mobile_*.py
       - packages/api-contracts/**
