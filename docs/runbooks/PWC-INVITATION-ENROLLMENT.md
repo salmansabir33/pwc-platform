@@ -144,3 +144,60 @@ and recipients through secure channels, approved notices/retention/provider/work
 parameters, and secret references—not credential values in chat. CI Compose/TLS/
 restore is disposable infrastructure evidence, not Contabo access or acceptance.
 Do not deploy, send invitations or create real accounts from this runbook.
+
+## Initial operating disposition — after merged PR46
+
+No new product acceptance is inferred by the operational-preparation task.
+Invitation-only, the intended Founder/AbuBakr recipients, ordinary permissions,
+personal email/password/TOTP, single use, and the **entire 24-hour ceremony** are
+accepted. Initial issuance is reserved to an explicitly authorized PWC officer;
+that rule does not identify or authenticate an actual officer. PR46/CI/merge are
+not officer appointment, legal/privacy approval or independent verification.
+
+**Exact issuer today: none executable.** `authorize_source` always denies. The
+staging `pwc_app` DB role has no invitation/account writer rights. Neither an
+operator, Founder title, repository owner nor staff/superuser can fill this gap.
+No new bootstrap credential, root installation command or privileged endpoint is
+proposed here. There is no honest deployment-only switch that enables enrollment.
+
+The first real issuance must follow this existing trust procedure, not a new
+identity system:
+
+1. The accountable PWC appointing/source owner supplies the *actual* officer's
+   person/account binding, charter, source/version and authenticated evidence via
+   the approved evidence channel. If no accepted source/credential ceremony yet
+   exists for that officer, the issuer dependency remains blocked; do not create
+   an officer account or grant as a circular enrollment workaround.
+2. The existing trusted-source/IAM owner independently validates that source and
+   its narrow personal-invitation action, exact canonical recipient bounds,
+   assurance, expiry and revocation. Issue42 remains the routing point for its
+   institutional source dependencies; no wholesale governance re-review is needed.
+3. The separately accepted source adapter authenticates the issuer using existing
+   live session/MFA primitives and transaction-held source/revocation checks.
+   Recipient UUIDs/names/GitHub accounts are not authority. The initial recipient
+   addresses are supplied securely and are not invented or committed here.
+4. Recipient email possession, password and TOTP complete only ordinary personal
+   enrollment. Independently confirm actual distinct-human bindings and conflicts
+   before Founder/verifier appointments; the Founder cannot independently verify
+   himself. Separate logins alone do not establish independence.
+5. Record the actual confirmer/charter, source/version, decision and evidence
+   reference. An agent cannot supply a signature or substitute a fixture for it.
+
+The indispensable external confirmation is therefore the actual scoped issuer
+appointment/source and its independent validation, not another vote on the
+already accepted invitation policy. Live source/DB/transport composition still
+requires reviewed implementation after that disposition, even if the VPS is ready.
+
+### Enrollment privacy/security worksheet (reuse ADR-0001 O1–O4)
+
+| Item | Existing minimum / technical boundary | Exact unresolved disposition before real data |
+| --- | --- | --- |
+| Personal data | Canonical email; password hash only; encrypted TOTP seed; hashed recovery codes; opaque invitation/source/user IDs, lifecycle times, keyed abuse counters and minimal typed security events. No ID scan, phone, NGO roster or legal-identity proof added to personal enrollment. | Actual age/eligibility rule and any guardian requirements; whether further fields are justified. Do not infer an adult-only rule. |
+| Notice and basis | Invitations hold an address *before* the person accepts; enrollment never opts a person into membership, marketing or disclosure. | Accountable privacy owner identifies appropriate processing basis for pre-invitation and account/security processing, notice text/version and acknowledgement/withdrawal effects. Product permission is not consent or a legal finding. |
+| Retention/deletion | Setup maximum five minutes; email proof maximum thirty minutes; invitation maximum twenty-four hours; expired/terminal encrypted material erased by the worker. No abandoned User exists. Typed audit is append-only. | Exact metadata/contact/IP/security/audit retention periods **and start events**, holds, access, deletion process and backup expiry. No statutory period or indefinite real-user retention is approved by the current implementation. |
+| Delivery | Separate recipient-bound proof; mandatory verified TLS/STARTTLS adapter, bounded retries/leases, no raw provider-error logging, no live SMTP composition. | Provider/region/terms, authenticated sender/domain, deliverability, budget, shared-NAT limits and worker/alert owner. |
+| Audit protection | No raw password/proof/seed/provider payload; opaque correlation; no public invitation list or audit reader; restricted staging DB principal; encrypted backup required. | Named audit readers, lawful purpose, retention/hold/erasure and privacy-safe incident access. |
+| MFA/recovery | Personally held authenticator, one-time recovery codes, explicit login after completion; recovery never grants institutional authority or clears holds by nomination. No shared seeds/passwords or operator proof retrieval. | Secure recovery-code custody guidance and actual support/incident owner; no alternate lost-contact/factor recovery channel is authorized. |
+
+Until these enumerated dispositions exist, use disposable non-personal fixtures
+only. Do not gather real addresses/evidence/credentials in chat or the repository.

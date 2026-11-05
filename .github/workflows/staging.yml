@@ -19,6 +19,12 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install --require-hashes -r requirements-ci.lock
+      - name: Install host-only backup encryption tool for disposable rehearsal
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install --yes --no-install-recommends age
+          age --version
+          command -v age-keygen
       - name: Offline deployment and host-observer tests
         run: |
           python -m unittest discover -s tests/deployment -v
