@@ -225,11 +225,22 @@ check **both** dump/encrypt/upload exits. Do not run with shell tracing.
 set -euo pipefail
 umask 077
 # AGE_RECIPIENT is the owner's approved public encryption recipient, not supplied here.
-infra/staging/stack.sh "$STAGING_RENDER/compose.json" backup |
-  age -r "$AGE_RECIPIENT" > "$ENCRYPTED_BACKUP"
+# ENCRYPTED_BACKUP must be a new absolute filename in an existing caller-owned
+# 0700 directory outside this checkout. Review/install the age CLI on the host.
+python3 -m infra.staging.backup \
+  --manifest "$STAGING_RENDER/compose.json" \
+  --recipient "$AGE_RECIPIENT" --output "$ENCRYPTED_BACKUP" --timeout 300
 # Upload encrypted file with approved tooling; validate hash, off-host durability,
 # retention/access controls and recovery-key availability separately.
 ```
+
+The wrapper checks both producer/encryptor exits, imposes a bounded timeout,
+keeps plaintext exclusively in a pipe, fsyncs encrypted output and atomically
+publishes without replacing an existing backup. Failures remove the temporary
+ciphertext. A publication/directory-fsync failure reports uncertainty and retains
+the encrypted copy; inspect it rather than retrying over it. Hash/size are the
+only returned evidence. This does not prove off-host durability or authorize use.
+Only native public age recipients are supported; private identities stay offline.
 
 Use `pg_dump` custom/no-owner/no-ACL with owner via verify-full TLS. Back up prior
 to migrations, scheduled to the owner's RPO and before patch/rotation. Separately
@@ -319,3 +330,46 @@ maintenance credentials, private DB, restore/rollback and disabled runtime flags
 remain mandatory. The prepared SMTP adapter is not wired to this stack; SMTP
 credentials/worker egress and authentication table privileges are not installed.
 No real-user or Contabo activation follows from image-scan success.
+
+## Separate Contabo authorization decision — exact sequence
+
+The Cloud VPS 8 label is not evidence of the actual OS, free capacity, listener
+inventory or isolation. Do not contact or change the VPS/DNS during preparation.
+The owner must supply the existing checklist's two exact domains, host/project/
+port inventory, reviewed base-image digests, private secret/PKI paths and backup
+owner/destination/RPO/RTO. If 443 is occupied, stop planning this topology: do not
+stop another project's proxy or attach PWC to it without a separately reviewed
+routing/isolation design. A fresh approval for **disabled-service staging only**
+is distinct from approval for actual credential transport and enrollment.
+
+Commands below are for the later explicitly authorized operator, from the exact
+reviewed checkout. Variables are owner-supplied absolute paths, not credentials.
+The example JSON intentionally cannot pass until the owner completes it.
+
+```bash
+set -euo pipefail
+umask 077
+# Offline checks only; inventory is an owner's recorded snapshot, not host proof.
+python3 -m infra.staging.readiness --config "$STAGING_CONFIG" --inventory "$HOST_INVENTORY"
+python3 -m infra.staging.deploy --config "$STAGING_CONFIG" --check
+# After explicit host/deployment authorization only:
+python3 -m infra.staging.deploy --config "$STAGING_CONFIG" --output "$STAGING_RENDER"
+infra/staging/stack.sh "$STAGING_RENDER/compose.json" build
+infra/staging/stack.sh "$STAGING_RENDER/compose.json" up
+infra/staging/stack.sh "$STAGING_RENDER/compose.json" status
+python3 -m infra.staging.backup --manifest "$STAGING_RENDER/compose.json" \
+  --recipient "$AGE_RECIPIENT" --output "$ENCRYPTED_BACKUP" --timeout 300
+```
+
+Before traffic: inspect independent real-host TLS/Host/SNI/Origin and ingress
+negatives, secure headers/cookies/CSRF boundaries, DB isolation, backup hash and
+off-host durability. Rehearse the existing **fresh isolated restore** sequence
+and compatible-release rollback before accepting RPO/RTO. Never restore onto the
+current live database or reverse migrations blindly. Do not publish private
+configs, backups, PKI, raw logs or personal evidence as CI/PR artifacts.
+
+The deployment permission must identify host, release/config/image hashes,
+project/port ownership, maintenance/rollback owner and risk disposition for all
+remaining HIGH/CRITICAL image findings. Passing the existing fixable-only scan
+is not zero vulnerabilities or risk acceptance. Enrollment requires the separate
+issuer/privacy/mail/transport dispositions in the existing invitation runbook.

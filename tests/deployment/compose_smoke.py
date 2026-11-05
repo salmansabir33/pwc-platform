@@ -18,6 +18,9 @@ import traceback
 
 from staging_fixtures import certificates, config, deploy, resign_app, ROOT
 
+sys.path.insert(0, str(ROOT))
+from infra.staging.backup import encrypted_backup  # noqa: E402
+
 BASES = {
     "python": "python:3.12-slim-bookworm",
     "node": "node:22.22.3-bookworm-slim",
@@ -316,8 +319,20 @@ with connection.cursor() as c:
             run(*command, "up", "-d", "--wait", "--wait-timeout", "180")
             checks.append("untrusted-wrong-name-upstream-fails-closed-and-recovers")
             # Snapshot/fresh restore round-trip including retained grants via migrate.
-            backup = run(stack, str(manifest), "backup")
+            identity = root / "backup-identity.txt"
+            run("age-keygen", "-o", str(identity))
+            recipient = run("age-keygen", "-y", str(identity)).decode().strip()
+            encrypted = root / "synthetic-backup.age"
+            receipt = encrypted_backup(
+                [stack, str(manifest), "backup"], recipient, encrypted
+            )
+            assert receipt["encrypted_bytes"] == encrypted.stat().st_size
+            assert not encrypted.read_bytes().startswith(b"PGDMP")
+            backup = run(
+                "age", "--decrypt", "--identity", str(identity), str(encrypted)
+            )
             assert backup.startswith(b"PGDMP")
+            checks.append("atomic-age-encrypted-backup-round-trip")
             run(*command, "stop", "gateway", "ngo", "ops", "app")
             # Prove fresh restore without destroying volume or existing records.
             run(
