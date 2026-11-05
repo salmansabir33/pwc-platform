@@ -1,6 +1,7 @@
 import { useLocale } from "@pwc/web-i18n";
 import { Banner, PersonalSessionPanel } from "@pwc/web-ui";
 import type { PersonalWorkspaceSession } from "@pwc/web-api";
+import { PersonalEnrollment } from "./PersonalEnrollment";
 import { WorkspaceHistory } from "./WorkspaceHistory";
 
 export function PersonalWorkspace({
@@ -21,6 +22,9 @@ export function PersonalWorkspace({
           "ذاتی نشست سے تنظیم کا سیاق یا انتظامی اختیار نہیں ملتا۔ ذاتی ویب رابطہ منظوری تک بند ہے۔",
         )}
       </Banner>
+      <PersonalEnrollment
+        {...(session ? { client: session.enrollment } : {})}
+      />
       <PersonalSessionPanel {...(session ? { session } : {})}>
         {(view) => (
           <WorkspaceHistory

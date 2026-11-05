@@ -50,6 +50,7 @@ export function App() {
                 P4 · Membership demonstration / رکنیت کا فرضی نمونہ
               </Link>
               <Link to="/administration">NGO administration (unavailable)</Link>
+              <Link to="/account">Personal enrollment / ذاتی اندراج</Link>
               <Link to="/application-history">My application history</Link>
               <Link to="/ngo-registry">NGO registry · public read-only</Link>
               <Link to="/verification">
@@ -73,6 +74,8 @@ export function App() {
         <Route path="/administration" element={<AdministrationBoundary />} />
         <Route path="/verification" element={<Verification />} />
         <Route path="/registry" element={<Registry />} />
+        <Route path="/account" element={<PersonalWorkspace />} />
+        <Route path="/account/confirm" element={<PersonalWorkspace />} />
         <Route path="/application-history" element={<PersonalWorkspace />} />
         <Route
           path="/ngo-registry"
