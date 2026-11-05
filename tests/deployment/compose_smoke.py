@@ -60,7 +60,7 @@ def main():
         stack = str(ROOT / "infra/staging/stack.sh")
         built = [
             value["project"] + "-" + name + ":" + value["release"]
-            for name in ("app", "ngo", "ops", "db")
+            for name in ("app", "ngo", "ops", "db", "gateway")
         ]
         try:
             print(
@@ -68,6 +68,37 @@ def main():
                 flush=True,
             )
             run(stack, str(manifest), "build")
+            # Public package versions only: prove patched apt is installed in
+            # every actual runtime image, not just a changed Dockerfile.
+            versions = {}
+            for image in built:
+                packages = run(
+                    "docker",
+                    "run",
+                    "--rm",
+                    "--entrypoint",
+                    "dpkg-query",
+                    image,
+                    "-W",
+                    "-f=${binary:Package}=${Version};",
+                    "apt",
+                    "libapt-pkg*",
+                ).decode("ascii")
+                if len(packages) > 512 or any(
+                    ord(c) < 32 or ord(c) > 126 for c in packages
+                ):
+                    raise ValueError("Invalid public package evidence")
+                role = image.split(":")[0].removeprefix(value["project"] + "-")
+                versions[role] = packages
+                print(
+                    "::notice title=Patched apt packages::" + role + ": " + packages,
+                    flush=True,
+                )
+            (ROOT / ".cache").mkdir(exist_ok=True)
+            (ROOT / ".cache/security-package-versions.json").write_text(
+                json.dumps(versions, indent=2)
+            )
+
             print(
                 "Starting private PostgreSQL, migrations, mTLS application and portals",
                 flush=True,
@@ -362,9 +393,7 @@ with connection.cursor() as c:
             os.chown(cache, ROOT.stat().st_uid, ROOT.stat().st_gid)
             (cache / "staging-smoke.json").write_text(json.dumps(report, indent=2))
             # Scanner consumes only image names; no deployment configuration/artifact.
-            (cache / "staging-images.txt").write_text(
-                "\n".join(built + [value["images"]["haproxy"]]) + "\n"
-            )
+            (cache / "staging-images.txt").write_text("\n".join(built) + "\n")
             print(
                 "Synthetic Compose passed: "
                 + str(len(checks))

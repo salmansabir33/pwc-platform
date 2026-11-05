@@ -429,7 +429,12 @@ def compose(value, destination):
         },
         "gateway": {
             **common,
-            "image": image["haproxy"],
+            "image": f"{project}-gateway:{release}",
+            "build": {
+                "context": str(ROOT),
+                "dockerfile": "infra/staging/gateway.Dockerfile",
+                "args": {"HAPROXY_IMAGE": image["haproxy"]},
+            },
             "user": "10001:10001",
             "command": ["haproxy", "-W", "-db", "-f", "/etc/pwc/haproxy.cfg"],
             "ports": ["443:8443"],

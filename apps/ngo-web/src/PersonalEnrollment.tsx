@@ -232,10 +232,16 @@ export function PersonalEnrollment({
       </Banner>
       <Card
         title={t(
-          "Create or recover a personal account",
-          "ذاتی اکاؤنٹ بنائیں یا بازیاب کریں",
+          "Invitation-only enrollment or account recovery",
+          "دعوت کے ذریعے اندراج یا اکاؤنٹ کی بازیابی",
         )}
       >
+        <p>
+          {t(
+            "Initial enrollment is invitation-only. Issuing and accepting invitations is unavailable until the issuer and privacy contracts are accepted. Public registration is test-only.",
+            "ابتدائی اندراج صرف دعوت سے ہے۔ دعوت دینے والے اور رازداری کے معاہدوں کی منظوری تک دعوت دینا اور قبول کرنا دستیاب نہیں۔ عام اندراج صرف آزمائش کے لیے ہے۔",
+          )}
+        </p>
         {!client && (
           <p>
             {t(

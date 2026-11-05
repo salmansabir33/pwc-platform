@@ -17,6 +17,8 @@ COPY tsconfig.json ./
 ARG PORTAL
 RUN test "$PORTAL" = ngo-web -o "$PORTAL" = pwc-ops && npm run build --workspace=@pwc/$PORTAL
 FROM ${NGINX_IMAGE}
+COPY infra/staging/security-upgrade.sh /tmp/pwc-security-upgrade.sh
+RUN sh /tmp/pwc-security-upgrade.sh && rm /tmp/pwc-security-upgrade.sh
 ARG PORTAL
 COPY --from=build /src/apps/${PORTAL}/dist /srv/portal
 USER 10001:10001

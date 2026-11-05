@@ -44,6 +44,9 @@ jobs:
           done < .cache/staging-images.txt
           python infra/staging/scan_summary.py .cache/trivy || result=1
           exit "$result"
+      - name: Public package advisory details (original scan gate unchanged)
+        if: always()
+        run: python infra/staging/advisory_report.py .cache/trivy .cache/public-image-advisories.json
       - name: Retain sanitized A-only evidence (never keys/config/logs/backups)
         if: always()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
@@ -51,6 +54,8 @@ jobs:
           name: staging-foundation-synthetic
           path: |
             .cache/staging-smoke.json
+            .cache/security-package-versions.json
+            .cache/public-image-advisories.json
             .cache/trivy/*.json
             .cache/trivy/scanner-digest.txt
           retention-days: 7
