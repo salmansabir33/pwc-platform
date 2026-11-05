@@ -29,10 +29,10 @@ async function portal(name, host = "ngo.pwc.invalid") {
   await signIn(page, name);
   return page;
 }
-function totp(secret, offset = 1) {
+function totp(secret, stepOffset = 1) {
   const bits = [...secret].map(c => "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567".indexOf(c).toString(2).padStart(5, "0")).join("");
   const key = Buffer.from((bits.match(/.{8}/g) || []).map(b => parseInt(b, 2)));
-  const counter = Buffer.alloc(8); counter.writeBigUInt64BE(BigInt(Math.floor(Date.now() / 30000) + offset));
+  const counter = Buffer.alloc(8); counter.writeBigUInt64BE(BigInt(Math.floor(Date.now() / 30000) + stepOffset));
   const hash = createHmac("sha1", key).update(counter).digest(); const offset = hash[19] & 15;
   return String((hash.readUInt32BE(offset) & 0x7fffffff) % 1000000).padStart(6, "0");
 }
