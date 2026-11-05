@@ -38,10 +38,16 @@ def rows(directory):
 
 def main(directory):
     evidence = rows(directory)
-    # One annotation per unique package/version/CVE; repeated binary packages may
-    # be identical. Do not truncate or discard unfixed findings from the JSON.
-    for row in sorted({json.dumps(r, sort_keys=True) for r in evidence}):
-        print("::notice title=Package advisory::" + row.replace("%", "%25"))
+    # GitHub retains only ten notices per step. Group by image so every public
+    # HIGH/CRITICAL package row survives the annotations API, including unfixed.
+    for image in IMAGES:
+        group = sorted(
+            {json.dumps(r, sort_keys=True) for r in evidence if r["image"] == image}
+        )
+        payload = "[" + ",".join(group) + "]"
+        if len(payload) > 60000:
+            raise ValueError("Advisory annotation too large; use retained JSON")
+        print("::notice title=Package advisory::" + payload.replace("%", "%25"))
     return evidence
 
 
