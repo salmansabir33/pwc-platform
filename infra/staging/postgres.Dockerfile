@@ -1,5 +1,7 @@
 ARG POSTGRES_IMAGE
 FROM ${POSTGRES_IMAGE}
+COPY infra/staging/security-upgrade.sh /tmp/pwc-security-upgrade.sh
+RUN sh /tmp/pwc-security-upgrade.sh && rm /tmp/pwc-security-upgrade.sh
 # The official image's downloaded Go gosu binary is not needed: use Debian's
 # maintained util-linux setpriv for the non-interactive UID/GID drop instead.
 # Remove unused vulnerable executable from the actual runtime, not scan evidence.

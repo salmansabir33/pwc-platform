@@ -60,7 +60,7 @@ def main():
         stack = str(ROOT / "infra/staging/stack.sh")
         built = [
             value["project"] + "-" + name + ":" + value["release"]
-            for name in ("app", "ngo", "ops", "db")
+            for name in ("app", "ngo", "ops", "db", "gateway")
         ]
         try:
             print(
@@ -362,9 +362,7 @@ with connection.cursor() as c:
             os.chown(cache, ROOT.stat().st_uid, ROOT.stat().st_gid)
             (cache / "staging-smoke.json").write_text(json.dumps(report, indent=2))
             # Scanner consumes only image names; no deployment configuration/artifact.
-            (cache / "staging-images.txt").write_text(
-                "\n".join(built + [value["images"]["haproxy"]]) + "\n"
-            )
+            (cache / "staging-images.txt").write_text("\n".join(built) + "\n")
             print(
                 "Synthetic Compose passed: "
                 + str(len(checks))
