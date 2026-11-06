@@ -74,7 +74,7 @@ jobs:
       - name: Complete backend contract-instrumented regression suite
         run: |
           set -o pipefail
-          coverage run --source=accounts,access,organizations,config,contracts manage.py test --testrunner contracts.testing.ContractRunner --verbosity 2 2>&1 | tee "$RUNNER_TEMP/pwc-backend-tests.txt"
+          coverage run --source=accounts,access,organizations,opportunities,config,contracts manage.py test --testrunner contracts.testing.ContractRunner --verbosity 2 2>&1 | tee "$RUNNER_TEMP/pwc-backend-tests.txt"
       - name: Redacted backend count evidence
         if: always()
         run: |

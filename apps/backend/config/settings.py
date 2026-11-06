@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "accounts",
     "organizations",
+    "opportunities",
     "access",
 ]
 MIDDLEWARE = [

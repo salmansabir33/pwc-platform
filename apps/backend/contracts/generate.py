@@ -35,7 +35,7 @@ def routes(patterns=None, prefix=""):
 def source_lock():
     paths = [ROOT / "apps/backend/config/urls.py", ROOT / "apps/backend/config/settings.py",
              ROOT / "apps/backend/config/environment.py"]
-    for folder in ("accounts", "access", "organizations"):
+    for folder in ("accounts", "access", "organizations", "opportunities"):
         paths.extend(p for p in (ROOT / "apps/backend" / folder).glob("*.py")
                      if not p.name.startswith("test") and p.name not in ("admin.py", "apps.py"))
     return {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(paths)}
