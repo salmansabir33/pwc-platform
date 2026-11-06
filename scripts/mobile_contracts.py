@@ -22,12 +22,14 @@ registry_ops = []
 verification_ops = []
 directory_ops = []
 for path, methods in spec['paths'].items():
-    directory = path == '/api/v1/directory/'
+    directory = path in ('/api/v1/directory/', '/api/v1/organizations/{pk}/')
     registry = path.startswith('/api/v1/registry/')
     verification = path.startswith('/api/v1/verification/')
     if not directory and not registry and not verification and (not path.startswith('/api/v1/auth/') or '/web/' in path or path.endswith('/csrf/')):
         continue
     for method, op in methods.items():
+        if directory and method != 'get':
+            continue
         def ref(content):
             return content.get('application/json', {}).get('schema', {}).get('$ref', '').split('/')[-1]
         request = ref(op.get('requestBody', {}).get('content', {}))

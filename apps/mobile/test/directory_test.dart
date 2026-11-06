@@ -15,26 +15,67 @@ const row = {
   'city': 'City',
   'classification': 'registered',
 };
+final second = {
+  ...row,
+  'id': '00000000-0000-4000-8000-000000000002',
+  'name': 'Second NGO',
+};
+RegistrySearchPage page(List<Map<String, Object?>> rows, [String? cursor]) =>
+    RegistrySearchPage.fromJson({'results': rows, 'next_cursor': cursor});
+http.Response jsonReply(Object body, [int status = 200]) => http.Response(
+  jsonEncode(body),
+  status,
+  headers: {'content-type': 'application/json; charset=utf-8'},
+);
 
 class FakeDirectory implements DirectoryGateway {
-  int calls = 0;
-  Completer<RegistrySearchPage>? pending;
+  final calls = <Map<String, String?>>[];
+  final pending = <Completer<RegistrySearchPage>>[];
+  int cancellations = 0;
+  int details = 0;
   bool fail = false;
+  bool failMore = false;
+  bool empty = false;
+  bool paginate = false;
+  bool missing = false;
+  Completer<PublicOrganization>? pendingDetail;
   @override
-  void cancel() {}
+  void cancel() {
+    cancellations++;
+  }
+
+  @override
+  Future<PublicOrganization> detail(String id) async {
+    details++;
+    if (pendingDetail != null) return pendingDetail!.future;
+    if (missing) throw const ApiFailure('DIRECTORY_UNAVAILABLE', 404);
+    if (fail) throw StateError('private backend note');
+    return PublicOrganization.fromJson({
+      ...row,
+      'id': id,
+      'name': 'Fresh public name',
+    });
+  }
+
   @override
   Future<RegistrySearchPage> search(
     String q,
     String city, {
+    String classification = '',
     String? cursor,
   }) async {
-    calls++;
-    if (fail) throw StateError('private server note');
-    if (pending != null) return pending!.future;
-    return RegistrySearchPage.fromJson({
-      'results': [row],
-      'next_cursor': null,
+    calls.add({
+      'q': q,
+      'city': city,
+      'classification': classification,
+      'cursor': cursor,
     });
+    if (pending.isNotEmpty) return pending.removeAt(0).future;
+    if (fail || (cursor != null && failMore))
+      throw StateError('private backend note');
+    if (empty) return page([]);
+    if (cursor != null) return page([row, second]);
+    return page([row], paginate ? 'cursor-one' : null);
   }
 }
 
@@ -45,41 +86,78 @@ Widget screen({DirectoryGateway? gateway, bool urdu = false}) => MaterialApp(
     ),
   ),
 );
+Future<void> tap(WidgetTester tester, String label) async {
+  final finder = find.text(label);
+  await tester.ensureVisible(finder);
+  await tester.tap(finder);
+  await tester.pumpAndSettle();
+}
+
 void main() {
   test(
-    'native public reader is exact HTTPS GET with no personal credentials',
+    'public search uses exact generated GET and only supported filters',
     () async {
-      final client = MockClient((request) async {
-        expect(
-          request.url.toString(),
-          'https://api.example.invalid/api/v1/directory/?q=Synthetic&city=City',
-        );
-        expect(request.method, 'GET');
-        expect(request.headers.containsKey('authorization'), isFalse);
-        expect(request.headers.containsKey('cookie'), isFalse);
-        expect(request.followRedirects, isFalse);
-        return http.Response(
-          jsonEncode({
-            'results': [row],
-            'next_cursor': null,
-          }),
-          200,
-          headers: {'content-type': 'application/json'},
-        );
-      });
       final api = NativeDirectoryGateway(
         'https://api.example.invalid',
-        factory: () => client,
+        factory: () => MockClient((request) async {
+          expect(
+            request.url.toString(),
+            'https://api.example.invalid/api/v1/directory/?q=Synthetic&city=City&classification=registered&cursor=next',
+          );
+          expect(request.method, 'GET');
+          expect(request.headers.containsKey('authorization'), isFalse);
+          expect(request.headers.containsKey('cookie'), isFalse);
+          expect(request.followRedirects, isFalse);
+          return jsonReply({
+            'results': [row],
+            'next_cursor': null,
+          });
+        }),
       );
       expect(
-        (await api.search('Synthetic', 'City')).results.single.name,
+        (await api.search(
+          'Synthetic',
+          'City',
+          classification: 'registered',
+          cursor: 'next',
+        )).results.single.name,
         'Synthetic NGO',
       );
       api.dispose();
     },
   );
   test(
-    'reject HTTP, credentials, paths, redirects and noncanonical response',
+    'detail uses exact public UUID route and rejects mismatched identity or private fields',
+    () async {
+      for (final body in [
+        row,
+        {...row, 'email': 'private'},
+        {...row, 'id': second['id']},
+      ]) {
+        final api = NativeDirectoryGateway(
+          'https://api.example.invalid',
+          factory: () => MockClient((request) async {
+            expect(
+              request.url.toString(),
+              'https://api.example.invalid/api/v1/organizations/${row['id']}/',
+            );
+            expect(request.headers.containsKey('authorization'), isFalse);
+            expect(request.headers.containsKey('cookie'), isFalse);
+            expect(request.followRedirects, isFalse);
+            return jsonReply(body);
+          }),
+        );
+        if (identical(body, row)) {
+          expect((await api.detail(row['id']!)).name, 'Synthetic NGO');
+        } else {
+          await expectLater(api.detail(row['id']!), throwsA(isA<ApiFailure>()));
+        }
+        api.dispose();
+      }
+    },
+  );
+  test(
+    'invalid origins and unsupported filters/IDs never request arbitrary resources',
     () async {
       for (final origin in [
         'http://api.example.invalid',
@@ -93,23 +171,49 @@ void main() {
           throwsA(isA<ApiFailure>()),
         );
       }
+      final api = NativeDirectoryGateway(
+        'https://api.example.invalid',
+        factory: () => throw StateError('Must not request'),
+      );
+      await expectLater(
+        api.search('', '', classification: 'private'),
+        throwsA(isA<ApiFailure>()),
+      );
+      await expectLater(api.detail('../private'), throwsA(isA<ApiFailure>()));
+      api.dispose();
+    },
+  );
+  test(
+    'invalid content, redirects, oversized bodies and duplicate rows fail closed',
+    () async {
       for (final response in [
         http.Response('private', 302),
+        http.Response('private', 404),
         http.Response(
           '<html>private</html>',
           200,
           headers: {'content-type': 'text/html'},
         ),
         http.Response(
-          jsonEncode({
-            'results': [
-              {...row, 'email': 'private'},
-            ],
-            'next_cursor': null,
-          }),
+          '{}',
           200,
-          headers: {'content-type': 'application/json'},
+          headers: {'content-type': 'application/json-invalid'},
         ),
+        jsonReply({
+          'results': [
+            {...row, 'evidence': 'private'},
+          ],
+          'next_cursor': null,
+        }),
+        jsonReply({
+          'results': [row, row],
+          'next_cursor': null,
+        }),
+        jsonReply({
+          'results': [row],
+          'next_cursor': 123,
+        }),
+        jsonReply('x' * 131073),
       ]) {
         final api = NativeDirectoryGateway(
           'https://api.example.invalid',
@@ -120,51 +224,199 @@ void main() {
       }
     },
   );
-  testWidgets(
-    'default unavailable and opt-in public result; no private authority',
-    (tester) async {
-      await tester.pumpWidget(screen());
-      expect(
-        tester.widget<FilledButton>(find.byType(FilledButton)).onPressed,
-        isNull,
+  test(
+    'cancellation rejects late responses without canceling newer results',
+    () async {
+      final old = Completer<http.Response>();
+      int count = 0;
+      final api = NativeDirectoryGateway(
+        'https://api.example.invalid',
+        factory: () => MockClient((_) async {
+          if (count++ == 0) return old.future;
+          return jsonReply({
+            'results': [second],
+            'next_cursor': null,
+          });
+        }),
       );
-      final api = FakeDirectory();
-      await tester.pumpWidget(screen(gateway: api));
-      await tester.tap(find.text('Search registry'));
-      await tester.pumpAndSettle();
-      expect(find.text('Synthetic NGO'), findsOneWidget);
-      expect(api.calls, 1);
-      expect(find.textContaining('Not membership'), findsOneWidget);
-    },
-  );
-  testWidgets(
-    'errors minimized, results clear on edits and late locale changes',
-    (tester) async {
-      final api = FakeDirectory()..fail = true;
-      await tester.pumpWidget(screen(gateway: api));
-      await tester.tap(find.text('Search registry'));
-      await tester.pumpAndSettle();
-      expect(find.textContaining('private server note'), findsNothing);
-      expect(find.textContaining('Registry unavailable'), findsOneWidget);
-      api.fail = false;
-      await tester.tap(find.text('Search registry'));
-      await tester.pumpAndSettle();
-      expect(find.text('Synthetic NGO'), findsOneWidget);
-      await tester.enterText(find.byType(TextField).first, 'other');
-      await tester.pump();
-      expect(find.text('Synthetic NGO'), findsNothing);
-      api.pending = Completer<RegistrySearchPage>();
-      await tester.tap(find.text('Search registry'));
-      await tester.pump();
-      await tester.pumpWidget(screen(gateway: api, urdu: true));
-      api.pending!.complete(
-        RegistrySearchPage.fromJson({
+      final first = api.search('old', '');
+      final rejected = expectLater(first, throwsA(isA<ApiFailure>()));
+      await Future<void>.delayed(Duration.zero);
+      api.cancel();
+      expect((await api.search('new', '')).results.single.name, 'Second NGO');
+      old.complete(
+        jsonReply({
           'results': [row],
           'next_cursor': null,
         }),
       );
-      await tester.pumpAndSettle();
-      expect(find.text('Synthetic NGO'), findsNothing);
+      await rejected;
+      api.dispose();
     },
   );
+
+  testWidgets('opt-in auto-load and default disabled transport', (
+    tester,
+  ) async {
+    await tester.pumpWidget(screen());
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<FilledButton>(find.byType(FilledButton)).onPressed,
+      isNull,
+    );
+    expect(find.textContaining('transport unavailable'), findsOneWidget);
+    final api = FakeDirectory();
+    await tester.pumpWidget(screen(gateway: api));
+    await tester.pumpAndSettle();
+    expect(find.text('Synthetic NGO'), findsOneWidget);
+    expect(api.calls.length, 1);
+    expect(find.textContaining('Not membership'), findsOneWidget);
+  });
+  testWidgets(
+    'search and classification reset stale rows and use actual filters',
+    (tester) async {
+      final api = FakeDirectory();
+      await tester.pumpWidget(screen(gateway: api));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField).first, 'Welfare');
+      await tester.enterText(find.byType(TextField).last, 'Faisalabad');
+      await tester.pump();
+      expect(find.text('Synthetic NGO'), findsNothing);
+      await tester.ensureVisible(find.byType(DropdownButtonFormField<String>));
+      await tester.tap(find.byType(DropdownButtonFormField<String>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Unregistered').last);
+      await tester.pumpAndSettle();
+      await tap(tester, 'Search registry');
+      expect(api.calls.last, {
+        'q': 'Welfare',
+        'city': 'Faisalabad',
+        'classification': 'unregistered',
+        'cursor': null,
+      });
+    },
+  );
+  testWidgets(
+    'load more appends deduplicated rows and retry preserves cursor and first page',
+    (tester) async {
+      final api = FakeDirectory()
+        ..paginate = true
+        ..failMore = true;
+      await tester.pumpWidget(screen(gateway: api));
+      await tester.pumpAndSettle();
+      await tap(tester, 'Load more');
+      expect(find.text('Synthetic NGO'), findsOneWidget);
+      expect(find.textContaining('private backend note'), findsNothing);
+      expect(api.calls.last['cursor'], 'cursor-one');
+      api.failMore = false;
+      await tap(tester, 'Retry');
+      expect(api.calls.last['cursor'], 'cursor-one');
+      expect(find.text('Synthetic NGO'), findsOneWidget);
+      expect(find.text('Second NGO'), findsOneWidget);
+      expect(find.text('Load more'), findsNothing);
+    },
+  );
+  testWidgets(
+    'empty and no-match states distinguish loading from an empty response',
+    (tester) async {
+      final api = FakeDirectory()..empty = true;
+      await tester.pumpWidget(screen(gateway: api));
+      await tester.pumpAndSettle();
+      expect(find.text('No public organizations available.'), findsOneWidget);
+      await tester.enterText(find.byType(TextField).first, 'Missing');
+      await tap(tester, 'Search registry');
+      expect(find.text('No public organizations match.'), findsOneWidget);
+    },
+  );
+  testWidgets('network failure retries and never renders raw diagnostic', (
+    tester,
+  ) async {
+    final api = FakeDirectory()..fail = true;
+    await tester.pumpWidget(screen(gateway: api));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Registry unavailable'), findsOneWidget);
+    expect(find.textContaining('private backend note'), findsNothing);
+    api.fail = false;
+    await tap(tester, 'Retry');
+    expect(find.text('Synthetic NGO'), findsOneWidget);
+  });
+  testWidgets('rapid searches isolate late responses', (tester) async {
+    final old = Completer<RegistrySearchPage>();
+    final current = Completer<RegistrySearchPage>();
+    final api = FakeDirectory()..pending.addAll([old, current]);
+    await tester.pumpWidget(screen(gateway: api));
+    await tester.pump();
+    expect(find.byType(LinearProgressIndicator), findsOneWidget);
+    await tester.enterText(find.byType(TextField).first, 'new');
+    await tester.tap(find.text('Search registry'));
+    await tester.pump();
+    old.complete(page([row]));
+    await tester.pump();
+    expect(find.text('Synthetic NGO'), findsNothing);
+    current.complete(page([second]));
+    await tester.pumpAndSettle();
+    expect(find.text('Second NGO'), findsOneWidget);
+  });
+  testWidgets(
+    'profile fetches fresh public fields, returns and refreshes the list',
+    (tester) async {
+      final api = FakeDirectory();
+      await tester.pumpWidget(screen(gateway: api));
+      await tester.pumpAndSettle();
+      await tap(tester, 'Synthetic NGO');
+      expect(find.text('Public NGO profile'), findsOneWidget);
+      expect(find.text('Fresh public name'), findsOneWidget);
+      expect(api.details, 1);
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+      expect(api.calls.length, 2);
+      expect(find.text('Synthetic NGO'), findsOneWidget);
+    },
+  );
+  testWidgets('withdrawn detail never falls back to list data', (tester) async {
+    final api = FakeDirectory()..missing = true;
+    await tester.pumpWidget(screen(gateway: api));
+    await tester.pumpAndSettle();
+    await tap(tester, 'Synthetic NGO');
+    expect(find.text('Public profile no longer available.'), findsOneWidget);
+    expect(find.text('Synthetic NGO'), findsNothing);
+    api.missing = false;
+    await tap(tester, 'Retry');
+    expect(find.text('Fresh public name'), findsOneWidget);
+  });
+  testWidgets('late detail completion after back cannot replace directory', (
+    tester,
+  ) async {
+    final api = FakeDirectory()
+      ..pendingDetail = Completer<PublicOrganization>();
+    await tester.pumpWidget(screen(gateway: api));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Synthetic NGO'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    api.pendingDetail!.complete(
+      PublicOrganization.fromJson({...row, 'name': 'Late profile'}),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Late profile'), findsNothing);
+    expect(find.text('Synthetic NGO'), findsOneWidget);
+  });
+  testWidgets('locale reset isolates old search and uses Urdu presentation', (
+    tester,
+  ) async {
+    final old = Completer<RegistrySearchPage>();
+    final api = FakeDirectory()
+      ..pending.add(old)
+      ..empty = true;
+    await tester.pumpWidget(screen(gateway: api));
+    await tester.pump();
+    await tester.pumpWidget(screen(gateway: api, urdu: true));
+    old.complete(page([row]));
+    await tester.pumpAndSettle();
+    expect(find.text('Synthetic NGO'), findsNothing);
+    expect(find.text('کوئی عوامی تنظیم دستیاب نہیں۔'), findsOneWidget);
+    expect(find.text('رجسٹریشن کی قسم'), findsOneWidget);
+  });
 }

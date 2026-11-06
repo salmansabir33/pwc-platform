@@ -121,3 +121,36 @@ class DirectoryTests(TestCase):
         self.assertEqual(response.status_code, 503)
         self.assertNotIn(b"private database name", response.content)
         self.assertNotIn("results", response.json())
+
+    def test_profile_rechecks_publication_after_search_and_never_returns_old_fields(
+        self,
+    ):
+        result = self.client.get(ROOT).json()["results"][0]
+        path = f"/api/v1/organizations/{result['id']}/"
+        self.assertEqual(self.client.get(path).json(), result)
+        for state in ("restricted", "deactivated", "provisional", "pending"):
+            with self.subTest(state=state):
+                OrganizationWorkspace.objects.filter(organization=self.visible).update(
+                    state=state
+                )
+                detail = self.client.get(path)
+                self.assertEqual(detail.status_code, 404)
+                self.assertNotIn(self.visible.name.encode(), detail.content)
+                self.assertEqual(self.client.get(ROOT).json()["results"], [])
+
+    def test_classification_cursor_cannot_be_reused_for_another_filter(self):
+        for index in range(21):
+            obj = Organization.objects.create(
+                name=f"Public {index}", city="City", classification="unregistered"
+            )
+            OrganizationWorkspace.objects.create(organization=obj, state="verified")
+        page = self.client.get(ROOT, {"classification": "unregistered"}).json()
+        self.assertTrue(page["next_cursor"])
+        self.assertTrue(
+            all(row["classification"] == "unregistered" for row in page["results"])
+        )
+        response = self.client.get(
+            ROOT, {"classification": "registered", "cursor": page["next_cursor"]}
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertNotIn("results", response.json())
