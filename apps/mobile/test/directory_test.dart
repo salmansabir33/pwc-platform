@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:pwc_mobile/core/directory_api.dart';
@@ -80,6 +81,9 @@ class FakeDirectory implements DirectoryGateway {
 }
 
 Widget screen({DirectoryGateway? gateway, bool urdu = false}) => MaterialApp(
+  locale: Locale(urdu ? 'ur' : 'en'),
+  supportedLocales: const [Locale('en'), Locale('ur')],
+  localizationsDelegates: GlobalMaterialLocalizations.delegates,
   home: Scaffold(
     body: SingleChildScrollView(
       child: DirectoryScreen(gateway: gateway, urdu: urdu),
@@ -418,5 +422,58 @@ void main() {
     expect(find.text('Synthetic NGO'), findsNothing);
     expect(find.text('کوئی عوامی تنظیم دستیاب نہیں۔'), findsOneWidget);
     expect(find.text('رجسٹریشن کی قسم'), findsOneWidget);
+  });
+  testWidgets(
+    'profile network failure is retryable and hides diagnostic text',
+    (tester) async {
+      final api = FakeDirectory();
+      await tester.pumpWidget(screen(gateway: api));
+      await tester.pumpAndSettle();
+      api.fail = true;
+      await tap(tester, 'Synthetic NGO');
+      expect(find.textContaining('Profile unavailable'), findsOneWidget);
+      expect(find.textContaining('private backend note'), findsNothing);
+      expect(find.text('Synthetic NGO'), findsNothing);
+      api.fail = false;
+      await tap(tester, 'Retry');
+      expect(find.text('Fresh public name'), findsOneWidget);
+    },
+  );
+
+  testWidgets('gateway replacement discards old pending results', (
+    tester,
+  ) async {
+    final old = Completer<RegistrySearchPage>();
+    final previous = FakeDirectory()..pending.add(old);
+    final current = FakeDirectory()..empty = true;
+    await tester.pumpWidget(screen(gateway: previous));
+    await tester.pump();
+    await tester.pumpWidget(screen(gateway: current));
+    old.complete(page([row]));
+    await tester.pumpAndSettle();
+    expect(find.text('Synthetic NGO'), findsNothing);
+    expect(find.text('No public organizations available.'), findsOneWidget);
+    expect(previous.cancellations, greaterThan(0));
+  });
+
+  testWidgets('Urdu directory and profile fit narrow RTL layouts', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(320, 800);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    final api = FakeDirectory();
+    await tester.pumpWidget(screen(gateway: api, urdu: true));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(
+      Directionality.of(tester.element(find.text('فہرست تلاش کریں'))),
+      TextDirection.rtl,
+    );
+    await tap(tester, 'Synthetic NGO');
+    expect(find.text('تنظیم کا عوامی تعارف'), findsOneWidget);
+    expect(find.text('رجسٹرڈ'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }
