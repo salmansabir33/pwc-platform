@@ -8,17 +8,19 @@ abstract interface class DirectoryGateway {
   Future<RegistrySearchPage> search(
     String query,
     String city, {
+    String classification = '',
     String? cursor,
   });
+  Future<PublicOrganization> detail(String id);
   void cancel();
 }
 
-// Separate opt-in public-only reader. Never accepts access credentials, tenant IDs,
-// arbitrary paths, cookies, redirects or writes. PersonalApi allowlist unchanged.
+// Public-only opt-in. No personal credentials, arbitrary paths, redirects or writes.
 class NativeDirectoryGateway implements DirectoryGateway {
   final Uri origin;
   final http.Client Function() _factory;
-  http.Client? _client;
+  final _clients = <http.Client>{};
+  int _generation = 0;
   NativeDirectoryGateway(String base, {http.Client Function()? factory})
     : origin = Uri.tryParse(base) ?? (throw const ApiFailure('CONFIGURATION')),
       _factory = factory ?? http.Client.new {
@@ -33,92 +35,134 @@ class NativeDirectoryGateway implements DirectoryGateway {
   }
   @override
   void cancel() {
-    _client?.close();
-    _client = null;
+    _generation++;
+    for (final client in _clients.toList()) {
+      client.close();
+    }
+    _clients.clear();
   }
 
-  void dispose() {
-    _client?.close();
-    _client = null;
-  }
+  void dispose() => cancel();
 
   @override
   Future<RegistrySearchPage> search(
     String query,
     String city, {
+    String classification = '',
     String? cursor,
   }) async {
     if (query.length > 250 ||
         city.length > 250 ||
+        !['', 'registered', 'unregistered'].contains(classification) ||
         (cursor?.length ?? 0) > 1024) {
       throw const ApiFailure('VALIDATION_ERROR');
     }
+    final data = await _get('publicDirectory', '/api/v1/directory/', {
+      'q': query,
+      'city': city,
+      if (classification.isNotEmpty) 'classification': classification,
+      if (cursor != null) 'cursor': cursor,
+    });
     try {
-      return await _search(
-        query,
-        city,
-        cursor,
-      ).timeout(const Duration(seconds: 20));
-    } on TimeoutException {
-      cancel();
-      throw const ApiFailure('NETWORK_UNAVAILABLE');
-    } on ApiFailure {
-      rethrow;
+      final page = RegistrySearchPage.fromJson(data);
+      final ids = page.results.map((row) => row.id).toSet();
+      if (ids.length != page.results.length) {
+        throw const ApiFailure('INVALID_RESPONSE');
+      }
+      return page;
     } catch (_) {
-      throw const ApiFailure('NETWORK_UNAVAILABLE');
+      throw const ApiFailure('INVALID_RESPONSE');
     }
   }
 
-  Future<RegistrySearchPage> _search(
-    String query,
-    String city,
-    String? cursor,
-  ) async {
+  @override
+  Future<PublicOrganization> detail(String id) async {
+    if (!RegExp(
+      r'^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$',
+    ).hasMatch(id)) {
+      throw const ApiFailure('VALIDATION_ERROR');
+    }
+    final canonical = id.toLowerCase();
+    final data = await _get(
+      'publicOrganization',
+      '/api/v1/organizations/{pk}/',
+      {},
+      id: canonical,
+    );
+    try {
+      final row = PublicOrganization.fromJson(data);
+      if (row.id != canonical) throw const ApiFailure('INVALID_RESPONSE');
+      return row;
+    } catch (_) {
+      throw const ApiFailure('INVALID_RESPONSE');
+    }
+  }
+
+  Future<Json> _get(
+    String operationId,
+    String template,
+    Map<String, String> query, {
+    String? id,
+  }) async {
     final operation = publicDirectoryOperations
         .cast<Map<String, dynamic>>()
-        .single;
-    if (operation['id'] != 'publicDirectory' ||
-        operation['method'] != 'GET' ||
-        operation['path'] != '/api/v1/directory/' ||
+        .singleWhere((op) => op['id'] == operationId);
+    if (operation['method'] != 'GET' ||
+        operation['path'] != template ||
         operation['authenticated'] != false) {
       throw const ApiFailure('CONFIGURATION');
     }
     final request = http.Request(
       'GET',
       origin
-          .resolve('/api/v1/directory/')
-          .replace(
-            queryParameters: {
-              'q': query,
-              'city': city,
-              if (cursor != null) 'cursor': cursor,
-            },
-          ),
+          .resolve(id == null ? template : template.replaceFirst('{pk}', id))
+          .replace(queryParameters: query.isEmpty ? null : query),
     );
     request.followRedirects = false;
     request.headers['Accept'] = 'application/json';
-    final response = await (_client ??= _factory()).send(request);
-    final bytes = <int>[];
-    await for (final chunk in response.stream) {
-      if (bytes.length + chunk.length > 131072) {
+    final client = _factory();
+    final generation = _generation;
+    _clients.add(client);
+    Future<Json> read() async {
+      final response = await client.send(request);
+      final bytes = <int>[];
+      await for (final chunk in response.stream) {
+        if (bytes.length + chunk.length > 131072) {
+          throw const ApiFailure('INVALID_RESPONSE');
+        }
+        bytes.addAll(chunk);
+      }
+      if (generation != _generation) {
+        throw const ApiFailure('DIRECTORY_UNAVAILABLE');
+      }
+      if (response.statusCode != 200) {
+        throw ApiFailure('DIRECTORY_UNAVAILABLE', response.statusCode);
+      }
+      if ((response.headers['content-type'] ?? '')
+              .toLowerCase()
+              .split(';')
+              .first
+              .trim() !=
+          'application/json') {
         throw const ApiFailure('INVALID_RESPONSE');
       }
-      bytes.addAll(chunk);
+      try {
+        return Map<String, Object?>.from(jsonDecode(utf8.decode(bytes)) as Map);
+      } catch (_) {
+        throw const ApiFailure('INVALID_RESPONSE');
+      }
     }
-    if (response.statusCode != 200) {
-      throw ApiFailure('DIRECTORY_UNAVAILABLE', response.statusCode);
-    }
-    if (!(response.headers['content-type'] ?? '').toLowerCase().startsWith(
-      'application/json',
-    )) {
-      throw const ApiFailure('INVALID_RESPONSE');
-    }
+
     try {
-      return RegistrySearchPage.fromJson(
-        Map<String, Object?>.from(jsonDecode(utf8.decode(bytes)) as Map),
-      );
+      return await read().timeout(const Duration(seconds: 20));
+    } on ApiFailure {
+      rethrow;
     } catch (_) {
-      throw const ApiFailure('INVALID_RESPONSE');
+      throw const ApiFailure('NETWORK_UNAVAILABLE');
+    } finally {
+      // A canceled request's timeout must never close a newer request's client.
+      _clients.remove(client);
+      client.close();
     }
   }
 }

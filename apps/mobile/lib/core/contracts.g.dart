@@ -27,7 +27,7 @@ final List<dynamic> verificationOperations =
         as List<dynamic>;
 final List<dynamic> publicDirectoryOperations =
     jsonDecode(
-          r'''[{"id":"publicDirectory","path":"/api/v1/directory/","method":"GET","request":"","responses":{"200":"RegistrySearchPage"},"authenticated":false}]''',
+          r'''[{"id":"publicDirectory","path":"/api/v1/directory/","method":"GET","request":"","responses":{"200":"RegistrySearchPage"},"authenticated":false},{"id":"publicOrganization","path":"/api/v1/organizations/{pk}/","method":"GET","request":"","responses":{"200":"PublicOrganization"},"authenticated":false}]''',
         )
         as List<dynamic>;
 
