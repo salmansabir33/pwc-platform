@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from django.urls import include, path
+from opportunities.views import OpportunityListView, OpportunityDetailView
 from organizations.directory import DirectoryView
 from organizations.views import OrganizationDetailView, OrganizationListView
 
@@ -7,6 +8,8 @@ def health(request):
     return JsonResponse({"status": "ok", "service": "pwc-api"})
 
 urlpatterns = [
+    path("api/v1/opportunities/", OpportunityListView.as_view()),
+    path("api/v1/opportunities/<str:pk>/", OpportunityDetailView.as_view()),
     path("api/v1/directory/", DirectoryView.as_view()),
     path("api/v1/controlled-onboarding/", include("organizations.controlled_urls")),
     path("api/v1/verification/", include("organizations.verification_urls")),

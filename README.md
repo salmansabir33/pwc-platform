@@ -111,3 +111,12 @@ credentialed browser/native history transport remains gated. Flutter adds a
 separate opt-in exact HTTPS public reader and permission-aware history screen.
 No officer provisioning, real review/invitation/admin grant or new intake is enabled.
 See [setup, working workflows, exact validation and remaining gates](docs/runbooks/PWC-04C-PERMITTED-APPLICATION-IMPLEMENTATION.md).
+
+## Public opportunities backend foundation (PWC-08C-A)
+
+The [08C-A runbook](docs/runbooks/PWC-08C-A-PUBLIC-OPPORTUNITIES.md) describes the
+new PostgreSQL opportunity model and bounded list/detail/search contracts for
+Jobs, Internships and Project discovery. Anonymous reads are test-exercisable
+only; live publication/reads remain unavailable pending exact authority and
+privacy acceptance. No publishing API, privileged grant, production fixtures,
+applications, saved items or private project workspace is provided.

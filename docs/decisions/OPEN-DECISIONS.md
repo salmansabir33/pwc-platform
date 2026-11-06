@@ -72,3 +72,15 @@ Product choices are closed unless explicitly changed. Non-product P4-01 charters
 P4-03/trusted authority/04C, P4-06, category disclosure and P4-09 remain open as
 specified there. No live reader/writer or privileged migration is authorized by
 product acceptance alone. Issue #40 remains open; no security-gate waiver.
+
+## PWC-08C-A — public opportunities candidate, 6 November 2026
+
+The [backend foundation](../runbooks/PWC-08C-A-PUBLIC-OPPORTUNITIES.md) implements
+only safe storage and test-exercisable anonymous public reads. The assignment's
+JOB/INTERNSHIP/PROJECT, single-NGO ownership, forward lifecycle and minimal public
+projection are candidate choices, not inferred formal acceptance. Exact remaining
+publication authority/issuer, field/consent/NGO-visibility, content-retention and
+writer/security decisions are listed in that runbook's bounded acceptance queue.
+Live reads and publication remain unavailable; no privileged writer/grant, private
+project domain or NGO member access is introduced. Existing C1 acceptance is
+unchanged and is not a publishing mandate.
