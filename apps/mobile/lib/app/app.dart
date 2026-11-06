@@ -47,8 +47,9 @@ class _PwcAppState extends ConsumerState<PwcApp> with WidgetsBindingObserver {
           '/ngo-registry',
           '/favorites',
         };
-        if (path == '/account')
+        if (path == '/account') {
           return session.authenticated ? '/personal' : '/identity';
+        }
         if (!session.authenticated && !publicPaths.contains(path)) {
           return signedOut ? '/' : '/identity';
         }
