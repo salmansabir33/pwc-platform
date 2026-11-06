@@ -26,6 +26,7 @@ class PwcApp extends ConsumerStatefulWidget {
 
 class _PwcAppState extends ConsumerState<PwcApp> with WidgetsBindingObserver {
   late final GoRouter _router;
+  late final VoidCallback _sessionChanged;
   bool _hidden = false;
   @override
   void initState() {
@@ -33,25 +34,22 @@ class _PwcAppState extends ConsumerState<PwcApp> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     final session = ref.read(sessionProvider);
     var previouslyAuthenticated = session.authenticated;
+    const publicPaths = {
+      '/',
+      '/identity',
+      '/account',
+      '/ngo-registry',
+      '/favorites',
+    };
     _router = GoRouter(
       initialLocation: '/',
-      refreshListenable: session,
       redirect: (context, state) {
         final path = state.uri.path;
-        final signedOut = previouslyAuthenticated && !session.authenticated;
-        previouslyAuthenticated = session.authenticated;
-        const publicPaths = {
-          '/',
-          '/identity',
-          '/account',
-          '/ngo-registry',
-          '/favorites',
-        };
         if (path == '/account') {
           return session.authenticated ? '/personal' : '/identity';
         }
         if (!session.authenticated && !publicPaths.contains(path)) {
-          return signedOut ? '/' : '/identity';
+          return '/identity';
         }
         if (session.authenticated && path == '/identity') return '/personal';
         return null;
@@ -169,6 +167,19 @@ class _PwcAppState extends ConsumerState<PwcApp> with WidgetsBindingObserver {
         ),
       ],
     );
+    // Observe transitions once, outside redirect: GoRouter may evaluate a
+    // redirect more than once. Never consume session-loss state inside it.
+    _sessionChanged = () {
+      final signedOut = previouslyAuthenticated && !session.authenticated;
+      previouslyAuthenticated = session.authenticated;
+      final path = _router.routeInformationProvider.value.uri.path;
+      if (signedOut && !publicPaths.contains(path)) {
+        _router.go('/');
+      } else {
+        _router.refresh();
+      }
+    };
+    session.addListener(_sessionChanged);
     Future.microtask(() async {
       try {
         await session.restore();
@@ -190,6 +201,7 @@ class _PwcAppState extends ConsumerState<PwcApp> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    ref.read(sessionProvider).removeListener(_sessionChanged);
     _router.dispose();
     super.dispose();
   }
