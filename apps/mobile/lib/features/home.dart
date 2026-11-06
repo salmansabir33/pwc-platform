@@ -35,7 +35,7 @@ class PublicHomeScreen extends StatelessWidget {
           label: Text(t('Favorite NGOs')),
         ),
         TextButton.icon(
-          onPressed: () => context.push('/account'),
+          onPressed: () => context.go('/account'),
           icon: const Icon(Icons.person_outline),
           label: Text(t('Open account')),
         ),

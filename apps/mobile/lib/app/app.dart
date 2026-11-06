@@ -248,8 +248,8 @@ class _Frame extends ConsumerWidget {
       ][v];
       if (target == path) return;
       session.cancelCeremonies();
-      if (v == 0) {
-        context.go('/');
+      if (v == 0 || v == 3) {
+        context.go(target);
       } else {
         context.push(target);
       }
@@ -293,51 +293,57 @@ class _Frame extends ConsumerWidget {
         ),
       ),
     );
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(translated('PWC citizen', ur)),
-        actions: [
-          Semantics(
-            label: ur ? 'English' : 'اردو',
-            button: true,
-            child: TextButton(
-              onPressed: () => ref.read(urduProvider.notifier).state = !ur,
-              child: Text(ur ? 'English' : 'اردو'),
+    return PopScope<void>(
+      canPop: path == '/' || context.canPop(),
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && path != '/') context.go('/');
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(translated('PWC citizen', ur)),
+          actions: [
+            Semantics(
+              label: ur ? 'English' : 'اردو',
+              button: true,
+              child: TextButton(
+                onPressed: () => ref.read(urduProvider.notifier).state = !ur,
+                child: Text(ur ? 'English' : 'اردو'),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
+        body: Row(
+          children: [
+            if (wide)
+              NavigationRail(
+                selectedIndex: selected,
+                onDestinationSelected: navigate,
+                labelType: NavigationRailLabelType.all,
+                destinations: [
+                  for (var i = 0; i < labels.length; i++)
+                    NavigationRailDestination(
+                      icon: Icon(icons[i]),
+                      label: Text(translated(labels[i], ur)),
+                    ),
+                ],
+              ),
+            Expanded(child: content),
+          ],
+        ),
+        bottomNavigationBar: !wide
+            ? NavigationBar(
+                selectedIndex: selected,
+                onDestinationSelected: navigate,
+                destinations: [
+                  for (var i = 0; i < labels.length; i++)
+                    NavigationDestination(
+                      icon: Icon(icons[i]),
+                      label: translated(labels[i], ur),
+                    ),
+                ],
+              )
+            : null,
       ),
-      body: Row(
-        children: [
-          if (wide)
-            NavigationRail(
-              selectedIndex: selected,
-              onDestinationSelected: navigate,
-              labelType: NavigationRailLabelType.all,
-              destinations: [
-                for (var i = 0; i < labels.length; i++)
-                  NavigationRailDestination(
-                    icon: Icon(icons[i]),
-                    label: Text(translated(labels[i], ur)),
-                  ),
-              ],
-            ),
-          Expanded(child: content),
-        ],
-      ),
-      bottomNavigationBar: !wide
-          ? NavigationBar(
-              selectedIndex: selected,
-              onDestinationSelected: navigate,
-              destinations: [
-                for (var i = 0; i < labels.length; i++)
-                  NavigationDestination(
-                    icon: Icon(icons[i]),
-                    label: translated(labels[i], ur),
-                  ),
-              ],
-            )
-          : null,
     );
   }
 }

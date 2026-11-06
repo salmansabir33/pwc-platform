@@ -78,8 +78,10 @@ anonymous users to sign-in, and private account navigation retains Personal,
 Affiliations, Workspaces and Security. Logout/session loss from a protected page
 returns Home; public pages remain public and never become membership/authority.
 
-Public/account navigation pushes history so Android back returns to the previous
-page, including its search/filter state; reselecting Home clears the route stack.
+Discover/Favorites navigation pushes public history so Android back returns to the
+previous page, including its search/filter state. Home and Account reset the stack;
+Account uses declarative routing so auth refresh consistently reaches Personal.
+Android back at a root Account/private page returns Home rather than exiting.
 Selecting the current destination is a no-op, preserving active account ceremonies.
 Profile navigation remains the existing fresh-fetch/cancellation flow. Lifecycle
 hiding and session suspension/restoration remain unchanged. No credentials, grants,
