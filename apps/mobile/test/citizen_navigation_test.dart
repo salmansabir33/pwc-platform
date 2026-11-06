@@ -139,6 +139,17 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     },
   );
+  testWidgets('Android back from root Account returns public Home', (
+    tester,
+  ) async {
+    await start(tester);
+    await select(tester, 'Account');
+    expect(find.text('ID-01 · Sign in'), findsOneWidget);
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.text('Welcome to PWC'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
+  });
   testWidgets('restored account does not hijack Home or public navigation', (
     tester,
   ) async {
