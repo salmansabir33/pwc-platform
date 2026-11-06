@@ -53,8 +53,9 @@ class FavoritesController extends ChangeNotifier {
       final data = raw == null ? <dynamic>[] : jsonDecode(raw);
       if (data is! List ||
           data.length > limit ||
-          data.any((id) => id is! String || !valid(id)))
+          data.any((id) => id is! String || !valid(id))) {
         throw const FormatException();
+      }
       _ids = data.cast<String>().toSet();
       ready = true;
     } catch (_) {
@@ -83,8 +84,9 @@ class FavoritesController extends ChangeNotifier {
     try {
       final value = jsonEncode(next.toList()..sort());
       await store.write(value);
-      if (await store.read() != value)
+      if (await store.read() != value) {
         throw StateError('Local storage unavailable');
+      }
       _ids = next;
     } catch (_) {
       failed = true;

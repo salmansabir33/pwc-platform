@@ -90,19 +90,21 @@ class _FavoritesScreenState extends State<FavoritesScreen>
       try {
         final row = await widget.gateway!.detail(id);
         if (!mounted || ticket != _generation) return;
-        if (row.id == id && widget.favorites.ids.contains(id))
+        if (row.id == id && widget.favorites.ids.contains(id)) {
           setState(() {
             _rows[id] = row;
           });
+        }
       } catch (_) {
         /* Only the local ID remains; never restore cached fields. */
       }
       if (!mounted || ticket != _generation) return;
     }
-    if (mounted && ticket == _generation)
+    if (mounted && ticket == _generation) {
       setState(() {
         _busy = false;
       });
+    }
   }
 
   void release() {
