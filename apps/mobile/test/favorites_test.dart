@@ -3,6 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pwc_mobile/app/app.dart';
+import 'package:pwc_mobile/app/providers.dart';
+import 'package:pwc_mobile/core/session_controller.dart';
+import 'fakes.dart';
 import 'package:pwc_mobile/core/api.dart';
 import 'package:pwc_mobile/core/contracts.g.dart';
 import 'package:pwc_mobile/core/favorites.dart';
@@ -245,6 +250,50 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Away'), findsOneWidget);
     expect(tester.takeException(), isNull);
+    controller.dispose();
+  });
+  testWidgets(
+    'anonymous citizen can open favorites without personal API calls',
+    (tester) async {
+      final api = FakeApi();
+      final controller = await saved(MemoryFavorites());
+      final session = SessionController(api, MemoryStore());
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sessionProvider.overrideWith((ref) => session),
+            favoritesProvider.overrideWith((ref) => controller),
+            favoritesDirectoryProvider.overrideWith((ref) => FakeDirectory()),
+          ],
+          child: const PwcApp(),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Favorite NGOs'));
+      await tester.pumpAndSettle();
+      expect(find.text('Fresh public name'), findsOneWidget);
+      expect(session.authenticated, isFalse);
+      expect(api.calls, isEmpty);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+  testWidgets('replacement gateway ignores old pending public detail', (
+    tester,
+  ) async {
+    final controller = await saved(MemoryFavorites());
+    final pending = Completer<PublicOrganization>();
+    await tester.pumpWidget(
+      favorites(controller, FakeDirectory()..pendingDetail = pending),
+    );
+    await tester.pump();
+    await tester.pumpWidget(
+      favorites(controller, FakeDirectory()..missing = true),
+    );
+    pending.complete(PublicOrganization.fromJson(row));
+    await tester.pumpAndSettle();
+    expect(find.text('Synthetic NGO'), findsNothing);
+    expect(find.text('NGO unavailable'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
     controller.dispose();
   });
 }
