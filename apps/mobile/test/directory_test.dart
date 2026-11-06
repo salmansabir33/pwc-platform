@@ -72,8 +72,9 @@ class FakeDirectory implements DirectoryGateway {
       'cursor': cursor,
     });
     if (pending.isNotEmpty) return pending.removeAt(0).future;
-    if (fail || (cursor != null && failMore))
+    if (fail || (cursor != null && failMore)) {
       throw StateError('private backend note');
+    }
     if (empty) return page([]);
     if (cursor != null) return page([row, second]);
     return page([row], paginate ? 'cursor-one' : null);
@@ -485,11 +486,12 @@ void main() {
         'https://api.example.invalid',
         factory: () => MockClient((request) async {
           if (request.url.path == '/api/v1/directory/') {
-            if (listCalls++ == 0)
+            if (listCalls++ == 0) {
               return jsonReply({
                 'results': [row],
                 'next_cursor': null,
               });
+            }
             return returning.future;
           }
           return jsonReply({...row, 'name': 'Fresh public name'});
