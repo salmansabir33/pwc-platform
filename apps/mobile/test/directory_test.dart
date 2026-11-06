@@ -476,4 +476,41 @@ void main() {
     expect(find.text('رجسٹرڈ'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+  testWidgets(
+    'profile exit animation cannot cancel the returning list request',
+    (tester) async {
+      final returning = Completer<http.Response>();
+      var listCalls = 0;
+      final api = NativeDirectoryGateway(
+        'https://api.example.invalid',
+        factory: () => MockClient((request) async {
+          if (request.url.path == '/api/v1/directory/') {
+            if (listCalls++ == 0)
+              return jsonReply({
+                'results': [row],
+                'next_cursor': null,
+              });
+            return returning.future;
+          }
+          return jsonReply({...row, 'name': 'Fresh public name'});
+        }),
+      );
+      await tester.pumpWidget(screen(gateway: api));
+      await tester.pumpAndSettle();
+      await tap(tester, 'Synthetic NGO');
+      await tester.pageBack();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      returning.complete(
+        jsonReply({
+          'results': [second],
+          'next_cursor': null,
+        }),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Second NGO'), findsOneWidget);
+      expect(find.textContaining('Registry unavailable'), findsNothing);
+      api.dispose();
+    },
+  );
 }
