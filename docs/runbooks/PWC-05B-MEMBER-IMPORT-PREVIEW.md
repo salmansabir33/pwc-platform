@@ -150,3 +150,50 @@ existing three moderate findings (unchanged package-lock; prior audit evidence
 retained). Python advisory review exits 1 because OSV is unreachable (`URLError`),
 not a zero-finding result. Neither gate is suppressed or waived; remote CI status
 must be checked separately. These results confer no member/import or 04C authority.
+
+## Bounded XLSX adapter — ORG-10 / PWC-05B
+
+`organizations.member_import_xlsx.preview_xlsx(raw, organization_id=..., catalog=...)`
+now accepts in-memory XLSX bytes and returns the **same** `ImportPreview` as
+`preview_csv`. This is an actual parser, not another fixture journey or screen.
+It is an independently usable internal value transformation, **not** approved
+intake, a live import/export permission, a new wire contract or a staging service.
+The existing CSV template's provisional status remains unchanged.
+
+Supported subset: one visible worksheet, the exact three-column header, inline /
+shared / rich text. Sparse rows/cells preserve spreadsheet positions rather than
+silently dropping incomplete records. OOXML escapes are decoded once; surrogate
+pairs are handled without turning escaped control characters into accepted names.
+CSV remains the single value/duplicate/tenant validator, preserving normalization,
+formula-text rejection, all duplicate-reference errors, name warnings, counts and
+redacted diagnostics. Nothing creates Users, memberships, claims, grants or DB rows.
+
+Fails closed on multiple/hidden/orphan worksheets, hidden rows/columns, merges,
+hyperlinks, unsupported sheet features, formulas (including cached results),
+numeric/date/boolean/error coercion, invalid shared-string indexes, duplicate or
+misordered cells, extra columns, macros, external relationships and unsafe paths.
+Formatting-only parts are ignored after bounded XML validation. UTF-8 XML only;
+DTDs/entities, malformed XML, unsupported package entries and encryption reject.
+No filesystem extraction, external resource resolution or new dependencies.
+
+Engineering bounds: 256 KiB compressed, 1 MiB expanded total, 512 KiB per part,
+32 ZIP entries, 201 worksheet rows including the header, 603 shared strings. The
+existing 64 KiB converted-CSV limit and 200 data-record limit still apply. These
+are not accepted real-NGO quotas. Fatal XLSX errors expose only a constant message
+and allowlisted code plus optional record/column; no partial report is returned.
+CSV validation retains the existing `ImportPreviewError` codes. No raw XML, cell
+content, formula, workbook title or relationship target enters diagnostics.
+
+Regression coverage includes a genuine synthetic XLSX made with XlsxWriter 3.2.9
+(`tests/fixtures/member-import-preview/text-cells.xlsx`, fixed fictional metadata),
+without adding that writer as a runtime/test dependency. In-memory OOXML packages
+exercise inline/shared/rich text, Unicode, escapes, duplicates, sparse cells,
+malformed/compressed hostile packages and same-/cross-tenant zero-query evaluation.
+React/Flutter remain fixed, read-only preparation views; no file picker or private
+transport has been added. XLSX column mapping, live upload/review/correction,
+persistent staging and atomic import remain unfinished and separately gated.
+
+This checkpoint advances the ORG-10 parser/report portion of PWC-05B only. It does
+not complete 05B, 05D, 05E or G1. For the next live slice, Issue42 and the existing
+P4 contract identify exact source/action, restricted-writer, disclosure and
+transport dependencies; no accepted C1 product choice is reopened.

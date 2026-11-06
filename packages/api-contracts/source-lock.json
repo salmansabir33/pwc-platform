@@ -46,6 +46,7 @@
   "apps/backend/organizations/directory.py": "27a695813a870cde5baa17be2ba6998cc3e78eff4d076838a1f103b3af75266a",
   "apps/backend/organizations/member_import_fixtures.py": "ff391302761b5ac2fbf83bbd973402d7814448423463767fd0b5b37340bd54ab",
   "apps/backend/organizations/member_import_preview.py": "183e3aa80b9ec3feeff5dc4525f03b554da702e87570c29bdd7ca10711e5b445",
+  "apps/backend/organizations/member_import_xlsx.py": "8ad6022b81d54ae924c1c08d598b671b1f13a961907ff3a6eaa4a30595c58175",
   "apps/backend/organizations/membership_category_rules.py": "0757a069f323fc6e88741b8cb3642e89d931359b2a1eddd0574a08ea6483c5fb",
   "apps/backend/organizations/membership_demonstrations.py": "91ff6d233bc9ad658148be23ed6cf5eb57e2f3f3aebb38f15bcd62e0a8500021",
   "apps/backend/organizations/membership_fixtures.py": "f98258ddb453798aece226491ef6738e47e832c955a5ddfabb6eb862fda43439",
