@@ -7,6 +7,7 @@ import '../design/theme.dart';
 import '../design/tokens.g.dart';
 import 'strings.dart';
 import '../features/identity.dart';
+import '../features/home.dart';
 import '../features/membership_preparation.dart';
 import '../features/personal.dart';
 import '../features/security.dart';
@@ -31,24 +32,39 @@ class _PwcAppState extends ConsumerState<PwcApp> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     final session = ref.read(sessionProvider);
+    var previouslyAuthenticated = session.authenticated;
     _router = GoRouter(
-      initialLocation: '/identity',
+      initialLocation: '/',
       refreshListenable: session,
       redirect: (context, state) {
-        if (!session.authenticated &&
-            ![
-              '/identity',
-              '/ngo-registry',
-              '/favorites',
-            ].contains(state.uri.path)) {
-          return '/identity';
+        final path = state.uri.path;
+        final signedOut = previouslyAuthenticated && !session.authenticated;
+        previouslyAuthenticated = session.authenticated;
+        const publicPaths = {
+          '/',
+          '/identity',
+          '/account',
+          '/ngo-registry',
+          '/favorites',
+        };
+        if (path == '/account')
+          return session.authenticated ? '/personal' : '/identity';
+        if (!session.authenticated && !publicPaths.contains(path)) {
+          return signedOut ? '/' : '/identity';
         }
-        if (session.authenticated && state.uri.path == '/identity') {
-          return '/personal';
-        }
+        if (session.authenticated && path == '/identity') return '/personal';
         return null;
       },
       routes: [
+        GoRoute(
+          path: '/',
+          builder: (c, s) => _Frame(
+            child: Consumer(
+              builder: (context, ref, child) =>
+                  PublicHomeScreen(urdu: ref.watch(urduProvider)),
+            ),
+          ),
+        ),
         GoRoute(
           path: '/favorites',
           builder: (c, s) => _Frame(
@@ -207,16 +223,35 @@ class _Frame extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final ur = ref.watch(urduProvider);
     final session = ref.watch(sessionProvider);
-    final labels = ['Personal', 'Affiliations', 'Workspaces', 'Security'];
+    final labels = ['Home', 'Discover', 'Favorites', 'Account'];
+    final path = GoRouterState.of(context).uri.path;
+    final selected = path == '/'
+        ? 0
+        : path == '/ngo-registry'
+        ? 1
+        : path == '/favorites'
+        ? 2
+        : 3;
     const icons = [
+      Icons.home_outlined,
+      Icons.search,
+      Icons.bookmark_outline,
       Icons.person_outline,
-      Icons.people_outline,
-      Icons.domain_outlined,
-      Icons.shield_outlined,
     ];
     void navigate(int v) {
+      final target = [
+        '/',
+        '/ngo-registry',
+        '/favorites',
+        session.authenticated ? '/personal' : '/identity',
+      ][v];
+      if (target == path) return;
       session.cancelCeremonies();
-      context.go(['/personal', '/affiliations', '/workspaces', '/security'][v]);
+      if (v == 0) {
+        context.go('/');
+      } else {
+        context.push(target);
+      }
     }
 
     final wide = MediaQuery.sizeOf(context).width >= PwcTokens.breakpoints[1];
@@ -227,14 +262,39 @@ class _Frame extends ConsumerWidget {
           padding: const EdgeInsets.all(24),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 640),
-            child: child,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (session.authenticated && index != null)
+                  Wrap(
+                    spacing: 8,
+                    children: [
+                      for (final destination in {
+                        'Personal': '/personal',
+                        'Affiliations': '/affiliations',
+                        'Workspaces': '/workspaces',
+                        'Security': '/security',
+                      }.entries)
+                        TextButton(
+                          onPressed: () {
+                            if (destination.value == path) return;
+                            session.cancelCeremonies();
+                            context.push(destination.value);
+                          },
+                          child: Text(translated(destination.key, ur)),
+                        ),
+                    ],
+                  ),
+                child,
+              ],
+            ),
           ),
         ),
       ),
     );
     return Scaffold(
       appBar: AppBar(
-        title: Text(translated('PWC personal identity', ur)),
+        title: Text(translated('PWC citizen', ur)),
         actions: [
           Semantics(
             label: ur ? 'English' : 'اردو',
@@ -248,9 +308,9 @@ class _Frame extends ConsumerWidget {
       ),
       body: Row(
         children: [
-          if (index != null && wide)
+          if (wide)
             NavigationRail(
-              selectedIndex: index,
+              selectedIndex: selected,
               onDestinationSelected: navigate,
               labelType: NavigationRailLabelType.all,
               destinations: [
@@ -264,9 +324,9 @@ class _Frame extends ConsumerWidget {
           Expanded(child: content),
         ],
       ),
-      bottomNavigationBar: index != null && !wide
+      bottomNavigationBar: !wide
           ? NavigationBar(
-              selectedIndex: index!,
+              selectedIndex: selected,
               onDestinationSelected: navigate,
               destinations: [
                 for (var i = 0; i < labels.length; i++)
