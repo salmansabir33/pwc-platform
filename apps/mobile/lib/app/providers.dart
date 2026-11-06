@@ -1,3 +1,4 @@
+import '../core/favorites.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/api.dart';
 import '../core/directory_api.dart';
@@ -37,6 +38,24 @@ final directoryProvider = Provider<DirectoryGateway?>((ref) {
     return gateway;
   } on ApiFailure {
     // Fail closed as unavailable; never expose or log configured origins.
+    return null;
+  }
+});
+
+final favoritesProvider = ChangeNotifierProvider<FavoritesController>((ref) {
+  return FavoritesController(const NativeFavoriteStore())..load();
+});
+
+// Favorites reads must not cancel an underlying directory search or cursor page.
+final favoritesDirectoryProvider = Provider.autoDispose<DirectoryGateway?>((
+  ref,
+) {
+  if (directoryOrigin.isEmpty) return null;
+  try {
+    final gateway = NativeDirectoryGateway(directoryOrigin);
+    ref.onDispose(gateway.dispose);
+    return gateway;
+  } on ApiFailure {
     return null;
   }
 });
