@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../core/api.dart';
+import '../core/favorites.dart';
+import 'favorite_button.dart';
 import '../core/directory_api.dart';
 import '../core/contracts.g.dart';
 import '../design/controls.dart';
@@ -7,7 +10,13 @@ import '../design/controls.dart';
 class DirectoryScreen extends StatefulWidget {
   final DirectoryGateway? gateway;
   final bool urdu;
-  const DirectoryScreen({super.key, this.gateway, this.urdu = false});
+  final FavoritesController? favorites;
+  const DirectoryScreen({
+    super.key,
+    this.gateway,
+    this.urdu = false,
+    this.favorites,
+  });
   @override
   State<DirectoryScreen> createState() => _DirectoryScreenState();
 }
@@ -124,8 +133,12 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
     api.cancel();
     await Navigator.of(context).push<void>(
       MaterialPageRoute(
-        builder: (_) =>
-            DirectoryProfileScreen(gateway: api, id: id, urdu: widget.urdu),
+        builder: (_) => DirectoryProfileScreen(
+          gateway: api,
+          id: id,
+          urdu: widget.urdu,
+          favorites: widget.favorites,
+        ),
       ),
     );
     // Refresh public eligibility after returning, rather than restore a stale card.
@@ -147,6 +160,11 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
         ),
         style: Theme.of(context).textTheme.headlineSmall,
       ),
+      if (widget.favorites != null)
+        TextButton(
+          onPressed: () => context.push('/favorites'),
+          child: Text(t('Favorite NGOs', 'پسندیدہ تنظیمیں')),
+        ),
       Notice(
         t(
           'Public information only. Not membership, administrator access or verification consent. New applications and claims remain unavailable.',
@@ -230,6 +248,13 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
       for (final row in _rows)
         Card(
           child: ListTile(
+            leading: widget.favorites == null
+                ? null
+                : FavoriteButton(
+                    favorites: widget.favorites!,
+                    id: row.id,
+                    urdu: widget.urdu,
+                  ),
             title: Text(row.name),
             subtitle: Text(row.city),
             trailing: PwcBadge(
@@ -253,11 +278,13 @@ class DirectoryProfileScreen extends StatefulWidget {
   final DirectoryGateway gateway;
   final String id;
   final bool urdu;
+  final FavoritesController? favorites;
   const DirectoryProfileScreen({
     super.key,
     required this.gateway,
     required this.id,
     this.urdu = false,
+    this.favorites,
   });
   @override
   State<DirectoryProfileScreen> createState() => _DirectoryProfileScreenState();
@@ -365,6 +392,12 @@ class _DirectoryProfileScreenState extends State<DirectoryProfileScreen> {
               ),
             ],
             if (_row != null) ...[
+              if (widget.favorites != null)
+                FavoriteButton(
+                  favorites: widget.favorites!,
+                  id: widget.id,
+                  urdu: widget.urdu,
+                ),
               Text(
                 _row!.name,
                 style: Theme.of(context).textTheme.headlineSmall,

@@ -74,6 +74,10 @@ class _IdentityState extends ConsumerState<IdentityScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           TextButton(
+            onPressed: () => context.push('/favorites'),
+            child: Text(ur ? 'پسندیدہ تنظیمیں' : 'Favorite NGOs'),
+          ),
+          TextButton(
             onPressed: () => context.push('/ngo-registry'),
             child: Text(
               ur ? 'عوامی تنظیموں کی فہرست' : 'NGO registry · public read-only',

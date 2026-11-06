@@ -37,3 +37,28 @@ organization-detail GETs; the personal operation allowlist is unchanged.
 Run `flutter test test/directory_test.dart` for public-client and widget coverage,
 including filters, append/retry, invalid/private responses, stale search/profile
 completion and navigation. Test records are synthetic fixtures, not shipped data.
+
+## Device-local Favorite NGOs
+
+Citizen favorites are reachable without login from identity, directory and personal
+screens. Bookmark controls appear on public directory cards and freshly fetched
+profiles. Favorites are **not** authenticated server-side Saved or NGO membership.
+Only a bounded, deduplicated list of public NGO UUIDs (up to 200) is stored under
+`pwc.public-ngo-favorites.v1` using the existing device storage dependency, separate
+from credentials. No names, profile fields, tokens or account IDs are persisted.
+No new dependencies, Django routes/grants or opportunity gates are changed.
+
+Favorites uses the existing opt-in `PWC_PUBLIC_DIRECTORY_ORIGIN` and exact public
+organization-detail GET, in an independent request scope so it cannot cancel an
+underlying directory search/page. Every entry, refresh, profile return and app
+resume re-fetches public details; errors/withdrawal retain only the removable local
+ID, never cached profile text. Removing an ID invalidates pending detail responses.
+English/Urdu empty, loading, transport/storage unavailable and retry states exist.
+Profiles can also be unbookmarked; bookmark failures are not optimistically saved.
+
+`flutter test test/favorites_test.dart` covers local IDs-only storage, isolated
+native adapter key, reconstruction/restart, duplicates, failures/retry, directory/
+profile toggles, unavailable records, stale completion/removal/disposal and Urdu.
+Native method-channel tests simulate persistent storage across fresh controller/
+adapter instances; physical-device forced-kill/reboot/backup behavior still needs
+manual device acceptance. No cloud sync or account coupling is implemented.

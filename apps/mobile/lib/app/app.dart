@@ -12,6 +12,7 @@ import '../features/personal.dart';
 import '../features/security.dart';
 import '../features/registry.dart';
 import '../features/directory.dart';
+import '../features/favorites.dart';
 import '../features/workspace_history.dart';
 import '../features/administration_boundary.dart';
 import '../features/verification.dart';
@@ -35,7 +36,11 @@ class _PwcAppState extends ConsumerState<PwcApp> with WidgetsBindingObserver {
       refreshListenable: session,
       redirect: (context, state) {
         if (!session.authenticated &&
-            !['/identity', '/ngo-registry'].contains(state.uri.path)) {
+            ![
+              '/identity',
+              '/ngo-registry',
+              '/favorites',
+            ].contains(state.uri.path)) {
           return '/identity';
         }
         if (session.authenticated && state.uri.path == '/identity') {
@@ -45,10 +50,23 @@ class _PwcAppState extends ConsumerState<PwcApp> with WidgetsBindingObserver {
       },
       routes: [
         GoRoute(
+          path: '/favorites',
+          builder: (c, s) => _Frame(
+            child: Consumer(
+              builder: (context, ref, child) => FavoritesScreen(
+                favorites: ref.watch(favoritesProvider),
+                gateway: ref.watch(favoritesDirectoryProvider),
+                urdu: ref.watch(urduProvider),
+              ),
+            ),
+          ),
+        ),
+        GoRoute(
           path: '/ngo-registry',
           builder: (c, s) => _Frame(
             child: Consumer(
               builder: (context, ref, child) => DirectoryScreen(
+                favorites: ref.watch(favoritesProvider),
                 gateway: ref.watch(directoryProvider),
                 urdu: ref.watch(urduProvider),
               ),

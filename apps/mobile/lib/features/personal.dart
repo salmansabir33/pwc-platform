@@ -49,6 +49,10 @@ class PersonalScreen extends ConsumerWidget {
           child: Text(t('ORG-01 / ORG-02 · Registry (unavailable)')),
         ),
         TextButton(
+          onPressed: () => context.push('/favorites'),
+          child: Text(ur ? 'پسندیدہ تنظیمیں' : 'Favorite NGOs'),
+        ),
+        TextButton(
           onPressed: () => context.push('/ngo-registry'),
           child: Text(
             ur ? 'عوامی تنظیموں کی فہرست' : 'NGO registry · public read-only',
