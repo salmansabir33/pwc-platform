@@ -38,6 +38,7 @@
   "apps/backend/opportunities/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "apps/backend/opportunities/contract.py": "4b28d12766f884de5458655511dbe7e1f0cf833da7db04083b111c25e7c88857",
   "apps/backend/opportunities/models.py": "9d1a55f6de544cd8e55824ff2b623cda9441a325bf2c71bcacc7e5adf50fd2a3",
+  "apps/backend/opportunities/preparation.py": "6956ee117b5fa1aecf6b78b08772e8c5a3060e53c7e7571394983071b3d02c50",
   "apps/backend/opportunities/serializers.py": "67fc287864e76cf5acdd8ef14ae9c58826eff77e5245f3681d3c96b9db777707",
   "apps/backend/opportunities/views.py": "b5aac9807ec95705478c5d6db58d055838137a14541f6713a8757310b986c2a5",
   "apps/backend/organizations/__init__.py": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",

@@ -164,3 +164,63 @@ DB constraints/trigger under ORM bypass, protected owner deletion and actual
 migration reversal/reapplication. CI Python 3.11/3.12 executes the full instrumented
 suite; mobile CI verifies shared generated-provenance drift. Execution counts,
 CI links and limitations are reported in the PR, not guessed here.
+
+## 08C-B continuation — nonwriting publishing preparation
+
+[Issue #51](https://github.com/salmansabir33/pwc-platform/issues/51) records the
+Founder's “ok” to seven product rules on 6 November 2026. This supersedes the
+08C-A *pending product* disposition above only: single NGO ownership; three types
+with PROJECT limited to discovery; explicitly authorized officer draft/request
+preparation (not creation of that authority); published-only/NGO-eligible discovery;
+withdrawal removes discovery/detail; no reopening or republishing withdrawn v1
+records; and the existing candidate public projection. Exact published-content
+editing/version semantics remain open. No independent privacy/legal/IAM/DB security
+or live-activation acceptance is inferred; no signer/evidence is invented here.
+
+`opportunities.preparation` now provides two **internal, nonwriting** functions:
+
+- `prepare_draft(organization_id, payload, opportunity_id=None)` validates a new
+  draft or a nonempty partial edit to an existing DRAFT. Only type/title/summary
+  are accepted. It reuses existing bounded text normalization and model-derived
+  limits/choices; title lookup uses the same normalization as `Opportunity.save`.
+- `propose_transition(organization_id, opportunity_id, operation, effective_at=...)`
+  accepts only `request_publication` from DRAFT or `withdraw` from PUBLISHED.
+  Returned PUBLISHED/WITHDRAWN states are **desired simulation outcomes**, not
+  approval or state changes. `publish`, `approve`, reopening, republishing and
+  published-content edits are rejected. The supplied aware clock is converted to
+  UTC, never represented as authoritative transaction time.
+
+Existing snapshots are freshly queried with **both NGO and opportunity IDs** before
+content/state checks; a missing/wrong-NGO source gives the same redacted diagnostic.
+IDs constrain data selection; **they are not permission**. The module is not routed,
+exported through an API, installed as a writer, or usable as an authorization proof.
+It has no actor/grant/issuer/staff override. Frozen, redacted-repr proposal values
+have no save/apply/public-preview methods and `live_execution_available` is always
+False. Do not log or publicly serialize their draft content.
+
+Field/FK and lifecycle/date constraints are evaluated with the existing model's
+`full_clean`, rather than introducing a second schema or relaxing PostgreSQL.
+Source-to-target checks are necessary for a nonwriting proposal: the existing
+forward-transition trigger cannot be invoked without writing. That trigger remains
+unchanged and is exercised separately in fictional-fixture database tests. Model
+validation may use SELECTs and savepoint bookkeeping, never speculative writes.
+
+No model/migration/HTTP contract/serializer/public gate/client changes. Only source
+provenance is regenerated for the new Python module; the OpenAPI contract itself
+is unchanged. `python manage.py test opportunities` covers normalization, partial
+preparation, malformed/unknown fields, immutable ownership/tenant lookup, lifecycle
+matrix, aware clocks, redacted immutable results, SELECT/savepoint-only validation,
+fresh snapshots, agreement with existing DB guards, unchanged public projections
+and the existing live-read 503 gate.
+
+**Remaining precise approvals, not product reapproval:** accountable NGO governance
+and trusted IAM/security must accept exact create/edit/request/publish/withdraw
+actor/issuer/source/tenant/expiry/revocation rules and the approval path; privacy/
+legal + product must accept actual field disclosure, consent/content safeguarding,
+audiences, retention/incident/withdrawal policy and NGO visibility integration;
+DB/API security must accept restricted writers, locks/revocation fence, revision/
+audit/receipt/idempotency/authorization contracts and live-read activation criteria.
+Published-content edits/versioning remain unimplemented pending exact acceptance.
+A future writer must re-read/revalidate under those accepted contracts: proposals
+can become stale and are neither locked state nor signed receipts. Browser/native
+integration awaits accepted live endpoints/source. C1/04C/GM remain untouched.

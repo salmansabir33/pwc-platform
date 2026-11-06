@@ -84,3 +84,14 @@ writer/security decisions are listed in that runbook's bounded acceptance queue.
 Live reads and publication remain unavailable; no privileged writer/grant, private
 project domain or NGO member access is introduced. Existing C1 acceptance is
 unchanged and is not a publishing mandate.
+
+### 08C-B product disposition — Issue #51, 6 November 2026
+
+[Issue #51](https://github.com/salmansabir33/pwc-platform/issues/51) records product
+acceptance of the seven initial opportunity rules; the 08C-A pending-product
+wording above is historical in that scope, not a request to reapprove those rules.
+The [08C-B continuation](../runbooks/PWC-08C-A-PUBLIC-OPPORTUNITIES.md#08c-b-continuation--nonwriting-publishing-preparation)
+delivers nonwriting draft/transition proposals only. Requesting publication is not
+approval, no officer/grant/issuer is created, and published edits/versioning remain
+open. Exact authority, disclosure/consent/retention, DB writer/security and live-read
+activation approvals remain required as listed there; no live privileges change.
