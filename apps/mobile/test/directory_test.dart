@@ -353,8 +353,11 @@ void main() {
     await tester.pump();
     expect(find.byType(LinearProgressIndicator), findsOneWidget);
     await tester.enterText(find.byType(TextField).first, 'new');
+    await tester.pump(); // Rebuild the button after canceling the old search.
     await tester.tap(find.text('Search registry'));
     await tester.pump();
+    expect(api.calls.length, 2);
+    expect(api.calls.last['q'], 'new');
     old.complete(page([row]));
     await tester.pump();
     expect(find.text('Synthetic NGO'), findsNothing);
