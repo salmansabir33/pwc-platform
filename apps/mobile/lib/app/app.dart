@@ -27,6 +27,7 @@ class PwcApp extends ConsumerStatefulWidget {
 class _PwcAppState extends ConsumerState<PwcApp> with WidgetsBindingObserver {
   late final GoRouter _router;
   late final VoidCallback _sessionChanged;
+  late final VoidCallback _removeSessionListener;
   bool _hidden = false;
   @override
   void initState() {
@@ -180,6 +181,7 @@ class _PwcAppState extends ConsumerState<PwcApp> with WidgetsBindingObserver {
       }
     };
     session.addListener(_sessionChanged);
+    _removeSessionListener = () => session.removeListener(_sessionChanged);
     Future.microtask(() async {
       try {
         await session.restore();
@@ -201,7 +203,7 @@ class _PwcAppState extends ConsumerState<PwcApp> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    ref.read(sessionProvider).removeListener(_sessionChanged);
+    _removeSessionListener();
     _router.dispose();
     super.dispose();
   }
