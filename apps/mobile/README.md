@@ -62,3 +62,34 @@ profile toggles, unavailable records, stale completion/removal/disposal and Urdu
 Native method-channel tests simulate persistent storage across fresh controller/
 adapter instances; physical-device forced-kill/reboot/backup behavior still needs
 manual device acceptance. No cloud sync or account coupling is implemented.
+
+## Public-first citizen navigation
+
+The app now starts at `/` (Home), without waiting for login or session restoration.
+Shared Home / Discover / Favorites / Account destinations use a bottom navigation
+bar on narrow displays and a rail on wide displays, with English/Urdu labels.
+Home links only to the implemented public NGO directory, local favorites and
+existing account experience: no dashboard statistics, opportunity requests or demos.
+
+Discover reuses `/ngo-registry`; Favorites reuses `/favorites`. Account resolves to
+`/identity` for guests and `/personal` for authenticated users. A restored session
+does not hijack Home/public discovery. Existing protected paths still redirect
+anonymous users to sign-in, and private account navigation retains Personal,
+Affiliations, Workspaces and Security. Logout/session loss from a protected page
+returns Home; public pages remain public and never become membership/authority.
+
+Discover/Favorites navigation pushes public history so Android back returns to the
+previous page, including its search/filter state. Home and Account reset the stack;
+Account uses declarative routing so auth refresh consistently reaches Personal.
+Android back at a root Account/private page returns Home rather than exiting.
+Selecting the current destination is a no-op, preserving active account ceremonies.
+Profile navigation remains the existing fresh-fetch/cancellation flow. Lifecycle
+hiding and session suspension/restoration remain unchanged. No credentials, grants,
+backend APIs, public-origin opt-in or opportunity 503 gate are changed.
+
+`flutter test test/citizen_navigation_test.dart test/widget_test.dart` exercises
+anonymous Home, Discover/Favorites-to-profile journeys, back/filter preservation,
+Account/login/restoration/logout, all protected route denials, Urdu RTL and stale
+responses. Existing small/large viewport and scaled-text tests now cover Home and
+sign-in together. Physical-device TalkBack/back gesture and native Urdu acceptance
+remain manual gates; widget tests and Android compilation are not device execution.

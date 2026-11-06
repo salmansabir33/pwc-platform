@@ -23,6 +23,8 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    await tester.tap(find.text('Account'));
+    await tester.pumpAndSettle();
     expect(find.text('ID-01 · Sign in'), findsOneWidget);
     final fields = tester.widgetList<TextField>(find.byType(TextField));
     expect(
@@ -49,6 +51,8 @@ void main() {
         child: const PwcApp(),
       ),
     );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(urdu['Account']!));
     await tester.pumpAndSettle();
     expect(find.text(urdu['ID-01 · Sign in']!), findsOneWidget);
     expect(
@@ -82,6 +86,12 @@ void main() {
               child: const PwcApp(),
             ),
           );
+          await tester.pumpAndSettle();
+          expect(
+            find.text(ur ? urdu['Welcome to PWC']! : 'Welcome to PWC'),
+            findsOneWidget,
+          );
+          await tester.tap(find.text(ur ? urdu['Account']! : 'Account'));
           await tester.pumpAndSettle();
           expect(tester.takeException(), null);
           await tester.pumpWidget(const SizedBox.shrink());
@@ -120,6 +130,8 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      await tester.tap(find.text('Account'));
+      await tester.pumpAndSettle();
       await session.login('person@example.invalid', 'synthetic-password');
       await tester.pumpAndSettle();
       expect(find.text('ID-02 · Personal profile'), findsOneWidget);
@@ -129,7 +141,7 @@ void main() {
       expect(find.textContaining('No real NGO workspace API'), findsOneWidget);
       await session.logout();
       await tester.pumpAndSettle();
-      expect(find.text('ID-01 · Sign in'), findsOneWidget);
+      expect(find.text('Welcome to PWC'), findsOneWidget);
       expect(find.text(userId), findsNothing);
       await tester.pumpWidget(const SizedBox.shrink());
     },
@@ -149,6 +161,8 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    await tester.tap(find.text('Account'));
+    await tester.pumpAndSettle();
     await session.login('person@example.invalid', 'synthetic-password');
     await tester.pumpAndSettle();
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
@@ -157,7 +171,7 @@ void main() {
     expect(find.text('Protected view hidden'), findsOneWidget);
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     await tester.pumpAndSettle();
-    expect(find.text('ID-01 · Sign in'), findsOneWidget);
+    expect(find.text('Welcome to PWC'), findsOneWidget);
     await tester.pumpWidget(const SizedBox.shrink());
   });
 }

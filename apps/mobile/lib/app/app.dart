@@ -7,6 +7,7 @@ import '../design/theme.dart';
 import '../design/tokens.g.dart';
 import 'strings.dart';
 import '../features/identity.dart';
+import '../features/home.dart';
 import '../features/membership_preparation.dart';
 import '../features/personal.dart';
 import '../features/security.dart';
@@ -25,30 +26,45 @@ class PwcApp extends ConsumerStatefulWidget {
 
 class _PwcAppState extends ConsumerState<PwcApp> with WidgetsBindingObserver {
   late final GoRouter _router;
+  late final VoidCallback _sessionChanged;
+  late final VoidCallback _removeSessionListener;
   bool _hidden = false;
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     final session = ref.read(sessionProvider);
+    var previouslyAuthenticated = session.authenticated;
+    const publicPaths = {
+      '/',
+      '/identity',
+      '/account',
+      '/ngo-registry',
+      '/favorites',
+    };
     _router = GoRouter(
-      initialLocation: '/identity',
-      refreshListenable: session,
+      initialLocation: '/',
       redirect: (context, state) {
-        if (!session.authenticated &&
-            ![
-              '/identity',
-              '/ngo-registry',
-              '/favorites',
-            ].contains(state.uri.path)) {
+        final path = state.uri.path;
+        if (path == '/account') {
+          return session.authenticated ? '/personal' : '/identity';
+        }
+        if (!session.authenticated && !publicPaths.contains(path)) {
           return '/identity';
         }
-        if (session.authenticated && state.uri.path == '/identity') {
-          return '/personal';
-        }
+        if (session.authenticated && path == '/identity') return '/personal';
         return null;
       },
       routes: [
+        GoRoute(
+          path: '/',
+          builder: (c, s) => _Frame(
+            child: Consumer(
+              builder: (context, ref, child) =>
+                  PublicHomeScreen(urdu: ref.watch(urduProvider)),
+            ),
+          ),
+        ),
         GoRoute(
           path: '/favorites',
           builder: (c, s) => _Frame(
@@ -152,6 +168,20 @@ class _PwcAppState extends ConsumerState<PwcApp> with WidgetsBindingObserver {
         ),
       ],
     );
+    // Observe transitions once, outside redirect: GoRouter may evaluate a
+    // redirect more than once. Never consume session-loss state inside it.
+    _sessionChanged = () {
+      final signedOut = previouslyAuthenticated && !session.authenticated;
+      previouslyAuthenticated = session.authenticated;
+      final path = _router.routeInformationProvider.value.uri.path;
+      if (signedOut && !publicPaths.contains(path)) {
+        _router.go('/');
+      } else {
+        _router.refresh();
+      }
+    };
+    session.addListener(_sessionChanged);
+    _removeSessionListener = () => session.removeListener(_sessionChanged);
     Future.microtask(() async {
       try {
         await session.restore();
@@ -173,6 +203,7 @@ class _PwcAppState extends ConsumerState<PwcApp> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _removeSessionListener();
     _router.dispose();
     super.dispose();
   }
@@ -207,16 +238,35 @@ class _Frame extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final ur = ref.watch(urduProvider);
     final session = ref.watch(sessionProvider);
-    final labels = ['Personal', 'Affiliations', 'Workspaces', 'Security'];
+    final labels = ['Home', 'Discover', 'Favorites', 'Account'];
+    final path = GoRouterState.of(context).uri.path;
+    final selected = path == '/'
+        ? 0
+        : path == '/ngo-registry'
+        ? 1
+        : path == '/favorites'
+        ? 2
+        : 3;
     const icons = [
+      Icons.home_outlined,
+      Icons.search,
+      Icons.bookmark_outline,
       Icons.person_outline,
-      Icons.people_outline,
-      Icons.domain_outlined,
-      Icons.shield_outlined,
     ];
     void navigate(int v) {
+      final target = [
+        '/',
+        '/ngo-registry',
+        '/favorites',
+        session.authenticated ? '/personal' : '/identity',
+      ][v];
+      if (target == path) return;
       session.cancelCeremonies();
-      context.go(['/personal', '/affiliations', '/workspaces', '/security'][v]);
+      if (v == 0 || v == 3) {
+        context.go(target);
+      } else {
+        context.push(target);
+      }
     }
 
     final wide = MediaQuery.sizeOf(context).width >= PwcTokens.breakpoints[1];
@@ -227,56 +277,87 @@ class _Frame extends ConsumerWidget {
           padding: const EdgeInsets.all(24),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 640),
-            child: child,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (session.authenticated && index != null)
+                  Wrap(
+                    spacing: 8,
+                    children: [
+                      for (final destination in {
+                        'Personal': '/personal',
+                        'Affiliations': '/affiliations',
+                        'Workspaces': '/workspaces',
+                        'Security': '/security',
+                      }.entries)
+                        TextButton(
+                          onPressed: () {
+                            if (destination.value == path) return;
+                            session.cancelCeremonies();
+                            context.push(destination.value);
+                          },
+                          child: Text(translated(destination.key, ur)),
+                        ),
+                    ],
+                  ),
+                child,
+              ],
+            ),
           ),
         ),
       ),
     );
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(translated('PWC personal identity', ur)),
-        actions: [
-          Semantics(
-            label: ur ? 'English' : 'اردو',
-            button: true,
-            child: TextButton(
-              onPressed: () => ref.read(urduProvider.notifier).state = !ur,
-              child: Text(ur ? 'English' : 'اردو'),
+    return PopScope<void>(
+      canPop: path == '/' || context.canPop(),
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && path != '/') context.go('/');
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(translated('PWC citizen', ur)),
+          actions: [
+            Semantics(
+              label: ur ? 'English' : 'اردو',
+              button: true,
+              child: TextButton(
+                onPressed: () => ref.read(urduProvider.notifier).state = !ur,
+                child: Text(ur ? 'English' : 'اردو'),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
+        body: Row(
+          children: [
+            if (wide)
+              NavigationRail(
+                selectedIndex: selected,
+                onDestinationSelected: navigate,
+                labelType: NavigationRailLabelType.all,
+                destinations: [
+                  for (var i = 0; i < labels.length; i++)
+                    NavigationRailDestination(
+                      icon: Icon(icons[i]),
+                      label: Text(translated(labels[i], ur)),
+                    ),
+                ],
+              ),
+            Expanded(child: content),
+          ],
+        ),
+        bottomNavigationBar: !wide
+            ? NavigationBar(
+                selectedIndex: selected,
+                onDestinationSelected: navigate,
+                destinations: [
+                  for (var i = 0; i < labels.length; i++)
+                    NavigationDestination(
+                      icon: Icon(icons[i]),
+                      label: translated(labels[i], ur),
+                    ),
+                ],
+              )
+            : null,
       ),
-      body: Row(
-        children: [
-          if (index != null && wide)
-            NavigationRail(
-              selectedIndex: index,
-              onDestinationSelected: navigate,
-              labelType: NavigationRailLabelType.all,
-              destinations: [
-                for (var i = 0; i < labels.length; i++)
-                  NavigationRailDestination(
-                    icon: Icon(icons[i]),
-                    label: Text(translated(labels[i], ur)),
-                  ),
-              ],
-            ),
-          Expanded(child: content),
-        ],
-      ),
-      bottomNavigationBar: index != null && !wide
-          ? NavigationBar(
-              selectedIndex: index!,
-              onDestinationSelected: navigate,
-              destinations: [
-                for (var i = 0; i < labels.length; i++)
-                  NavigationDestination(
-                    icon: Icon(icons[i]),
-                    label: translated(labels[i], ur),
-                  ),
-              ],
-            )
-          : null,
     );
   }
 }

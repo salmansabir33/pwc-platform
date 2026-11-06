@@ -1,5 +1,17 @@
 // Both languages are first-class; canonical IDs are stable in either locale.
 const urdu = <String, String>{
+  'Home': 'ہوم',
+  'Discover': 'دریافت',
+  'Favorites': 'پسندیدہ',
+  'PWC citizen': 'پی ڈبلیو سی شہری',
+  'Welcome to PWC': 'پی ڈبلیو سی میں خوش آمدید',
+  'Explore NGOs': 'تنظیمیں دریافت کریں',
+  'Favorite NGOs': 'پسندیدہ تنظیمیں',
+  'Open account': 'اکاؤنٹ کھولیں',
+  'Explore public NGOs and keep favorites on this device. No sign-in is needed.':
+      'عوامی تنظیمیں دریافت کریں اور اسی آلے پر پسندیدہ محفوظ کریں۔ سائن اِن ضروری نہیں۔',
+  'Public discovery is not NGO membership or administrator access.':
+      'عوامی دریافت تنظیم کی رکنیت یا منتظم کی رسائی نہیں ہے۔',
   'PWC personal identity': 'پی ڈبلیو سی ذاتی شناخت',
   'Personal': 'ذاتی',
   'Security': 'تحفظ',
