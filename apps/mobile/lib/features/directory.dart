@@ -290,7 +290,8 @@ class DirectoryProfileScreen extends StatefulWidget {
   State<DirectoryProfileScreen> createState() => _DirectoryProfileScreenState();
 }
 
-class _DirectoryProfileScreenState extends State<DirectoryProfileScreen> {
+class _DirectoryProfileScreenState extends State<DirectoryProfileScreen>
+    with WidgetsBindingObserver {
   PublicOrganization? _row;
   bool _busy = true;
   bool _missing = false;
@@ -300,6 +301,7 @@ class _DirectoryProfileScreenState extends State<DirectoryProfileScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     load();
   }
 
@@ -344,6 +346,21 @@ class _DirectoryProfileScreenState extends State<DirectoryProfileScreen> {
     }
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (!_active) return;
+    if (state == AppLifecycleState.resumed) {
+      load();
+    } else {
+      _generation++;
+      widget.gateway.cancel();
+      setState(() {
+        _row = null;
+        _busy = true;
+      });
+    }
+  }
+
   void _release() {
     if (!_active) return;
     _active = false;
@@ -354,6 +371,7 @@ class _DirectoryProfileScreenState extends State<DirectoryProfileScreen> {
   @override
   void dispose() {
     _release();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
