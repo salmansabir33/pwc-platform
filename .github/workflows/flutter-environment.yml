@@ -201,10 +201,40 @@ jobs:
       - name: Build actual PWC Android debug APK
         working-directory: apps/mobile
         run: |
-          set -o pipefail
+          set -euo pipefail
           test "$(git -C "$FLUTTER_ROOT" rev-parse HEAD)" = adc901062556672b4138e18a4dc62a4be8f4b3c2
-          flutter build apk --debug --no-pub 2>&1 | tee "$RUNNER_TEMP/pwc-android-build.txt"
-          sha256sum build/app/outputs/flutter-apk/app-debug.apk
+          # Explicitly offline: neither public nor personal networking is enabled.
+          flutter build apk --debug --no-pub --target=lib/main.dart --dart-define=PWC_PUBLIC_DIRECTORY_ORIGIN= --dart-define=PWC_API_ORIGIN= 2>&1 | tee "$RUNNER_TEMP/pwc-android-build.txt"
+          # The next harness build overwrites app-debug.apk. Preserve the citizen app first.
+          PILOT="$RUNNER_TEMP/pwc-citizen-offline-pilot"
+          mkdir -p "$PILOT"
+          cp build/app/outputs/flutter-apk/app-debug.apk "$PILOT/pwc-citizen-offline-debug.apk"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$PILOT/pwc-citizen-offline-debug.apk" > "$PILOT/package.txt"
+          grep -q "package: name='pk.org.pwc.pwc_mobile'" "$PILOT/package.txt"
+          grep -q "launchable-activity: name='pk.org.pwc.pwc_mobile.MainActivity'" "$PILOT/package.txt"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$PILOT/pwc-citizen-offline-debug.apk" > "$PILOT/signature.txt"
+          {
+            echo 'Navigation/offline pilot; public and personal networking disabled.'
+            echo "Source commit: $GITHUB_SHA"
+            echo "Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            flutter --version
+            stat --printf='APK size: %s bytes\n' "$PILOT/pwc-citizen-offline-debug.apk"
+            echo 'Static package/signature checks only; no device install or launch performed.'
+          } > "$PILOT/build.txt"
+          (cd "$PILOT" && sha256sum pwc-citizen-offline-debug.apk > SHA256SUMS)
+          cat "$PILOT/build.txt" "$PILOT/SHA256SUMS"
+          echo "::notice title=Offline pilot APK SHA-256::$(cut -d ' ' -f 1 "$PILOT/SHA256SUMS")"
+          echo "::notice title=Offline pilot APK size::$(stat --printf='%s' "$PILOT/pwc-citizen-offline-debug.apk") bytes"
+          echo "::notice title=Offline pilot APK runner path::$PILOT/pwc-citizen-offline-debug.apk"
+          echo "::notice title=Offline pilot APK package::$(head -n 1 "$PILOT/package.txt")"
+          echo '::notice title=Offline pilot verification::aapt package and launchable activity checks passed; apksigner verification passed. No device install or launch performed.'
+      - name: Retain installable offline citizen APK before harness compilation
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pwc-citizen-offline-pilot
+          path: ${{ runner.temp }}/pwc-citizen-offline-pilot/
+          if-no-files-found: error
+          retention-days: 14
       - name: Compile native integration harness (not a device test)
         working-directory: apps/mobile
         run: |
