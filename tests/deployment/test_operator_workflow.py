@@ -48,6 +48,7 @@ class OperatorTests(unittest.TestCase):
             self.assertEqual(args[0], ["docker", "--context", "default", "ps"])
             self.assertNotIn("COMPOSE_PROJECT_NAME", keywords["env"])
             self.assertNotIn("COMPOSE_PROFILES", keywords["env"])
+            self.assertNotIn("DOCKER_CONTEXT", keywords["env"])
 
     def test_config_cas_retains_original_and_no_overwrite(self):
         before = self.config.read_bytes()

@@ -127,7 +127,16 @@ def run(*args):
             command[1:1] = ["--context", "default"]
         # A terminal used for another project must not retarget this operation.
         environment = {
-            k: v for k, v in os.environ.items() if not k.startswith("COMPOSE_")
+            k: v
+            for k, v in os.environ.items()
+            if not k.startswith("COMPOSE_")
+            and k
+            not in {
+                "DOCKER_HOST",
+                "DOCKER_CONTEXT",
+                "DOCKER_TLS_VERIFY",
+                "DOCKER_CERT_PATH",
+            }
         }
         return subprocess.run(
             command,
