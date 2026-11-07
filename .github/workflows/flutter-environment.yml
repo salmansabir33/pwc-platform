@@ -223,6 +223,11 @@ jobs:
           } > "$PILOT/build.txt"
           (cd "$PILOT" && sha256sum pwc-citizen-offline-debug.apk > SHA256SUMS)
           cat "$PILOT/build.txt" "$PILOT/SHA256SUMS"
+          echo "::notice title=Offline pilot APK SHA-256::$(cut -d ' ' -f 1 "$PILOT/SHA256SUMS")"
+          echo "::notice title=Offline pilot APK size::$(stat --printf='%s' "$PILOT/pwc-citizen-offline-debug.apk") bytes"
+          echo "::notice title=Offline pilot APK runner path::$PILOT/pwc-citizen-offline-debug.apk"
+          echo "::notice title=Offline pilot APK package::$(head -n 1 "$PILOT/package.txt")"
+          echo '::notice title=Offline pilot verification::aapt package and launchable activity checks passed; apksigner verification passed. No device install or launch performed.'
       - name: Retain installable offline citizen APK before harness compilation
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
