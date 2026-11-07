@@ -32,6 +32,8 @@ jobs:
           ruff format --check infra/staging/*.py tests/deployment/staging_fixtures.py tests/deployment/test_staging.py tests/deployment/compose_smoke.py apps/backend/config/staging.py
           for file in infra/staging/*.sh; do sh -n "$file"; done
           python scripts/security_checks.py
+      - name: Actual disposable issuer and operator workflow tests
+        run: sudo python3 -m unittest discover -s tests/deployment -p test_operator_workflow.py -v
       - name: Actual disposable Compose with synthetic TLS and PostgreSQL
         run: sudo env PWC_DISPOSABLE_CI=YES python3 tests/deployment/compose_smoke.py
       - name: Scan deployed images (fixable high/critical gate; all findings retained)

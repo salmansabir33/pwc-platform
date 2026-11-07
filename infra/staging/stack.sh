@@ -6,7 +6,10 @@ manifest=$1
 operation=$2
 case "$manifest" in /*/compose.json) ;; *) exit 2 ;; esac
 [ -f "$manifest" ] || exit 2
-compose() { docker compose --env-file /dev/null -f "$manifest" "$@"; }
+# Never inherit another project's Compose scope/profiles or a remote Docker target.
+unset COMPOSE_PROJECT_NAME COMPOSE_PROFILES COMPOSE_FILE COMPOSE_ENV_FILES COMPOSE_PATH_SEPARATOR
+unset DOCKER_HOST DOCKER_CONTEXT DOCKER_TLS_VERIFY DOCKER_CERT_PATH
+compose() { docker --context default compose --env-file /dev/null -f "$manifest" "$@"; }
 case "$operation" in
     build) compose config --quiet; compose build --pull app ngo ops db gateway ;;
     up)
