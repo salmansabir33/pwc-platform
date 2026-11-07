@@ -145,7 +145,10 @@ For no findings, omit `--risk-disposition`. This starts only private PostgreSQL,
 uses the existing owner-only migration/grant service, then starts the app with its
 bounded runtime role. DB TLS, migrations and application mTLS are checked by the
 existing health commands. No portal/gateway/host port is started. No root development
-Compose file or environment-file override is used. An existing volume or unhealthy/different project is a hard stop, not permission
+Compose file or environment-file override is used. Docker explicitly selects the
+local default context (never changes the saved context), and inherited COMPOSE_*
+project/profile overrides cannot retarget another workload. A remote/rootless
+Docker context is intentionally unsupported by this local-host workflow. An existing volume or unhealthy/different project is a hard stop, not permission
 to drop it; an already-healthy exact private bootstrap is a no-op. Preserve partial state on error.
 
 Install/review the age CLI on the authorized hosts. Owner provides a public native

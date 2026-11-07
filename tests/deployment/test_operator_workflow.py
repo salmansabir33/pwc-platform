@@ -28,6 +28,27 @@ class OperatorTests(unittest.TestCase):
         self.config.write_text(json.dumps(self.value))
         self.config.chmod(0o600)
 
+    def test_docker_execution_pins_local_context_and_drops_other_project_environment(
+        self,
+    ):
+        with (
+            patch.dict(
+                os.environ,
+                {
+                    "COMPOSE_PROJECT_NAME": "unrelated",
+                    "COMPOSE_PROFILES": "maintenance",
+                    "DOCKER_CONTEXT": "remote",
+                },
+            ),
+            patch.object(provision.subprocess, "run") as command,
+        ):
+            command.return_value.stdout = b"ok"
+            self.assertEqual(provision.run("docker", "ps"), b"ok")
+            args, keywords = command.call_args
+            self.assertEqual(args[0], ["docker", "--context", "default", "ps"])
+            self.assertNotIn("COMPOSE_PROJECT_NAME", keywords["env"])
+            self.assertNotIn("COMPOSE_PROFILES", keywords["env"])
+
     def test_config_cas_retains_original_and_no_overwrite(self):
         before = self.config.read_bytes()
         sha = provision.digest(self.config)

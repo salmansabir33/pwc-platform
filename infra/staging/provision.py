@@ -121,6 +121,22 @@ def _save_config(path, value, expected):
 
 
 def run(*args):
+    if args[0] == "docker" or args[0] == str(deploy.HERE / "stack.sh"):
+        command = [*args]
+        if args[0] == "docker":
+            command[1:1] = ["--context", "default"]
+        # A terminal used for another project must not retarget this operation.
+        environment = {
+            k: v for k, v in os.environ.items() if not k.startswith("COMPOSE_")
+        }
+        return subprocess.run(
+            command,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            check=True,
+            env=environment,
+        ).stdout
     return deploy.checked(list(args))
 
 
