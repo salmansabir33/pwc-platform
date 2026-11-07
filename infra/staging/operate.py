@@ -170,6 +170,13 @@ def healthy(manifest, roles, expected_images=None):
                 raise ValueError("RUNNING_IMAGE_DRIFT")
 
 
+def has_db_volume(project):
+    # Labels are insufficient: Compose can reuse an existing unlabeled volume
+    # with the canonical name. Never initialize/restore over that volume either.
+    names = run("docker", "volume", "ls", "--quiet").decode().splitlines()
+    return project + "_pgdata" in names
+
+
 def require_free_ingress():
     """Read-only availability check, not a reservation or firewall change."""
     for family, address in ((socket.AF_INET, "0.0.0.0"), (socket.AF_INET6, "::")):
@@ -380,15 +387,7 @@ def main():
                             "Exact private bootstrap already healthy; no services changed"
                         )
                         return 0
-                    if run(
-                        "docker",
-                        "volume",
-                        "ls",
-                        "--quiet",
-                        "--filter",
-                        "label=com.docker.compose.project="
-                        + provision.load(args.config)["project"],
-                    ).strip():
+                    if has_db_volume(provision.load(args.config)["project"]):
                         raise ValueError("EXISTING_VOLUME_PRESERVED")
                     run(
                         *compose(

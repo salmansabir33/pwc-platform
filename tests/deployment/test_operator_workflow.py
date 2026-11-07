@@ -234,6 +234,13 @@ class OperatorTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 recovery.restore_plan(self.config, "render", encrypted, receipt)
 
+    def test_unlabeled_canonical_volume_is_not_fresh(self):
+        with patch.object(
+            operate, "run", return_value=b"other_project_pgdata\npwc-staging_pgdata\n"
+        ):
+            self.assertTrue(operate.has_db_volume("pwc-staging"))
+            self.assertFalse(operate.has_db_volume("pwc-staging-new"))
+
     def test_restore_never_touches_existing_volume(self):
         with (
             patch.object(
@@ -242,7 +249,9 @@ class OperatorTests(unittest.TestCase):
                 return_value=("manifest", {"action": "restore"}),
             ),
             patch.object(
-                operate, "run", side_effect=[b"", b"existing-volume"]
+                operate,
+                "run",
+                side_effect=[b"", (self.value["project"] + "_pgdata\n").encode()],
             ) as commands,
         ):
             with self.assertRaises(ValueError):

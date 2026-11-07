@@ -162,18 +162,10 @@ def rehearse(config, rendered, encrypted, source_receipt, identity, receipt, app
     if operate.token(bound) != approval:
         raise ValueError("EXACT_RESTORE_APPROVAL_REQUIRED")
     value = provision.load(config)
-    # Must be genuinely fresh: no existing project container OR named DB volume.
-    if (
-        operate.run(*operate.compose(manifest, "ps", "--all", "--quiet")).strip()
-        or operate.run(
-            "docker",
-            "volume",
-            "ls",
-            "--quiet",
-            "--filter",
-            "label=com.docker.compose.project=" + value["project"],
-        ).strip()
-    ):
+    # Check canonical name as well as containers: unlabeled volumes also count.
+    if operate.run(
+        *operate.compose(manifest, "ps", "--all", "--quiet")
+    ).strip() or operate.has_db_volume(value["project"]):
         raise ValueError("RESTORE_HOST_NOT_FRESH")
     identity = provision.external(identity)
     operate.run(
