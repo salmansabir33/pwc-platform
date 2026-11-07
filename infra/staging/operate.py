@@ -252,6 +252,15 @@ def verify(value):
                 if response.status != status or len(raw) > 131072:
                     raise ValueError("PUBLIC_ENDPOINT_STATUS_OR_SIZE")
                 data = json.loads(raw)
+                if (
+                    not isinstance(data, dict)
+                    or (response.getheader("Content-Type") or "")
+                    .split(";", 1)[0]
+                    .strip()
+                    .lower()
+                    != "application/json"
+                ):
+                    raise ValueError("PUBLIC_JSON_REQUIRED")
                 if path.endswith("directory/") and (
                     set(data) != {"results", "next_cursor"}
                     or data["results"] != []
@@ -259,8 +268,21 @@ def verify(value):
                     or response.getheader("Cache-Control") != "no-store"
                 ):
                     raise ValueError("EMPTY_PUBLIC_DIRECTORY_REQUIRED")
-                if path.endswith("health/") and data.get("service") != "pwc-api":
+                if path.endswith("health/") and data != {
+                    "status": "ok",
+                    "service": "pwc-api",
+                }:
                     raise ValueError("HEALTH_INVALID")
+                if status == 404 and (
+                    set(data) != {"detail"} or not isinstance(data["detail"], str)
+                ):
+                    raise ValueError("DETAIL_ERROR_FIELDS_INVALID")
+                if status == 503 and (
+                    set(data) != {"error"}
+                    or not isinstance(data["error"], dict)
+                    or data["error"].get("code") != "OPPORTUNITIES_UNAVAILABLE"
+                ):
+                    raise ValueError("OPPORTUNITY_GATE_INVALID")
                 outcomes[host + path] = status
             finally:
                 client.close()
@@ -352,21 +374,22 @@ def main():
                 elif args.command == "bootstrap":
                     # No published ingress. Stop if any service already exists:
                     # upgrades need their own reviewed maintenance/backup sequence.
-                    if (
-                        run(*compose(manifest, "ps", "--all", "--quiet")).strip()
-                        or run(
-                            "docker",
-                            "volume",
-                            "ls",
-                            "--quiet",
-                            "--filter",
-                            "label=com.docker.compose.project="
-                            + provision.load(args.config)["project"],
-                        ).strip()
-                    ):
-                        raise ValueError(
-                            "INITIAL_BOOTSTRAP_ONLY_EXISTING_PROJECT_PRESERVED"
+                    if run(*compose(manifest, "ps", "--all", "--quiet")).strip():
+                        healthy(manifest, ("db", "app"), bound["images"])
+                        print(
+                            "Exact private bootstrap already healthy; no services changed"
                         )
+                        return 0
+                    if run(
+                        "docker",
+                        "volume",
+                        "ls",
+                        "--quiet",
+                        "--filter",
+                        "label=com.docker.compose.project="
+                        + provision.load(args.config)["project"],
+                    ).strip():
+                        raise ValueError("EXISTING_VOLUME_PRESERVED")
                     run(
                         *compose(
                             manifest,

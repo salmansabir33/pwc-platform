@@ -7,8 +7,9 @@ owner supplies exact host/change authority. Docker access is root-equivalent.
 No real NGO records, fixtures, accounts or grants are created. All personal/private
 service flags and opportunity publication remain closed in the existing renderer.
 
-This workflow is for **initial deployment**. An existing project/container/DB volume
-blocks bootstrap/restore rather than automatically migrating or overwriting it.
+This workflow is for **initial deployment**. An already-healthy exact private bootstrap is a no-op; any other existing
+project/container/DB volume blocks bootstrap/restore rather than automatically
+migrating or overwriting it.
 Partial failures preserve files, containers and volumes for operator-led recovery;
 there is deliberately no automatic teardown, volume deletion, rollback, firewall,
 DNS, shared-proxy edit or destructive retry. Healthy exact-stack exposure is a no-op.
@@ -144,8 +145,8 @@ For no findings, omit `--risk-disposition`. This starts only private PostgreSQL,
 uses the existing owner-only migration/grant service, then starts the app with its
 bounded runtime role. DB TLS, migrations and application mTLS are checked by the
 existing health commands. No portal/gateway/host port is started. No root development
-Compose file or environment-file override is used. An existing project/volume is a
-hard stop, not permission to drop it. Preserve partial state on error.
+Compose file or environment-file override is used. An existing volume or unhealthy/different project is a hard stop, not permission
+to drop it; an already-healthy exact private bootstrap is a no-op. Preserve partial state on error.
 
 Install/review the age CLI on the authorized hosts. Owner provides a public native
 age recipient, separate backup-host SSH account, pinned known_hosts file, private

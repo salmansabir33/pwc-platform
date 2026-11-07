@@ -355,6 +355,78 @@ class OperatorTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 operate.healthy("manifest", ("app",), {"app": "approved-image"})
 
+    def test_empty_public_probe_checks_both_hosts_and_closed_opportunities(self):
+        requests = []
+
+        class Client:
+            def request(self, method, path, headers):
+                self.path = path
+                requests.append((method, path, headers))
+
+            def getresponse(self):
+                path = self.path
+
+                class Response:
+                    status = (
+                        404
+                        if "organizations" in path
+                        else 503
+                        if "opportunities" in path
+                        else 200
+                    )
+
+                    def read(self, limit):
+                        if "health" in path:
+                            return b'{"status":"ok","service":"pwc-api"}'
+                        if "organizations" in path:
+                            return b'{"detail":"Not found"}'
+                        if "opportunities" in path:
+                            return b'{"error":{"code":"OPPORTUNITIES_UNAVAILABLE"}}'
+                        return b'{"results":[],"next_cursor":null}'
+
+                    def getheader(self, name):
+                        return (
+                            "application/json" if name == "Content-Type" else "no-store"
+                        )
+
+                return Response()
+
+            def close(self):
+                pass
+
+        with patch.object(
+            operate.http.client, "HTTPSConnection", return_value=Client()
+        ):
+            result = operate.verify(self.value)
+        self.assertEqual(len(requests), 8)
+        self.assertFalse(result["acceptance"])
+        self.assertTrue(all(r[2] == {"Accept": "application/json"} for r in requests))
+
+    def test_healthy_exact_bootstrap_repetition_is_noop(self):
+        bound = {"images": {r: "image" for r in operate.ROLES}, "action": "bootstrap"}
+        argv = [
+            "operate",
+            "bootstrap",
+            "--config",
+            str(self.config),
+            "--render",
+            "render",
+            "--approve-plan-sha256",
+            operate.token(bound),
+        ]
+        with (
+            patch("sys.argv", argv),
+            patch.object(
+                operate, "scan_binding", return_value=(self.value, "manifest", bound)
+            ),
+            patch.object(
+                operate, "run", return_value=b"existing container"
+            ) as commands,
+            patch.object(operate, "healthy"),
+        ):
+            self.assertEqual(operate.main(), 0)
+            self.assertEqual(commands.call_count, 1)
+
     def test_public_probe_does_not_follow_redirects_or_accept_real_data(self):
         class Response:
             status = 200
