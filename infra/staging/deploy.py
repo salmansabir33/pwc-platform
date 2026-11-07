@@ -504,6 +504,30 @@ def compose(value, destination):
     }
 
 
+def gateway_config(value):
+    return f"""global
+  maxconn 512
+defaults
+  mode tcp
+  timeout connect 5s
+  timeout client 40s
+  timeout server 40s
+frontend tls
+  bind :8443
+  tcp-request inspect-delay 5s
+  tcp-request content accept if {{ req.ssl_hello_type 1 }}
+  use_backend ngo if {{ req.ssl_sni -i {value["ngo_host"]} }}
+  use_backend ops if {{ req.ssl_sni -i {value["ops_host"]} }}
+  default_backend denied
+backend ngo
+  server ngo ngo:8443 check
+backend ops
+  server ops ops:8443 check
+backend denied
+  tcp-request content reject
+"""
+
+
 def render(config, output, synthetic=False):
     value = metadata(
         json.loads(Path(config).read_text(), object_pairs_hook=unique), synthetic
@@ -531,28 +555,7 @@ def render(config, output, synthetic=False):
     for name in ("ngo", "ops"):
         (output / (name + ".conf")).write_text(portal(value[name + "_host"]))
         (output / (name + ".conf")).chmod(0o644)
-    gateway = f"""global
-  maxconn 512
-defaults
-  mode tcp
-  timeout connect 5s
-  timeout client 40s
-  timeout server 40s
-frontend tls
-  bind :8443
-  tcp-request inspect-delay 5s
-  tcp-request content accept if {{ req.ssl_hello_type 1 }}
-  use_backend ngo if {{ req.ssl_sni -i {value["ngo_host"]} }}
-  use_backend ops if {{ req.ssl_sni -i {value["ops_host"]} }}
-  default_backend denied
-backend ngo
-  server ngo ngo:8443 check
-backend ops
-  server ops ops:8443 check
-backend denied
-  tcp-request content reject
-"""
-    (output / "haproxy.cfg").write_text(gateway)
+    (output / "haproxy.cfg").write_text(gateway_config(value))
     (output / "haproxy.cfg").chmod(0o644)
     document = compose(value, output)
     path = output / "compose.json"

@@ -373,3 +373,12 @@ project/port ownership, maintenance/rollback owner and risk disposition for all
 remaining HIGH/CRITICAL image findings. Passing the existing fixable-only scan
 is not zero vulnerabilities or risk acceptance. Enrollment requires the separate
 issuer/privacy/mail/transport dispositions in the existing invitation runbook.
+
+## Initial deployment automation
+
+Use the single [operator procedure](OPERATOR.md) for client CSR completion (existing
+issuer/import or explicitly approved replacement client CA), reviewed digest
+resolution, approval-bound build/scan/private bootstrap, encrypted off-host export,
+isolated restore rehearsal and approval-bound public exposure. It reuses this
+renderer, stack, runtime and backup boundary. It does not install a host, seed data,
+authorize itself, change shared ingress or claim actual-host acceptance from CI.

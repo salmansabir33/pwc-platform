@@ -26,7 +26,7 @@ def main(directory):
         findings = [
             item
             for result in value.get("Results", [])
-            for item in result.get("Vulnerabilities", [])
+            for item in (result.get("Vulnerabilities") or [])
             if item.get("Severity") in {"HIGH", "CRITICAL"}
         ]
         fixable = [item for item in findings if item.get("FixedVersion")]
