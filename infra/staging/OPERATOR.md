@@ -16,7 +16,7 @@ DNS, shared-proxy edit or destructive retry. Healthy exact-stack exposure is a n
 PKI/config updates are idempotent for a completed generation; interrupted generations
 are retained and require a new versioned directory. Old keys/configs remain intact.
 
-## 1. Apply reviewed release and complete the client identities
+## 1. Apply reviewed release and select private operator state
 
 On the trusted SSH terminal, use the reviewed PR/merge commit, not an unreviewed
 branch or the old `15c277a` code. Preserve the existing checkout and workloads;
@@ -30,9 +30,39 @@ umask 077
 CONFIG=/srv/projects/pwc/staging/secrets/config.json
 # Owner-selected NEW private directory outside Git; do not reuse another release.
 : "${STATE:?Set the absolute operator state directory for this release}"
-mkdir -m 700 "$STATE"
+test -d "$STATE" || mkdir -m 700 "$STATE"
 sha256sum "$CONFIG"
 ```
+
+## 2. Resolve, review and apply immutable image references
+
+Supply `IMAGE_CANDIDATES_JSON` outside Git with exactly `python`, `node`, `nginx`,
+`postgres`, `haproxy` mapped to owner-selected registry tags. Start from current
+reviewed distro/version requirements in README, not an unreviewed `latest` tag.
+Resolution pulls images but cannot apply them automatically:
+
+```bash
+python3 -m infra.staging.provision resolve-images \
+  --candidates "$IMAGE_CANDIDATES_JSON" --output "$STATE/image-proposal.json"
+# Owner reviews provenance, architecture, versions and exact repository@sha256 refs.
+python3 -m infra.staging.provision apply-images --config "$CONFIG" \
+  --reviewed-images "$STATE/image-proposal.json" \
+  --approve-config-sha256 "$OWNER_APPROVED_CURRENT_CONFIG_SHA256"
+```
+
+`apply-images` rejects mutable references and sets `release` to this reviewed
+checkout's exact HEAD. Other configuration fields/secrets stay intact. Use the new
+current config hash for each approved mutation, not the hash from a prior step.
+
+Image approval comes **before** client certificate completion. Only `apply-images`
+may load the exact documented initial image placeholders; it validates every other
+metadata field and all replacement references strictly. It deliberately does not
+require the not-yet-issued client certificates. The configuration SHA changes after
+image approval: obtain a **new owner approval** for that updated SHA before signing.
+Do not reuse the pre-image SHA. Rendering still requires complete valid files and
+immutable images and must fail until client completion succeeds.
+
+## 3. Complete the client identities
 
 Choose **one** issuer path below. Do not regenerate public/app/DB keys or four
 application secrets. CSR/key matching, >7-day validity, chain/purpose and full
@@ -80,27 +110,7 @@ binds a change; it does not establish the operator's organizational authority.
 On failure there is no config switch; preserve the generation for private diagnosis.
 Existing configuration backups can contain sensitive paths: never upload them.
 
-## 2. Resolve, review and apply immutable image references
-
-Supply `IMAGE_CANDIDATES_JSON` outside Git with exactly `python`, `node`, `nginx`,
-`postgres`, `haproxy` mapped to owner-selected registry tags. Start from current
-reviewed distro/version requirements in README, not an unreviewed `latest` tag.
-Resolution pulls images but cannot apply them automatically:
-
-```bash
-python3 -m infra.staging.provision resolve-images \
-  --candidates "$IMAGE_CANDIDATES_JSON" --output "$STATE/image-proposal.json"
-# Owner reviews provenance, architecture, versions and exact repository@sha256 refs.
-python3 -m infra.staging.provision apply-images --config "$CONFIG" \
-  --reviewed-images "$STATE/image-proposal.json" \
-  --approve-config-sha256 "$OWNER_APPROVED_CURRENT_CONFIG_SHA256"
-```
-
-`apply-images` rejects mutable references and sets `release` to this reviewed
-checkout's exact HEAD. Other configuration fields/secrets stay intact. Use the new
-current config hash for each approved mutation, not the hash from a prior step.
-
-## 3. Render, approve build, build and scan
+## 4. Render, approve build, build and scan
 
 ```bash
 RENDER="$STATE/rendered"
@@ -131,7 +141,7 @@ invalidates approval. Another operator must not mutate Docker tags/files during
 these operations; host/root administrators remain a trust boundary. No tool here
 creates independent legal/security acceptance by generating a receipt.
 
-## 4. Approve private bootstrap; encrypted off-host backup
+## 5. Approve private bootstrap; encrypted off-host backup
 
 After explicit owner approval to initialize this **fresh** PWC project (no ingress):
 
@@ -177,7 +187,7 @@ Schedule the existing encrypted backup/export operation to the approved RPO afte
 initial deployment; scheduling credentials/retention settings are provider inputs,
 not defaults supplied by this code. Do not auto-delete older backups.
 
-## 5. Rehearse on a separate isolated restore host
+## 6. Rehearse on a separate isolated restore host
 
 Use a **third authorized machine**, distinct from source and backup storage. Supply
 the same reviewed checkout and **exact five built image IDs** through the approved
@@ -206,7 +216,7 @@ operational receipt back to source's private STATE using approved transport.
 Record measured recovery time and owner RPO/RTO acceptance. No automated teardown is
 performed: isolate/preserve the rehearsal until its owner authorizes cleanup.
 
-## 6. Approve exposure, then independently verify
+## 7. Approve exposure, then independently verify
 
 Back on Contabo, supply the genuine off-host/rehearsal receipts. The binding rejects
 same-machine rehearsal, mismatched backups/config/source image IDs and stale scans.
@@ -264,3 +274,36 @@ recovery identity; approved deployment/443 change and external testing network.
 These are not synthesized by CI and are the only reason to stop the corresponding
 phase. No requirement to reinstall Docker, reissue valid public TLS or recreate
 valid application secrets is introduced.
+
+## Resume the reported initial bootstrap failure
+
+No generation/key was created by the failed operation. Do not delete or recreate
+existing secrets/certificates. Apply this reviewed fix to the source checkout first;
+`apply-images` sets the config release to that exact new HEAD (not the old `15c277a`).
+Use the authorized owner account and existing private STATE/CSR paths:
+
+```bash
+CONFIG=/srv/projects/pwc/staging/secrets/config.json
+INITIAL_SHA=e949418b49b7b449077a32f9ccfb20cede79bf5a253cd97cd4f45c8fdd61d856
+printf '%s  %s\n' "$INITIAL_SHA" "$CONFIG" | sha256sum --check -
+# If this fails, stop: review the changed config rather than reusing old approval.
+python3 -m infra.staging.provision resolve-images \
+  --candidates "$IMAGE_CANDIDATES_JSON" --output "$NEW_IMAGE_PROPOSAL_JSON"
+# Owner reviews these actual resolved references; no sample/fake digests on VPS.
+python3 -m infra.staging.provision apply-images --config "$CONFIG" \
+  --reviewed-images "$NEW_IMAGE_PROPOSAL_JSON" --approve-config-sha256 "$INITIAL_SHA"
+sha256sum "$CONFIG"
+# Obtain owner approval of THIS NEW hash for replacement client trust/custody.
+python3 -m infra.staging.provision clients --config "$CONFIG" \
+  --output "$STATE/client-generation" --ngo-csr "$NGO_CSR" --ops-csr "$OPS_CSR" \
+  --issuer-key "$APPROVED_NEW_CLIENT_ISSUER_KEY" --replace-client-ca \
+  --approve-config-sha256 "$OWNER_APPROVED_POST_IMAGE_CONFIG_SHA256"
+python3 -m infra.staging.deploy --config "$CONFIG" --check
+```
+
+Set variables to the existing actual CSRs, an approved **new** issuer key path in
+its separate private directory, a new generation path and reviewed image candidates.
+Do not infer registry provenance/approval from a digest's shape. Original and
+post-image configs remain in `config.json.before-<sha>`; do not overwrite or publish
+these backups. Continue at step 4 only after strict renderer validation succeeds.
+These commands provision configuration/PKI only; they do not deploy services.

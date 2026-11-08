@@ -88,6 +88,38 @@ class OperatorTests(unittest.TestCase):
         self.assertEqual(provision.load(self.config)["release"], "a" * 40)
         self.assertEqual(provision.load(self.config)["files"], self.value["files"])
 
+    def test_pending_images_are_only_accepted_for_reviewed_image_application(self):
+        initial = "OWNER_APPROVED_REPOSITORY@sha256:REQUIRED_64_HEX_DIGEST"
+        for field, invalid in (
+            ("images", {k: "latest" for k in self.value["images"]}),
+            ("images", {"python": initial}),
+            ("ngo_host", "localhost"),
+            ("files", {**self.value["files"], "db_key": "relative.key"}),
+        ):
+            value = copy.deepcopy(self.value)
+            value["images"] = {k: initial for k in value["images"]}
+            value[field] = invalid
+            self.config.write_text(json.dumps(value))
+            before = self.config.read_bytes()
+            with self.assertRaises(ValueError):
+                provision.apply_images(
+                    self.config, self.value["images"], provision.digest(self.config)
+                )
+            self.assertEqual(self.config.read_bytes(), before)
+        value = copy.deepcopy(self.value)
+        value["images"] = {k: initial for k in value["images"]}
+        self.config.write_text(json.dumps(value))
+        for replacement in (
+            {k: "latest" for k in self.value["images"]},
+            {"python": "latest"},
+        ):
+            with self.assertRaises(ValueError):
+                provision.apply_images(
+                    self.config, replacement, provision.digest(self.config)
+                )
+        with self.assertRaises(ValueError):
+            provision.load(self.config)
+
     def test_resolver_only_proposes_never_changes_config(self):
         before = self.config.read_bytes()
         references = ["reviewed@sha256:" + "b" * 64]
@@ -617,3 +649,108 @@ class IssuerTests(unittest.TestCase):
                 provision.digest(self.config),
             )
         self.assertEqual(before, self.config.read_bytes())
+
+
+@unittest.skipUnless(
+    os.getuid() == 0, "Disposable real PKI requires root mount ownership"
+)
+class InitialBootstrapTests(unittest.TestCase):
+    def test_example_based_incomplete_config_to_valid_render_without_loader_mocks(self):
+        # TEST ONLY: real disposable cryptography, fixture image identifiers;
+        # no registry/host connection, synthetic data insertion or issuer on a VPS.
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            root.chmod(0o700)
+            fixture = config(root)
+            fixture.update(
+                ngo_host="ngo-staging.coventure.pk", ops_host="ops-staging.coventure.pk"
+            )
+            certificates(fixture)
+            initial = json.loads(
+                (provision.deploy.HERE / "config.example.json").read_text()
+            )
+            initial.update(
+                project="pwc-staging",
+                release="15c277a5b39dd0265f31bbe7a32d10702aa5edc8",
+                ngo_host=fixture["ngo_host"],
+                ops_host=fixture["ops_host"],
+                files=fixture["files"],
+            )
+            path = root / "config.json"
+            path.write_text(json.dumps(initial))
+            path.chmod(0o600)
+            csrs = {}
+            for name in ("ngo_client", "ops_client"):
+                Path(fixture["files"][name + "_cert"]).unlink()
+                csrs[name] = str(root / (name + ".csr"))
+                provision.run(
+                    "openssl",
+                    "req",
+                    "-new",
+                    "-key",
+                    fixture["files"][name + "_key"],
+                    "-subj",
+                    "/CN=pending",
+                    "-out",
+                    csrs[name],
+                )
+            (root / "client_ca_key").unlink()  # Original issuer really unavailable.
+            preserved = {
+                name: Path(p).read_bytes()
+                for name, p in fixture["files"].items()
+                if Path(p).exists()
+            }
+            original = path.read_bytes()
+            original_sha = provision.digest(path)
+            with self.assertRaises(ValueError):
+                provision.load(path)
+            with self.assertRaises(ValueError):
+                provision.deploy.render(path, None)
+            # Applying approved image references MUST NOT inspect missing leaves.
+            provision.apply_images(path, fixture["images"], original_sha)
+            approved = path.read_bytes()
+            approved_sha = provision.digest(path)
+            self.assertEqual(
+                provision.load(path)["release"],
+                provision.run(
+                    "git", "-C", str(provision.deploy.ROOT), "rev-parse", "HEAD"
+                )
+                .decode()
+                .strip(),
+            )
+            with self.assertRaises((ValueError, OSError)):
+                provision.deploy.render(path, None)  # Rendering still fails closed.
+            issuer = root / "issuer"
+            issuer.mkdir(mode=0o700)
+            output = root / "client-generation"
+            key = issuer / "replacement.key"
+            with self.assertRaises(ValueError):
+                provision.clients(path, output, csrs, key, True, original_sha)
+            self.assertFalse(output.exists())
+            self.assertFalse(key.exists())
+            provision.clients(path, output, csrs, key, True, approved_sha)
+            final = provision.load(path)
+            for name in provision.CLIENTS:
+                provision.checked_client(
+                    final["files"][name + "_cert"],
+                    final["files"][name + "_key"],
+                    final["files"]["client_ca"],
+                    name,
+                )
+            for name, data in preserved.items():
+                self.assertEqual(Path(fixture["files"][name]).read_bytes(), data)
+            self.assertEqual(
+                path.with_name("config.json.before-" + original_sha).read_bytes(),
+                original,
+            )
+            self.assertEqual(
+                path.with_name("config.json.before-" + approved_sha).read_bytes(),
+                approved,
+            )
+            provision.deploy.render(path, None)  # Real final validation; no patches.
+            manifest = provision.deploy.render(path, root / "rendered")
+            self.assertTrue(manifest.is_file())
+            after = path.read_bytes()
+            provision.apply_images(path, fixture["images"], provision.digest(path))
+            provision.clients(path, output, csrs, key, True, provision.digest(path))
+            self.assertEqual(path.read_bytes(), after)  # Completed retry is a no-op.

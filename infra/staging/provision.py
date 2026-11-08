@@ -45,15 +45,36 @@ def private_directory(path):
     return path
 
 
-def load(path):
+def read_config(path):
+    """Read private operator JSON; structural validation belongs to load()."""
     path = external(path)
     private_directory(path.parent)
     info = path.stat()
     if info.st_uid != os.geteuid() or info.st_mode & 0o077:
         raise ValueError("PRIVATE_CONFIG_REQUIRED")
-    return deploy.metadata(
-        json.loads(path.read_text(), object_pairs_hook=deploy.unique)
-    )
+    return json.loads(path.read_text(), object_pairs_hook=deploy.unique)
+
+
+def load(path, *, reviewed_images=None):
+    value = read_config(path)
+    if reviewed_images is not None:
+        # Only image approval may consume the documented initial placeholder.
+        # Validate the original image field shape before replacing its values;
+        # all other metadata and the NEW references still use the final validator.
+        initial = "OWNER_APPROVED_REPOSITORY@sha256:REQUIRED_64_HEX_DIGEST"
+        old = value.get("images") if isinstance(value, dict) else None
+        if not isinstance(old, dict) or set(old) != set(deploy.IMAGES):
+            raise ValueError("INITIAL_IMAGE_FIELDS_INVALID")
+        for image in old.values():
+            if not isinstance(image, str) or (
+                image != initial
+                and not re.fullmatch(r"[a-zA-Z0-9./_:-]+@sha256:[a-f0-9]{64}", image)
+            ):
+                raise ValueError("INITIAL_IMAGE_REFERENCE_INVALID")
+        value = {**value, "images": reviewed_images}
+    # This checks paths, not file existence. Missing signed client certificates
+    # are allowed only until clients/import-clients runs full deploy.files().
+    return deploy.metadata(value)
 
 
 def write_new(path, data):
@@ -326,7 +347,7 @@ def resolve_images(candidates, output):
 
 
 def apply_images(config, images, approval):
-    value = load(config)
+    value = load(config, reviewed_images=images)
     if digest(config) != approval:
         raise ValueError("EXACT_CONFIG_APPROVAL_REQUIRED")
     value["images"] = images
@@ -334,7 +355,7 @@ def apply_images(config, images, approval):
         run("git", "-C", str(deploy.ROOT), "rev-parse", "HEAD").decode().strip()
     )
     deploy.metadata(value)
-    if load(config) == value:
+    if read_config(config) == value:
         return
     save_config(config, value, approval)
 
