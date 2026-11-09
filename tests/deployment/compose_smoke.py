@@ -95,7 +95,10 @@ def main():
                 role = image.split(":")[0].removeprefix(value["project"] + "-")
                 versions[role] = packages
                 print(
-                    "::notice title=Security package versions::" + role + ": " + packages,
+                    "::notice title=Security package versions::"
+                    + role
+                    + ": "
+                    + packages,
                     flush=True,
                 )
             (ROOT / ".cache").mkdir(exist_ok=True)

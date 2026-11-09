@@ -26,11 +26,11 @@ class SecurityUpgradeTests(unittest.TestCase):
                 script.replace(". /etc/os-release", f'. "{root}/os-release"')
             )
             commands = {
-                "apt-get": '''#!/bin/sh
+                "apt-get": """#!/bin/sh
 printf '%s\\n' "$*" >> "$CALL_LOG"
 case "$*" in *"$FAIL_APT"*) [ -z "$FAIL_APT" ] || exit 1;; esac
-''',
-                "dpkg-query": '''#!/bin/sh
+""",
+                "dpkg-query": """#!/bin/sh
 for package do :; done
 case "$package" in
     apt) printf %s "$APT_VERSION" ;;
@@ -38,7 +38,7 @@ case "$package" in
     zlib1g) [ "$ZLIB_VERSION" != missing ] || exit 1; printf %s "$ZLIB_VERSION" ;;
     *) exit 1 ;;
 esac
-''',
+""",
                 "rm": "#!/bin/sh\nexit 0\n",
             }
             for name, content in commands.items():
@@ -55,7 +55,10 @@ esac
                 "FAIL_APT": versions.get("fail_apt", ""),
             }
             result = subprocess.run(
-                ["sh", str(root / "upgrade.sh")], capture_output=True, text=True, env=env
+                ["sh", str(root / "upgrade.sh")],
+                capture_output=True,
+                text=True,
+                env=env,
             )
             calls = (root / "calls").read_text() if (root / "calls").exists() else ""
             return result, calls
@@ -104,14 +107,25 @@ esac
                 self.assertNotEqual(result.returncode, 0)
 
     def test_four_affected_services_build_from_remediated_dockerfiles(self):
-        services = deploy.compose(config("/tmp/pwc-not-real"), Path("/tmp/rendered"))["services"]
+        services = deploy.compose(config("/tmp/pwc-not-real"), Path("/tmp/rendered"))[
+            "services"
+        ]
         for service, dockerfile in (
-            ("ngo", "portal"), ("ops", "portal"), ("db", "postgres"), ("gateway", "gateway")
+            ("ngo", "portal"),
+            ("ops", "portal"),
+            ("db", "postgres"),
+            ("gateway", "gateway"),
         ):
             with self.subTest(service=service):
-                self.assertEqual(services[service]["build"]["dockerfile"], f"infra/staging/{dockerfile}.Dockerfile")
+                self.assertEqual(
+                    services[service]["build"]["dockerfile"],
+                    f"infra/staging/{dockerfile}.Dockerfile",
+                )
                 content = (ROOT / f"infra/staging/{dockerfile}.Dockerfile").read_text()
-                self.assertIn("COPY infra/staging/security-upgrade.sh /tmp/pwc-security-upgrade.sh", content)
+                self.assertIn(
+                    "COPY infra/staging/security-upgrade.sh /tmp/pwc-security-upgrade.sh",
+                    content,
+                )
                 self.assertIn("RUN sh /tmp/pwc-security-upgrade.sh &&", content)
 
 
