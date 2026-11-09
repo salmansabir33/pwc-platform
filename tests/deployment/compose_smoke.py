@@ -71,8 +71,8 @@ def main():
                 flush=True,
             )
             run(stack, str(manifest), "build")
-            # Public package versions only: prove patched apt is installed in
-            # every actual runtime image, not just a changed Dockerfile.
+            # Public package versions only: record apt and zlib in every
+            # actual runtime image, not just a changed Dockerfile.
             versions = {}
             for image in built:
                 packages = run(
@@ -86,6 +86,7 @@ def main():
                     "-f=${binary:Package}=${Version};",
                     "apt",
                     "libapt-pkg*",
+                    "zlib1g",
                 ).decode("ascii")
                 if len(packages) > 512 or any(
                     ord(c) < 32 or ord(c) > 126 for c in packages
@@ -94,7 +95,10 @@ def main():
                 role = image.split(":")[0].removeprefix(value["project"] + "-")
                 versions[role] = packages
                 print(
-                    "::notice title=Patched apt packages::" + role + ": " + packages,
+                    "::notice title=Security package versions::"
+                    + role
+                    + ": "
+                    + packages,
                     flush=True,
                 )
             (ROOT / ".cache").mkdir(exist_ok=True)
